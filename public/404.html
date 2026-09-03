@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 · Not Found</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- GitHub Pages serves this file for non-hash URLs. Return visitors to the
+       deployed site's root without hard-coding the former NYU path. -->
+  <script>
+    var segments = location.pathname.split('/').filter(Boolean);
+    var root = location.hostname.endsWith('.github.io') && segments.length
+      ? '/' + segments[0] + '/'
+      : '/';
+    location.replace(root + '#/en/404');
+  </script>
+  <style>
+    html,body{margin:0;height:100%}
+    body{background:#20103d;color:#f0ebe0;display:grid;place-items:center;
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:24px}
+    h1{font-size:28px;font-weight:600;margin:0 0 8px}
+    p{color:#9088a8;max-width:420px;margin:0 auto 20px}
+    a{color:#f5a05c;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Error 404</h1>
+    <p>This page wandered off — the address doesn’t lead anywhere on this site.</p>
+    <p><a href="./#/en">← Back to home</a></p>
+  </div>
+</body>
+</html>

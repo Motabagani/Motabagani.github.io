@@ -1,0 +1,150 @@
+.subway-sign {
+  --sign-shell: #746b2e;
+  --sign-screen: #fff526;
+  --sign-ink: #090909;
+  width: 100%;
+  min-height: clamp(112px, 18vw, 220px);
+  padding: clamp(16px, 3vw, 34px);
+  display: grid;
+  grid-template-columns: clamp(72px, 11vw, 124px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(14px, 2vw, 24px);
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--sign-shell);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 22px 60px rgb(0 0 0 / 24%);
+}
+
+/* Placement under the homepage hero: constrained width, centered, with breathing
+   room above so it reads as a marquee under the intro. */
+.subway-sign.subway-sign--hero {
+  max-width: 760px;
+  margin: clamp(4px, 1.5vw, 14px) auto clamp(22px, 4vw, 40px);
+}
+
+.subway-route,
+.subway-screen {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--sign-screen);
+}
+
+.subway-route {
+  height: clamp(82px, 14vw, 160px);
+  border-radius: 10px;
+}
+
+.subway-screen {
+  min-width: 0;
+  height: clamp(62px, 9vw, 104px);
+  padding: 12px clamp(12px, 3vw, 38px);
+  border-radius: 8px;
+}
+
+.subway-destination {
+  /* --fit (0..1) shrinks the actual dot size so a long phrase fits the screen;
+     shrinking the real layout (not a transform) keeps normal centering working
+     and clips in no browser. Set from JS per phrase. */
+  --fit: 1;
+  --dot-size: calc(clamp(2px, 0.5vw, 7px) * var(--fit));
+  --dot-gap: calc(clamp(1px, 0.18vw, 3px) * var(--fit));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--dot-size) * 1.35);
+  width: max-content;
+  filter: drop-shadow(0 0 0.2px var(--sign-ink));
+}
+
+.subway-route .subway-destination {
+  --dot-size: calc(clamp(5px, 0.72vw, 10px) * var(--fit));
+  --dot-gap: calc(clamp(2px, 0.24vw, 4px) * var(--fit));
+}
+
+.subway-glyph {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), var(--dot-size));
+  grid-template-rows: repeat(7, var(--dot-size));
+  gap: var(--dot-gap);
+}
+
+.subway-glyph i {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  display: block;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.subway-glyph i.is-lit {
+  background: var(--sign-ink);
+}
+
+.subway-destination--out i.is-lit {
+  animation: subway-led-out 240ms steps(2, end) forwards;
+  animation-delay: calc(var(--pixel-order) * 0.55ms);
+}
+
+.subway-destination--in i.is-lit {
+  animation: subway-led-in 360ms steps(3, end) both;
+  animation-delay: calc(var(--pixel-order) * 0.55ms);
+}
+
+@keyframes subway-led-out {
+  0%, 35% { opacity: 1; transform: scale(1); }
+  36%, 62% { opacity: 0.18; transform: scale(0.72); }
+  63%, 76% { opacity: 0.75; }
+  100% { opacity: 0; transform: scale(0.35); }
+}
+
+@keyframes subway-led-in {
+  0% { opacity: 0; transform: scale(0.35); }
+  28% { opacity: 0.85; }
+  42% { opacity: 0.2; }
+  65%, 100% { opacity: 1; transform: scale(1); }
+}
+
+.subway-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .subway-sign {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+    border-radius: 13px;
+  }
+
+  .subway-route {
+    height: 72px;
+  }
+
+  .subway-screen {
+    height: 58px;
+    padding-inline: 8px;
+  }
+
+  .subway-destination {
+    --dot-size: calc(clamp(1.4px, 0.42vw, 2.4px) * var(--fit));
+    --dot-gap: calc(1px * var(--fit));
+    gap: calc(var(--dot-size) * 0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subway-destination--out i.is-lit,
+  .subway-destination--in i.is-lit {
+    animation: none;
+  }
+}

@@ -1,0 +1,895 @@
+/* ============================================================
+   FONT LOADING — your local SF Grandezza files
+   ============================================================ */
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('/fonts/sf-grandezza.light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('/fonts/sf-grandezza.light-oblique.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('/fonts/sf-grandezza.medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('/fonts/sf-grandezza.medium-oblique.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('/fonts/sf-grandezza.heavy.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('/fonts/sf-grandezza.heavy-oblique.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Mada';
+  src: url('/fonts/mada.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* ============================================================
+   DESIGN TOKENS — Riyadh Air-inspired palette
+   ============================================================ */
+:root {
+  /* Core colors — deep purple base, off-white text, amber accent */
+  --bg: #20103d;
+  --ink: #f0ebe0;
+  --muted: #9088a8;
+  --accent: #f5a05c;
+
+  /* Surface tints — these are key to the Riyadh Air look.
+     White overlays at low opacity create the frosted-panel feel. */
+  --surface-1: rgba(255, 255, 255, 0.04);   /* subtle card backgrounds */
+  --surface-2: rgba(255, 255, 255, 0.07);   /* hover states, slightly brighter */
+  --surface-3: rgba(255, 255, 255, 0.12);   /* pills, badges */
+  --divider:   #20103d;   /* hairline dividers inside panels */
+
+  /* Code block tones */
+  --code-bg: rgba(0, 0, 0, 0.3);
+  --code-ink: #f0ebe0;
+
+  /* Typography */
+  --font: "SF Grandezza", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ar: "Mada", "SF Grandezza", sans-serif;
+
+  /* Rounding — generous, consistent across the site */
+  --r-sm: 12px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-pill: 999px;
+}
+
+/* ============================================================
+   RESET + BASE
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; transition: color 0.2s ease; }
+a:hover { color: var(--accent); }
+
+button { font-family: inherit; }
+
+.container { max-width: 100%; margin: 0 auto; padding: 0 48px; }
+.narrow    { max-width: 100%; margin: 0 auto; padding: 0 48px; }
+
+/* ============================================================
+   NAQSH SITE-WIDE BACKDROP — soft amber atmosphere
+   ============================================================ */
+body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 1400px;
+  height: 90vh;
+  background-image: url('/images/naqsh.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.12;
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(340deg);
+  mix-blend-mode: screen;
+}
+
+/* All real content sits above the backdrop */
+.topbar, main, footer, .breadcrumb {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   TOPBAR — clean, no border, generous padding
+   ============================================================ */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.topbar .mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+
+/* ============================================================
+   HERO — uppercase eyebrow, oversized statement headline
+   ============================================================ */
+.hero {
+  padding: 120px 0 100px;
+}
+
+.hero .eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+}
+
+.hero h1 {
+  font-weight: 300;
+  font-size: clamp(56px, 9vw, 128px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  margin-bottom: 40px;
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.hero .lede {
+ font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.5;
+  max-width: 720px;
+  margin: 0 auto;           /* ← add this line */
+  font-weight: 300;
+  color: var(--muted);
+}
+.hero .lede strong { color: var(--ink); font-weight: 500; }
+
+/* ============================================================
+   SECTION SCAFFOLDING — no dividers, big rhythm via padding
+   ============================================================ */
+.section {
+  padding: 80px 0;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 48px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.section-head h2 {
+  font-weight: 500;
+  font-size: clamp(28px, 3.5vw, 42px);
+  letter-spacing: -0.02em;
+}
+.section-head .num {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  padding: 6px 14px;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+}
+
+/* ============================================================
+   PROJECT GRID — soft frosted cards, no harsh borders
+   ============================================================ */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.project {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  transition: background 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.project:hover {
+  background: var(--surface-2);
+  transform: translateY(-4px);
+}
+
+.project .meta {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.project h3 {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.project p {
+  color: var(--muted);
+  margin-bottom: 24px;
+  flex-grow: 1;
+  font-size: 15px;
+}
+
+.project .tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+.project .tags span {
+  padding: 6px 12px;
+  background: var(--surface-3);
+  border-radius: var(--r-pill);
+  color: var(--ink);
+}
+
+.project .arrow {
+  margin-top: 20px;
+  font-style: italic;
+  color: var(--accent);
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(-8px);
+}
+.project:hover .arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ============================================================
+   WRITING LIST — one frosted container with internal dividers
+   ============================================================ */
+.writing-list {
+  list-style: none;
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 8px 28px;
+}
+.writing-list li {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 32px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--divider);
+  align-items: baseline;
+  transition: padding-left 0.3s ease;
+}
+.writing-list li:last-child { border-bottom: none; }
+.writing-list li:hover { padding-left: 12px; }
+.writing-list li:hover h4 { color: var(--accent); }
+
+.writing-list .date {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.writing-list h4 {
+  font-size: 20px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+.writing-list .read {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+/* ============================================================
+   ABOUT — text on left, frosted meta panel on right
+   ============================================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.about-grid > div:first-child p {
+  font-size: 19px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.about-meta {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 36px;
+  font-size: 13px;
+}
+.about-meta dl {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 20px 24px;
+}
+.about-meta dt {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-size: 11px;
+}
+.about-meta dd { color: var(--ink); }
+.about-meta dd a {
+  color: var(--accent);
+  border-bottom: 1px solid var(--surface-3);
+  padding-bottom: 1px;
+}
+.about-meta dd a:hover { border-bottom-color: var(--accent); }
+
+/* ============================================================
+   FOOTER — single big sign-off, no harsh divider
+   ============================================================ */
+footer {
+  padding: 100px 32px 40px;
+  text-align: center;
+}
+footer .big {
+  font-style: italic;
+  font-size: clamp(40px, 7vw, 88px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 48px;
+  line-height: 1;
+}
+footer .big a {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 4px;
+}
+footer .colophon {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ============================================================
+   PROJECT DETAIL PAGE
+   ============================================================ */
+.breadcrumb {
+  padding: 32px 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.breadcrumb a {
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--surface-3);
+}
+
+.project-header { padding: 60px 0 60px; }
+.project-header .eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-bottom: 28px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.project-header .eyebrow span {
+  padding: 6px 14px;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+}
+.project-header h1 {
+  font-weight: 400;
+  font-size: clamp(40px, 6vw, 76px);
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  margin-bottom: 28px;
+}
+.project-header .deck {
+  font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.5;
+  font-weight: 300;
+  max-width: 700px;
+  color: var(--muted);
+}
+
+.meta-bar {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 32px 36px;
+  margin-bottom: 64px;
+}
+.meta-bar dl {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  font-size: 13px;
+}
+.meta-bar dt {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.meta-bar dd a { color: var(--accent); }
+
+/* ============================================================
+   PROSE — body content on detail page
+   ============================================================ */
+.prose { padding-bottom: 60px; }
+.prose h2 {
+  font-weight: 500;
+  font-size: clamp(26px, 2.8vw, 34px);
+  letter-spacing: -0.02em;
+  margin: 64px 0 20px;
+}
+.prose h3 {
+  font-weight: 500;
+  font-size: 20px;
+  margin: 36px 0 12px;
+}
+.prose p { margin-bottom: 20px; font-size: 17px; color: var(--ink); }
+.prose p.lead {
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 300;
+  color: var(--muted);
+}
+.prose ul, .prose ol { margin: 0 0 24px 24px; padding: 0; }
+.prose li { margin-bottom: 10px; font-size: 16px; }
+.prose strong { font-weight: 500; color: var(--ink); }
+.prose em { font-style: italic; color: var(--accent); font-weight: 400; }
+.prose code {
+  font-size: 14px;
+  background: var(--surface-2);
+  color: var(--accent);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.codeblock {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  padding: 28px 32px;
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  margin: 32px 0;
+  font-size: 13px;
+  line-height: 1.65;
+  position: relative;
+  white-space: pre;
+}
+.codeblock::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  opacity: 0.6;
+}
+.codeblock .k { color: #f5a05c; }
+.codeblock .c { color: rgba(255,255,255,0.4); font-style: italic; }
+.codeblock .s { color: #a5d18a; }
+.codeblock .t { color: #82b9d6; }
+
+.arch {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 36px;
+  margin: 32px 0;
+}
+.arch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  font-size: 12px;
+}
+.arch-node {
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  padding: 18px;
+  text-align: center;
+}
+.arch-node strong {
+  display: block;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.arch-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.arch-row::before, .arch-row::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--divider);
+}
+
+.pull {
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.4;
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 32px 36px;
+  margin: 48px 0;
+  color: var(--ink);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0 32px;
+}
+.feature {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  transition: background 0.2s ease;
+}
+.feature:hover { background: var(--surface-2); }
+.feature .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.feature h4 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.feature p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.back-link {
+  padding: 60px 0;
+  text-align: center;
+}
+.back-link a {
+  font-style: italic;
+  font-size: 22px;
+  color: var(--accent);
+  padding: 12px 28px;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+  display: inline-block;
+  transition: background 0.2s ease;
+}
+.back-link a:hover { background: var(--surface-2); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .container, .narrow { padding: 0 20px; }
+  .topbar { padding: 20px 24px; }
+  .hero { padding: 80px 0 60px; }
+  .projects { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .writing-list { padding: 8px 20px; }
+  .writing-list li { grid-template-columns: 1fr; gap: 4px; }
+  .writing-list .read { display: none; }
+  .meta-bar dl { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .arch-grid { grid-template-columns: 1fr; }
+  .features { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   ENTRANCE ANIMATIONS
+   ============================================================ */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero .eyebrow { animation: rise 0.6s ease 0.1s both; }
+.hero h1       { animation: rise 0.8s ease 0.2s both; }
+.hero .lede    { animation: rise 0.8s ease 0.4s both; }
+.project-header .eyebrow { animation: rise 0.6s ease 0.05s both; }
+.project-header h1       { animation: rise 0.6s ease 0.15s both; }
+.project-header .deck    { animation: rise 0.6s ease 0.25s both; }
+
+/* ============================================================
+   ADD THIS TO THE BOTTOM OF YOUR App.css
+   ============================================================ */
+
+/* ============================================================
+   LANGUAGE SWITCHER
+   ============================================================ */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-switch {
+  background: var(--surface-1);
+  border: none;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.lang-switch:hover {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+/* The switcher inside the overlay menu — bigger, friendlier */
+.lang-switch-overlay {
+  margin-top: 24px;
+  font-size: 16px;
+  padding: 12px 28px;
+}
+
+/* ============================================================
+   ARABIC TYPOGRAPHY — slightly larger, better line-height
+   ============================================================ */
+html[lang="ar"] body {
+  /* Arabic glyphs are often more compact vertically;
+     bumping line-height keeps reading comfortable */
+  line-height: 1.75;
+}
+
+html[lang="ar"] .hero h1,
+html[lang="ar"] .project-header h1,
+html[lang="ar"] .section-head h2 {
+  /* Arabic doesn't use ligatures the same way; tighter letter-spacing */
+  letter-spacing: 0;
+  /* Arabic also benefits from a touch more line-height in big sizes */
+  line-height: 1.2;
+}
+
+html[lang="ar"] .topbar nav a {
+  letter-spacing: 0;
+}
+
+/* ============================================================
+   RTL LAYOUT — flips alignment for Arabic
+   The `dir="rtl"` attribute on <html> handles most flipping
+   automatically (text alignment, flex direction, etc.).
+   These rules clean up edge cases.
+   ============================================================ */
+
+/* The hero eyebrow has a leading bar that should flip to the other side */
+html[dir="rtl"] .hero .eyebrow {
+  flex-direction: row-reverse;
+}
+
+/* The project arrow points the wrong direction in RTL — flip it */
+html[dir="rtl"] .project .arrow {
+  transform: translateX(8px) scaleX(-1);
+}
+html[dir="rtl"] .project:hover .arrow {
+  transform: translateX(0) scaleX(-1);
+}
+
+/* The hamburger button: when overlay opens, nav slides in from the LEFT in RTL */
+html[dir="rtl"] .topbar nav {
+  transform: translateX(-100%);
+}
+html[dir="rtl"] .topbar nav.is-open {
+  transform: translateX(0);
+}
+
+/* Hover slide direction for overlay nav links — slide LEFT in RTL */
+html[dir="rtl"] .topbar nav a:hover {
+  transform: translateX(-8px);
+}
+
+/* Writing list hover slide */
+html[dir="rtl"] .writing-list li:hover {
+  padding-left: 0;
+  padding-right: 12px;
+}
+
+/* Section head — number badge naturally flips with flex, no fix needed */
+/* Project meta — also auto-flips */
+/* About grid — auto-flips */
+/* Meta-bar — auto-flips */
+
+/* Footer underline on "talk" link works in both directions, no fix needed */
+
+/* ============================================================
+   SMOOTH LANGUAGE TRANSITION
+   ============================================================ */
+body {
+  transition: none;   /* prevent flash; layout flip should be instant */
+}
+
+/* When the page is in Arabic mode, switch to Mada */
+html[lang="ar"] body,
+html[lang="ar"] .topbar nav a,
+html[lang="ar"] .hero h1,
+html[lang="ar"] .project h3,
+html[lang="ar"] .section-head h2,
+html[lang="ar"] .project-header h1 {
+  font-family: var(--font-ar);
+}
+
+
+/* ============================================================
+   HAMBURGER BUTTON
+   ============================================================ */
+.menu-toggle {
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  width: 44px;
+  height: 44px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  z-index: 10;
+  border-radius: var(--r-pill);
+  transition: background 0.2s ease;
+}
+.menu-toggle:hover { background: var(--surface-1); }
+.menu-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.menu-toggle span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ============================================================
+   FINAL DRAWER FIX — must be last in file
+   ============================================================ */
+header.topbar nav {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  width: 420px !important;
+  max-width: 85vw !important;
+  height: 100vh !important;
+  background-color: #20103d !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  padding: 0 60px !important;
+  gap: 32px !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.5s ease !important;
+  z-index: 9999 !important;
+  box-shadow: -20px 0 60px rgba(0,0,0,0.4) !important;
+  pointer-events: none !important;
+}
+
+header.topbar nav.is-open {
+  transform: translateX(0) !important;
+  pointer-events: auto !important;
+}
+
+header.topbar nav a {
+  font-size: 32px !important;
+  font-weight: 300 !important;
+  color: #f0ebe0 !important;
+  cursor: pointer !important;
+}
+
+header.topbar nav a:hover {
+  color: #f5a05c !important;
+}
+
+html[dir="rtl"] header.topbar nav {
+  right: auto !important;
+  left: 0 !important;
+  transform: translateX(-100%) !important;
+  align-items: flex-end !important;
+  box-shadow: 20px 0 60px rgba(0,0,0,0.4) !important;
+}
+
+html[dir="rtl"] header.topbar nav.is-open {
+  transform: translateX(0) !important;
+}

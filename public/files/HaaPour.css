@@ -1,0 +1,106 @@
+/* ── shell ───────────────────────────────────────────── */
+.haa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2.4vh, 26px);
+  background: var(--bg, #20103d);
+}
+
+.haa--splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.55s ease;
+}
+
+.haa--inline {
+  position: relative;
+  background: transparent;
+}
+
+.haa--out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── stage: 470 × 667 artwork box ────────────────────── */
+.haa__stage {
+  position: relative;
+  width: min(56vw, 46vh, 330px);
+  aspect-ratio: 470 / 667;
+  opacity: 0;
+  transform: scale(0.955);
+  transition: opacity 0.62s ease-out, transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.haa__stage--in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── the four poses, stacked and cross-cut ───────────── */
+.haa__pose {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: opacity 70ms linear;
+}
+
+/* ── the pour: Layer_15 at x103 y311, 65 × 54 ────────── */
+.haa__stream {
+  position: absolute;
+  left: 21.915%;   /* 103 / 470 */
+  top: 46.627%;    /* 311 / 667 */
+  width: 13.830%;  /*  65 / 470 */
+  height: 8.096%;  /*  54 / 667 */
+  display: block;
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+}
+
+/* wipes downward, spout → finjan */
+.haa__stream--pour {
+  opacity: 1;
+  animation: haa-pour var(--pour-ms, 460ms) cubic-bezier(0.45, 0, 0.35, 1) forwards;
+}
+
+@keyframes haa-pour {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0% 0); }
+}
+
+/* ── wordmark ────────────────────────────────────────── */
+.haa__mark {
+  color: var(--ink, #f0ebe0);
+  font-size: clamp(15px, 2.3vw, 21px);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: haa-mark 0.7s ease-out 1.15s forwards;
+}
+
+.haa__mark[dir="rtl"] {
+  letter-spacing: normal;
+  text-indent: 0;
+  text-transform: none;
+  font-size: clamp(19px, 3vw, 27px);
+}
+
+@keyframes haa-mark {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 0.85; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .haa--splash { display: none; }
+  .haa__stage { opacity: 1; transform: none; transition: none; }
+  .haa__stream--pour { animation: none; opacity: 1; clip-path: none; }
+  .haa__mark { animation: none; opacity: 0.85; }
+}

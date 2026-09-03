@@ -1,0 +1,2674 @@
+/* ============================================================
+   FONT LOADING
+   ============================================================ */
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('./assets/fonts/sf-grandezza.light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('./assets/fonts/sf-grandezza.light-oblique.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('./assets/fonts/sf-grandezza.medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('./assets/fonts/sf-grandezza.medium-oblique.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('./assets/fonts/sf-grandezza.heavy.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SF Grandezza';
+  src: url('./assets/fonts/sf-grandezza.heavy-oblique.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Mada';
+  src: url('./assets/fonts/mada.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Latin-only alias of SF Grandezza, scoped by unicode-range. Listing it first
+   in --font-ar means Latin characters, digits and punctuation inside Arabic
+   text render in the English face, while Arabic falls through to Mada.
+   The ranges deliberately exclude Arabic (U+0600–06FF) and Arabic-Indic
+   digits (U+0660–0669). */
+@font-face {
+  font-family: 'SF Grandezza Latin';
+  src: url('./assets/fonts/sf-grandezza.light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  unicode-range: U+0000-024F, U+2000-206F, U+20A0-20BF, U+2100-214F, U+2190-21FF;
+}
+@font-face {
+  font-family: 'SF Grandezza Latin';
+  src: url('./assets/fonts/sf-grandezza.light-oblique.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  unicode-range: U+0000-024F, U+2000-206F, U+20A0-20BF, U+2100-214F, U+2190-21FF;
+}
+@font-face {
+  font-family: 'SF Grandezza Latin';
+  src: url('./assets/fonts/sf-grandezza.medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  unicode-range: U+0000-024F, U+2000-206F, U+20A0-20BF, U+2100-214F, U+2190-21FF;
+}
+@font-face {
+  font-family: 'SF Grandezza Latin';
+  src: url('./assets/fonts/sf-grandezza.medium-oblique.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  unicode-range: U+0000-024F, U+2000-206F, U+20A0-20BF, U+2100-214F, U+2190-21FF;
+}
+@font-face {
+  font-family: 'SF Grandezza Latin';
+  src: url('./assets/fonts/sf-grandezza.heavy.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  unicode-range: U+0000-024F, U+2000-206F, U+20A0-20BF, U+2100-214F, U+2190-21FF;
+}
+@font-face {
+  font-family: 'SF Grandezza Latin';
+  src: url('./assets/fonts/sf-grandezza.heavy-oblique.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  unicode-range: U+0000-024F, U+2000-206F, U+20A0-20BF, U+2100-214F, U+2190-21FF;
+}
+
+:root {
+  /* The site is designed dark. Declaring the scheme tells the browser so —
+     without it, Chrome's "Auto Dark Mode for Web Contents" tries to re-adapt the
+     page and mangles elements (e.g. large headings flip to near-black on Windows
+     light mode). This opts out of that and gives dark form controls/scrollbars. */
+  color-scheme: dark;
+  --bg: #20103d;
+  --ink: #f0ebe0;
+  --muted: #9088a8;
+  --accent: #f5a05c;
+  --surface-1: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.07);
+  --surface-3: rgba(255, 255, 255, 0.12);
+  --divider: rgba(255, 255, 255, 0.08);
+  --font: "SF Grandezza", sans-serif;
+  /* Latin alias first so English words inside Arabic text use the English
+     face; Arabic characters fall through to Mada. */
+  --font-ar: "SF Grandezza Latin", "Mada", sans-serif;
+  --r-lg: 28px;
+  --r-pill: 999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; transition: color 0.2s ease; }
+a:hover { color: var(--accent); }
+button { font-family: inherit; }
+
+/* Visually hidden but available to screen readers (for off-screen headings/labels). */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px; border: 0;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap;
+}
+
+/* Skip link: off-screen until a keyboard user Tabs to it, then slides into view. */
+.skip-link {
+  position: fixed; top: 0; left: 50%; z-index: 100010;
+  transform: translate(-50%, -130%);
+  padding: .7em 1.2em; border-radius: 0 0 12px 12px;
+  background: var(--accent); color: #20103d; font-weight: 700;
+  transition: transform .15s ease;
+}
+.skip-link:focus-visible { transform: translate(-50%, 0); outline: 3px solid var(--ink); outline-offset: 2px; }
+
+/* <main> is focused programmatically (route change / skip link) only so screen
+   readers announce new content — it must NOT draw a visible focus box. */
+#main-content:focus { outline: none; }
+
+/* Inline links inside running copy read as plain text otherwise — make them
+   clearly clickable (accent + underline). Structural links (nav, cards,
+   breadcrumb, buttons, footer) opt out below and keep their own styling. */
+main p a,
+.prose a,
+.about-meta dd a,
+.rq-cta-note a,
+.deck a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+main p a:hover,
+.prose a:hover,
+.about-meta dd a:hover,
+.deck a:hover {
+  color: var(--accent);
+  filter: brightness(1.15);
+  text-decoration-thickness: 2px;
+}
+
+.container { max-width: 100%; margin: 0 auto; padding: 0 48px; }
+.narrow { max-width: 100%; margin: 0 auto; padding: 0 48px; }
+
+body::before {
+   content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 1400px;
+  height: 90vh;
+  background-image: url('./assets/naqsh.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.28;           /* ← was 0.12 — bumps up presence */
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(340deg);
+  mix-blend-mode: screen;
+}
+
+.topbar, main, footer {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+ position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  background: transparent;
+  transition: background 0.35s ease;
+}
+
+/* Full-width glass layer — applied via pseudo-element so padding doesn't constrain it */
+.topbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  bottom: 0;
+  z-index: -1;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.02) 20%,
+    rgba(32, 16, 61, 0.16) 100%
+  );
+  /* -webkit- first, standard last, SAME value: the CSS minifier collapses the
+     pair to the last one, so the standard `backdrop-filter` survives (Chrome/
+     Edge need it — they don't render a -webkit-only filter). Safari uses either. */
+  -webkit-backdrop-filter: blur(24px) saturate(190%) brightness(0.92);
+  backdrop-filter: blur(24px) saturate(190%) brightness(0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.40),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.04),
+    0 10px 30px rgba(0, 0, 0, 0.18);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.topbar.is-scrolled::before {
+  opacity: 1;
+}
+
+.topbar .mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.logo { height: 32px; width: auto; display: block; }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-switch {
+  background: var(--surface-1);
+  border: none;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+.lang-switch:hover { background: var(--surface-2); color: var(--accent); }
+
+.menu-toggle {
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  width: 44px;
+  height: 44px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  z-index: 200;
+  border-radius: var(--r-pill);
+}
+.menu-toggle:hover { background: var(--surface-1); }
+
+.menu-toggle span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* Dimming backdrop behind the drawer */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 5, 24, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 90;
+}
+.nav-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.topbar nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: auto;
+  width: 420px;
+  max-width: 85vw;
+  height: 100vh;
+  height: 100dvh;
+  background: linear-gradient(160deg, #2a1652 0%, #1b0f38 100%);
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 96px 60px 60px;
+  gap: 48px;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 100;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  /* Scroll the drawer when its content is taller than the screen (short
+     phones / landscape) instead of clipping the lower links. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.topbar nav.is-open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Logo lockup at the top of the drawer */
+.topbar nav .nav-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+}
+.topbar nav .nav-mark span { white-space: nowrap; }
+
+.topbar nav .nav-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.topbar nav a {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--ink);
+  cursor: pointer;
+}
+.topbar nav .nav-links a:hover { color: var(--accent); }
+
+html[dir="rtl"] .topbar nav {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+  border-left: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.4);
+}
+html[dir="rtl"] .topbar nav.is-open {
+  transform: translateX(0);
+}
+
+.hero { padding: 120px 0 100px; }
+
+.hero .eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+}
+
+.hero h1 {
+  font-weight: 300;
+  font-size: clamp(56px, 9vw, 128px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  margin-bottom: 40px;
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.hero .lede {
+  font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.5;
+  max-width: 720px;
+  margin: 0 auto;
+  font-weight: 300;
+  color: var(--muted);
+}
+
+.section { padding: 80px 0; }
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 48px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.section-head h2 {
+  font-weight: 500;
+  font-size: clamp(28px, 3.5vw, 42px);
+  letter-spacing: -0.02em;
+}
+.section-head .num {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  padding: 6px 14px;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+}
+
+.projects {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+.projects::-webkit-scrollbar { height: 8px; }
+.projects::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 999px; }
+.projects > .project {
+  flex: 0 0 clamp(260px, 74vw, 360px);
+  scroll-snap-align: start;
+}
+
+.project {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  cursor: pointer;
+}
+.project:hover { background: var(--surface-2); }
+
+.project .meta {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.project h3 {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.project p {
+  color: var(--muted);
+  margin-bottom: 24px;
+  flex-grow: 1;
+  font-size: 15px;
+}
+
+/* Push the tags + "Read more" to the bottom as a group so the thumbnail, meta
+   and title sit at the top and the card content is evenly distributed. */
+.project .tags { display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; margin-top: auto; }
+.project .tags span {
+  padding: 6px 12px;
+  background: var(--surface-3);
+  border-radius: var(--r-pill);
+  color: var(--ink);
+}
+
+/* "Read more →" is pinned to the bottom of the card (cards are equal height in
+   the scroll row) so it lines up across every card. padding-top keeps a minimum
+   gap from the tags above. */
+.project .arrow {
+  margin-top: 16px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.writing-list {
+  list-style: none;
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 8px 28px;
+}
+.writing-list li {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 32px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--divider);
+  align-items: baseline;
+}
+.writing-list li:last-child { border-bottom: none; }
+
+.writing-list .date { font-size: 12px; color: var(--muted); }
+.writing-list h4 { font-size: 20px; font-weight: 400; }
+.writing-list .read { font-size: 11px; text-transform: uppercase; color: var(--muted); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.about-grid > div:first-child p {
+  font-size: 19px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+
+.about-meta {
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: 36px;
+  font-size: 13px;
+}
+.about-meta dl {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 20px 24px;
+}
+.about-meta dt {
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+footer { padding: 100px 32px 40px; text-align: center; }
+footer .big {
+  font-style: italic;
+  font-size: clamp(40px, 7vw, 88px);
+  font-weight: 300;
+  margin-bottom: 48px;
+  line-height: 1;
+}
+footer .big a { color: var(--accent); border-bottom: 2px solid var(--accent); }
+footer .colophon {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+html[lang="ar"] body { font-family: var(--font-ar); line-height: 1.75; }
+html[lang="ar"] .topbar nav a,
+html[lang="ar"] .hero h1,
+html[lang="ar"] .section-head h2,
+html[lang="ar"] .project h3 {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+}
+html[lang="ar"] .hero h1 { line-height: 1.2; }
+
+/* Arabic script is cursive — letter-spacing pulls the joined letterforms apart
+   and looks broken. Neutralize tracking for all Arabic text site-wide; Latin
+   runs (tags, handles, code) are marked .latin and keep their own spacing.
+   The `body` raises specificity so this beats other !important tracking rules
+   (e.g. the project-header eyebrow tags). */
+html[lang="ar"] body *:not(.latin):not(.keep-tracking),
+html[dir="rtl"] body *:not(.latin):not(.keep-tracking) { letter-spacing: normal !important; }
+/* The Rafeeq simulator is a self-contained app that sets dir on its own root. */
+.rafeeq[dir="rtl"] *:not(.latin):not(.keep-tracking) { letter-spacing: normal !important; }
+
+html[dir="rtl"] .hero .eyebrow { flex-direction: row-reverse; }
+
+@media (max-width: 768px) {
+  .container, .narrow { padding: 0 20px; }
+  /* These sit outside .container (max-width + auto margins only), so they hit the
+     screen edges on mobile without their own inline padding. */
+  .jt, .certs, .about-mobile-pad { padding-inline: 20px; }
+  .topbar { padding: 20px 24px; }
+  .hero { padding: 80px 0 60px; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .writing-list li { grid-template-columns: 1fr; gap: 4px; }
+  .writing-list .read { display: none; }
+}
+
+/* Force drawer to be fully opaque (both stops are solid) */
+.topbar nav {
+  background: linear-gradient(160deg, #2a1652 0%, #1b0f38 100%);
+  isolation: isolate;
+}
+
+.topbar nav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #2a1652 0%, #1b0f38 100%);
+  z-index: -1;
+}
+
+/* Drawer link alignment. In a column flex container `flex-start` is the
+   inline-start edge, so it is already left in English and right in Arabic —
+   no direction-specific override needed (flex-end would wrongly flip it). */
+.topbar nav,
+.topbar nav .nav-links { align-items: flex-start; }
+.topbar nav .nav-links a,
+.topbar nav .nav-mark { text-align: start; }
+html[dir="rtl"] .topbar nav .nav-links { align-items: flex-start; }
+
+/* Force drawer above everything */
+.topbar nav {
+  z-index: 99999;
+}
+
+.menu-toggle {
+  z-index: 100000;
+}
+
+/* Knock the naqsh and hero down so the drawer wins */
+body::before,
+.hero,
+main {
+  z-index: 0;
+}
+
+/* Arabic letters must stay connected — zero letter-spacing */
+html[lang="ar"] .topbar .mark,
+html[lang="ar"] .topbar .mark span {
+  letter-spacing: 0;
+  font-family: var(--font-ar);
+}
+
+.hero-naqsh {
+  position: fixed !important;
+  left: 0px !important;
+  top: -35px !important;
+  width: 700px !important;
+  height: auto !important;
+  pointer-events: none !important;
+  mix-blend-mode: screen !important;
+  opacity: 0.15 !important;
+  z-index: 0 !important;
+}
+
+html[dir="rtl"] .hero-naqsh {
+  left: -150px !important;
+  right: auto !important;
+}
+
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+.section-link:hover h2 { color: var(--accent); }
+
+.section-link::after {
+  content: "→";
+  font-size: 28px;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.section-link:hover::after { opacity: 1; transform: translateX(0); }
+
+/* RTL: arrow points the other way and slides from the opposite side */
+html[dir="rtl"] .section-link::after { content: "←"; transform: translateX(8px); }
+html[dir="rtl"] .section-link:hover::after { transform: translateX(0); }
+
+/* ============================================================
+   CATCH GAME
+   ============================================================ */
+.catch-game {
+  max-width: 800px;
+  margin: 40px auto 80px;
+  padding: 0 20px;
+}
+
+.catch-game__header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.catch-game__header h3 {
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.catch-game__instruction {
+  color: var(--muted);
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.catch-game__controls-hint {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.catch-game__hud {
+  display: flex;
+  justify-content: space-between;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+  padding: 12px 24px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.catch-game__hud strong {
+  color: var(--accent);
+  margin-inline-start: 8px;
+}
+
+.catch-game__area {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  background: var(--surface-1);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  cursor: none;        /* hide cursor while playing */
+  touch-action: none;  /* prevent scroll on touch */
+  user-select: none;
+}
+
+.catch-game__player {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;     /* hint for browser to GPU-accelerate */
+}
+
+.catch-game__item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.catch-game__item--logo {
+  filter: brightness(1.2);
+}
+
+.catch-game__item--lion {
+  /* PSU logo stays in its original blue */
+}
+
+.catch-game__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(32, 16, 61, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  text-align: center;
+}
+
+.catch-game__overlay h4 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--accent);
+}
+
+.catch-game__overlay p {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.catch-game__button {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 16px 40px;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.catch-game__button:hover {
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   DESERT RUNNER GAME
+   ============================================================ */
+.runner-game {
+  max-width: 900px;
+  margin: 40px auto 80px;
+  padding: 0 20px;
+}
+
+.runner-game__header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.runner-game__header h3 {
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.runner-game__instruction {
+  color: var(--muted);
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+.runner-game__controls-hint {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.runner-game__hud {
+  display: flex;
+  justify-content: space-between;
+  background: var(--surface-1);
+  border-radius: var(--r-pill);
+  padding: 12px 24px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.runner-game__hud strong {
+  color: var(--accent);
+  margin-inline-start: 8px;
+}
+
+.runner-game__area {
+  position: relative;
+  width: 100%;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  outline: none;
+  background: linear-gradient(to bottom, #2a1b54 0%, #3d2670 60%, #4a2e7f 100%);
+}
+
+.runner-game__sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.runner-game__cloud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(240, 235, 224, 0.15);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  filter: blur(1px);
+}
+
+.runner-game__ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to bottom, #b8a6d9 0%, #9b86c4 40%, #7a64a8 100%);
+  border-top: 2px solid rgba(245, 160, 92, 0.4);
+}
+.runner-game__ground::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px);
+  background-size: 8px 8px;
+  opacity: 0.6;
+}
+
+.runner-game__player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+.runner-game__obstacle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 1;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.runner-game__collectible {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 1;
+  filter: drop-shadow(0 0 12px rgba(245, 160, 92, 0.5));
+}
+
+.runner-game__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(32, 16, 61, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  text-align: center;
+}
+.runner-game__overlay h4 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--accent);
+}
+.runner-game__overlay p {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.runner-game__button {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 16px 40px;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+.runner-game__button:hover { transform: scale(1.05); }
+
+.runner-game__hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--surface-1);
+  padding: 12px 24px;
+  border-radius: var(--r-pill);
+  z-index: 10;
+  pointer-events: none;
+  animation: hint-pulse 2s ease-in-out infinite;
+}
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+/* Meta-bar — proper 4-column grid */
+/* A row of meta items (Year / Stack / Role). Flex-wrap keeps them on one line
+   on wide screens and lets them wrap as a group on narrow ones — a fixed
+   column count left an empty slot with 3 items and dropped the last to its
+   own row. Row-gap/column-gap are separated so wrapping stays tidy. */
+.meta-bar dl {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 56px;
+}
+.meta-bar dl > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+.meta-bar dt {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.meta-bar dd { color: var(--ink); font-size: 14px; }
+.meta-bar dd a { color: var(--accent); }
+
+/* Constrain prose width for readability */
+.project-header.narrow,
+.prose.narrow {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Shared column for the case-study pages. Same geometry as
+   .project-header.narrow, so the meta bar, closing CTA and back link line up
+   with the breadcrumb, header and prose instead of each picking their own
+   width. `start` keeps it left in English and right in Arabic. */
+.case-col {
+  max-width: 820px;
+  margin-inline: auto;
+  padding-inline: 32px;
+  text-align: start;
+}
+
+.back-link { padding-block: 8px 72px; }
+.back-link a {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.back-link a:hover { color: var(--accent); }
+
+/* ------------------------------------------------------------------
+   Haa greeter — Clippy-style pop-in.
+   Sits below the nav drawer/backdrop (z-index 90+) so opening the menu
+   covers it rather than fighting it.
+   ------------------------------------------------------------------ */
+.haa {
+  position: fixed;
+  inset-block-end: 24px;
+  inset-inline-end: 24px;
+  z-index: 85;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  pointer-events: none;
+  animation: haa-in 620ms cubic-bezier(0.22, 1.4, 0.4, 1) both;
+}
+.haa > * { pointer-events: auto; }
+
+@keyframes haa-in {
+  from { opacity: 0; transform: translateY(28px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.haa-bubble {
+  position: relative;
+  width: 290px;
+  background: linear-gradient(165deg, #2f1a5c 0%, #211141 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 20px 20px 18px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  text-align: start;
+  margin-block-end: 26px;
+}
+
+/* Tail pointing at the character. */
+.haa-bubble::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -8px;
+  inset-inline-end: 26px;
+  width: 16px;
+  height: 16px;
+  background: #211141;
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.14);
+  border-block-end: 1px solid rgba(255, 255, 255, 0.14);
+  transform: rotate(45deg);
+}
+
+.haa-x {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 10px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+}
+.haa-x:hover { color: var(--ink); background: var(--surface-1); }
+
+.haa-hello {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  padding-inline-end: 18px;
+}
+.haa-line {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.haa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.haa-btn {
+  font-family: var(--font);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  padding: 9px 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.haa-btn:hover { background: var(--surface-2); }
+.haa-btn--primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--bg);
+  font-weight: 600;
+}
+.haa-btn--primary:hover { filter: brightness(1.07); background: var(--accent); }
+.haa-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+html[lang="ar"] .haa-btn,
+html[lang="ar"] .haa-hello,
+html[lang="ar"] .haa-line,
+html[lang="ar"] .haa-area { font-family: var(--font-ar); }
+
+.haa-area {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 13.5px;
+  line-height: 1.5;
+  resize: vertical;
+  text-align: start;
+}
+.haa-area:focus { outline: none; border-color: var(--accent); }
+.haa-area::placeholder { color: var(--muted); }
+
+/* The character, assembled from its layers so the arm can wave on its own.
+   Percentages are relative to haaidle.png's canvas (1992×2935) and were
+   solved by matching each layer's alpha against that reference — do not
+   hand-tweak them without re-checking against haaidle.png. The figure is
+   never mirrored: the body is an Arabic letterform. */
+.haa-figure {
+  position: relative;
+  width: 116px;
+  aspect-ratio: 1992 / 2935;
+  flex: none;
+  animation: haa-bob 3.6s ease-in-out infinite;
+}
+.haa-figure img {
+  position: absolute;
+  height: auto;
+  display: block;
+}
+.haa-body      { width: 89.46%; left: 9.29%;  top: 7.77%; }
+.haa-face      { width: 45.48%; left: 31.43%; top: 0; }
+.haa-arm-still { width: 18.07%; left: 82.14%; top: 33.01%; }
+
+/* Haa's right arm (viewer's left). Pivots at the shoulder, top-right of its
+   own box, so it stays attached while it swings. The art is flipped
+   vertically (scaleY(-1)); the flip is carried in every keyframe because the
+   animation's transform would otherwise override it. */
+.haa-arm-wave {
+  width: 35.74%;
+  left: 0;
+  top: 30%;
+  transform-origin: 88% 10%;
+  transform: scaleY(-1) rotate(-20deg);
+  animation: haa-wave 3.2s ease-in-out infinite;
+}
+
+@keyframes haa-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+/* Waves, then rests — a constant wave reads frantic. Rotations sit 20° to the
+   left of the flipped rest pose; the shoulder pivot keeps it attached. */
+@keyframes haa-wave {
+  0%, 50%, 100% { transform: scaleY(-1) rotate(-20deg); }
+  58%           { transform: scaleY(-1) rotate(8deg); }
+  66%           { transform: scaleY(-1) rotate(-9deg); }
+  74%           { transform: scaleY(-1) rotate(8deg); }
+  82%           { transform: scaleY(-1) rotate(-9deg); }
+  90%           { transform: scaleY(-1) rotate(3deg); }
+}
+
+@media (max-width: 560px) {
+  .haa { inset-inline-end: 12px; inset-block-end: 12px; gap: 0; }
+  .haa-bubble { width: min(66vw, 240px); padding: 15px 15px 14px; margin-block-end: 22px; }
+  .haa-hello { font-size: 13.5px; }
+  .haa-line { font-size: 12.5px; line-height: 1.5; }
+  .haa-actions { margin-top: 11px; gap: 6px; }
+  .haa-btn { font-size: 11.5px; padding: 8px 12px; }
+  .haa-area { font-size: 12.5px; }
+  .haa-figure { width: 74px; }
+  .haa-mini { inset-inline-end: 14px; inset-block-end: 14px; }
+}
+
+.haa-error {
+  color: #ff9b8a;
+  font-size: 12.5px;
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+/* Minimized launcher — a logo-style purple square framing Haa's head.
+   Clicking it reopens the greeting. */
+.haa-mini {
+  position: fixed;
+  inset-block-end: 24px;
+  inset-inline-end: 24px;
+  z-index: 85;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: #20103d;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  animation: haa-in 500ms cubic-bezier(0.22, 1.4, 0.4, 1) both;
+}
+.haa-mini:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+}
+.haa-mini img {
+  position: absolute;
+  width: 150%;
+  left: 50%;
+  top: 14%;
+  transform: translateX(-50%);
+  display: block;
+}
+
+/* Honeypot field — off-screen for people, present in the DOM for bots.
+   display:none is avoided because some bots skip those. Shared by the greeter
+   and the contact form. */
+.haa-hp {
+  position: absolute !important;
+  left: -9999px !important;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Respect a reduced-motion preference — no bob, wave, or pop. */
+@media (prefers-reduced-motion: reduce) {
+  .haa,
+  .haa-figure,
+  .haa-arm-wave { animation: none; }
+}
+
+/* ------------------------------------------------------------------
+   Contact form
+   ------------------------------------------------------------------ */
+.contact-form {
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: start;
+}
+.contact-field label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+html[lang="ar"] .contact-field label { letter-spacing: 0; text-transform: none; }
+
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--ink);
+  font-family: var(--font-ar);
+  font-size: 15px;
+  line-height: 1.55;
+  text-align: start;
+}
+.contact-field textarea { resize: vertical; min-height: 140px; }
+.contact-field input::placeholder,
+.contact-field textarea::placeholder { color: var(--muted); }
+.contact-field input:focus,
+.contact-field textarea:focus { outline: none; border-color: var(--accent); }
+
+.contact-btn {
+  align-self: start;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--bg);
+  cursor: pointer;
+  transition: filter 0.16s ease, transform 0.16s ease;
+}
+.contact-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.contact-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+html[lang="ar"] .contact-btn { font-family: var(--font-ar); }
+
+.contact-error {
+  color: #ff9b8a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.contact-done {
+  max-width: 620px;
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+.contact-done p { font-size: 18px; line-height: 1.6; color: var(--ink); }
+
+/* Meta bar — give it room and rules above/below so it reads as a band
+   between the header and the body copy instead of butting against them. */
+.meta-bar {
+  padding-block: 28px;
+  border-block: 1px solid var(--divider);
+}
+
+/* ------------------------------------------------------------------
+   Long-form prose rhythm.
+   The global `* { margin: 0 }` reset strips every default margin, so the
+   case-study copy had zero spacing between paragraphs, headings and lists,
+   and bullets sat outside their box. This restores the scale explicitly.
+   ------------------------------------------------------------------ */
+.prose { padding-block: 40px 8px; }
+
+/* Base step between any two sibling blocks; headings override below. */
+.prose > * + * { margin-top: 20px; }
+
+.prose p { font-size: 17px; line-height: 1.75; color: var(--muted); }
+.prose p strong { color: var(--ink); font-weight: 500; }
+.prose em { font-style: italic; }
+
+.prose h2 {
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-top: 56px;
+  margin-bottom: 18px;
+}
+.prose h3 {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+  margin-top: 36px;
+  margin-bottom: 12px;
+}
+.prose h2 + p,
+.prose h3 + p { margin-top: 0; }
+
+.prose ul,
+.prose ol { padding-inline-start: 24px; }
+.prose li {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.prose li::marker { color: var(--accent); }
+
+/* Inline code was unstyled — it sits inside running text, so keep it quiet. */
+.prose code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Project footer styling */
+.project-footer {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .meta-bar dl { gap: 16px 40px; }
+}
+
+/* ============================================================
+   PROJECT DETAIL PAGE — DEFINITIVE OVERRIDES
+   ============================================================ */
+
+/* Eyebrow pills: 3 separate chips with space between them */
+.project-header .eyebrow {
+  display: flex !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+  margin-bottom: 32px !important;
+  background: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  justify-content: flex-start !important;
+}
+/* Direct-child spans only, and not the status badge — otherwise this catches the
+   status badge's nested dot span and inflates it into a pill. */
+.project-header .eyebrow > span:not(.project-status) {
+  display: inline-block !important;
+  padding: 6px 14px !important;
+  background: var(--surface-1) !important;
+  border-radius: var(--r-pill) !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  color: var(--muted) !important;
+}
+
+/* Project title and deck — start-aligned (left in English, right in Arabic) */
+.project-header h1,
+.project-header .deck {
+  text-align: start !important;
+}
+.project-header h1 {
+  font-weight: 300 !important;
+  font-size: clamp(40px, 6vw, 72px) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.03em !important;
+  margin-bottom: 24px !important;
+}
+.project-header .deck {
+  font-size: 20px !important;
+  line-height: 1.5 !important;
+  color: var(--muted) !important;
+  font-weight: 300 !important;
+  margin-bottom: 48px !important;
+  max-width: 700px !important;
+}
+
+/* Force prose body left-aligned */
+.prose,
+.prose p,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose ul,
+.prose ol,
+.prose li {
+  text-align: left !important;
+}
+
+/* RTL override */
+html[dir="rtl"] .prose,
+html[dir="rtl"] .prose p,
+html[dir="rtl"] .prose h2,
+html[dir="rtl"] .prose h3,
+html[dir="rtl"] .project-header h1,
+html[dir="rtl"] .project-header .deck {
+  text-align: right !important;
+}
+
+/* `justify-content: flex-start` is already the inline-start edge in both
+   directions — an RTL `flex-end` override would wrongly push the tags left. */
+
+/* Breadcrumb — matches .container's width and padding so it lines up with the
+   page content below it. `start` puts it left in English and right in Arabic. */
+.breadcrumb {
+  /* width:100% matters when the breadcrumb is a direct flex child of #root
+     (the case-study pages render it outside <main>). Without it the `auto`
+     side margins shrink-wrap the box and centre it, so `text-align: start`
+     has nothing to align against. */
+  width: 100% !important;
+  max-width: 100% !important;
+  align-self: stretch !important;
+  margin: 32px auto 48px !important;
+  padding: 0 48px !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  color: var(--muted) !important;
+  text-align: start !important;
+}
+
+/* On the case-study pages the header/tags sit in a centred 820px column,
+   so the breadcrumb matches that column and shares its start edge. */
+.breadcrumb--narrow {
+  max-width: 820px !important;
+  padding: 0 32px !important;
+}
+.breadcrumb a { color: var(--ink) !important; }
+.breadcrumb a:hover { color: var(--accent) !important; }
+
+@media (max-width: 768px) {
+  .breadcrumb { padding: 0 20px !important; }
+}
+
+/* ============================================================
+   RUNNER GAME — PRE-START SCREEN
+   ============================================================ */
+.runner-game__prestart {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 40px;
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+/* English-only smaller headline */
+html[lang="en"] .runner2__prestart-title {
+  font-size: clamp(22px, 3.5vw, 48px);   /* smaller than the base value */
+}
+
+html[lang="en"] .runner2__prestart-sub {
+  font-size: 10px;                        /* smaller subtitle too if needed */
+}
+
+html[lang="ar"] .runner2__prestart-title,
+html[lang="ar"] .runner2__prestart-sub {
+  letter-spacing: 0;
+}
+
+/* Also kill text-transform: uppercase since Arabic doesn't have cases */
+html[lang="ar"] .runner2__prestart-title,
+html[lang="ar"] .runner2__prestart-sub {
+  text-transform: none;
+}
+
+.runner-game__prestart-driller {
+  width: 180px;
+  height: auto;
+  animation: prestart-float 3s ease-in-out infinite;
+}
+
+@keyframes prestart-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.runner-game__prestart-title {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-align: left;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.runner-game__prestart-sub {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.7;
+  margin: 0;
+  animation: hint-pulse 2s ease-in-out infinite;
+}
+
+/* When game starts, this whole block fades out — but we just unmount via conditional */
+
+/* ============================================================
+   RUNNER GAME 2.0 — STABLE LAYOUT
+   Game area doesn't shift when the game starts.
+   ============================================================ */
+
+.runner2 {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;          /* centered block, not edge-to-edge */
+  margin: 24px auto 0;        /* centered horizontally */
+  padding: 0 32px;
+}
+
+/* HUD — always rendered, just hidden before start. 
+   This reserves its vertical space so nothing shifts on game start. */
+.runner2__hud {
+  display: flex;
+  gap: 32px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 24px;
+  padding: 0;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  min-height: 18px;           /* hold the space even when empty */
+}
+.runner2__hud span { white-space: nowrap; }
+.runner2__hud strong {
+  color: var(--accent);
+  margin-inline-start: 8px;
+  /* Reserve a fixed numeric width so a growing score never resizes/shoves the
+     row (the display font lacks true tabular figures on some phones). */
+  display: inline-block;
+  min-width: 4ch;
+  text-align: start;
+  letter-spacing: normal;     /* tracking inflates digit width; drop it on the number */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+@media (max-width: 560px) {
+  .runner2__hud { gap: 16px; }
+}
+.runner2__hud--hidden {
+  visibility: hidden;         /* invisible but still takes space */
+}
+
+/* ------------------------------------------------------------------
+   HaaBand — the "skyline musical" 403 scene (static; on the black page)
+   ------------------------------------------------------------------ */
+.haa-band {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 8px auto 0;
+  aspect-ratio: 2789 / 1018;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Moon — soft glowing disc, parked in clear top-right sky (far from the WTC
+   tip on the left). Size scales with the viewport so it never swells to cover
+   a tower on a narrow phone. */
+.haa-band__moon {
+  position: absolute;
+  top: 6%;
+  left: 33%;
+  width: clamp(26px, 4.4vw, 46px);
+  height: clamp(26px, 4.4vw, 46px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fefdf8 0%, #ece6d6 58%, #cfc9bb 100%);
+  box-shadow:
+    0 0 16px 3px rgba(240, 235, 224, 0.3),
+    0 0 36px 8px rgba(180, 200, 255, 0.1);
+}
+
+/* Twinkling stars. */
+.haa-band__stars { position: absolute; inset: 0; pointer-events: none; }
+.haa-band__star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px 1px rgba(255, 255, 255, 0.55);
+  transform: translate(-50%, -50%);
+  animation-name: haa-twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes haa-twinkle {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 0.95; }
+}
+
+/* Meteor — a bright head with a tail trailing behind it, gliding down to the
+   right, then resting before the next pass. The head leads; the tail follows. */
+.haa-band__meteor {
+  position: absolute;
+  top: 7%;
+  left: 22%;
+  width: 116px;
+  height: 2px;
+  border-radius: 2px;
+  /* faint at the tail (left) → bright at the head (right) */
+  background: linear-gradient(to right,
+    transparent 0%,
+    rgba(190, 214, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0.92) 100%);
+  opacity: 0;
+  animation: haa-meteor 11s ease-in-out infinite;
+}
+/* the glowing head, at the leading (right) end */
+.haa-band__meteor::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1px;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.95), 0 0 16px 4px rgba(160, 190, 255, 0.5);
+}
+@keyframes haa-meteor {
+  0%   { transform: rotate(33deg) translateX(-40px); opacity: 0; }
+  10%  { opacity: 0; }
+  16%  { opacity: 1; }
+  52%  { transform: rotate(33deg) translateX(300px); opacity: 1; }
+  62%  { transform: rotate(33deg) translateX(340px); opacity: 0; }
+  100% { transform: rotate(33deg) translateX(340px); opacity: 0; }
+}
+
+/* Warm city glow rising from the skyline base. */
+.haa-band__cityglow {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 6%;
+  height: 34%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(130, 150, 255, 0.16) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+/* The skyline group (towers + tip beacons) — nudged a little right + down
+   as one, so the beacons stay locked to their tips. */
+.haa-band__city {
+  position: absolute;
+  inset: 0;
+  transform: translate(2.5%, 3%);
+  pointer-events: none;
+}
+
+/* Towers — the skyline shines: brighter, cooler glow around the outlines. */
+.haa-band__towers {
+  position: absolute;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 0 3px rgba(220, 232, 255, 0.9))
+    drop-shadow(0 0 9px rgba(150, 190, 255, 0.6))
+    drop-shadow(0 0 22px rgba(120, 160, 255, 0.3));
+}
+
+/* Props (train + sign) — sit in front of the towers, no glow. */
+.haa-band__props {
+  position: absolute;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Ground line — a thin glowing horizon running under the whole scene. */
+.haa-band__ground {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0.2%;
+  height: 5px;
+  z-index: 2;
+  background: #fff;
+}
+
+/* Tower-tip beacons — a soft pulsing point of light on each tip. */
+.haa-band__beacon {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;   /* center on the tip coordinate */
+  border-radius: 50%;
+  background: #fff7e6;
+  box-shadow: 0 0 5px 1px rgba(255, 236, 190, 0.95), 0 0 12px 3px rgba(255, 220, 150, 0.5);
+  z-index: 3;
+  animation: haa-beacon 2.6s ease-in-out infinite;
+}
+/* The WTC gets the classic red beacon at its tip. */
+.haa-band__beacon--red {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: #ff4136;
+  box-shadow: 0 0 6px 2px rgba(255, 65, 54, 0.95), 0 0 16px 5px rgba(255, 65, 54, 0.5);
+  animation-duration: 1.6s;
+}
+@keyframes haa-beacon {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .haa-band__star, .haa-band__meteor, .haa-band__beacon { animation: none; }
+  .haa-band__meteor { opacity: 0; }
+  .haa-band__beacon { opacity: 0.9; }
+}
+/* The 403 page goes fully black; the naqsh watermark (body::before) still
+   shows through since #root stays transparent. Also drop #root's side border
+   (var(--border) is purple and shows as a stray vertical line on black). */
+body.page-black { background: #000; }
+body.page-black #root { border-inline-color: transparent; }
+.runner2__taphint {
+  margin-inline-start: auto;  /* push to the end of the HUD row */
+  color: var(--accent);
+}
+
+.runner2__area {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  outline: none;
+}
+
+.runner2__horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--ink);
+  opacity: 0.9;
+}
+
+.runner2__player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+.runner2__obstacle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 1;
+  opacity: 0.95;
+}
+
+.runner2__collectible {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 1;
+  filter: drop-shadow(0 0 12px rgba(245, 160, 92, 0.4));
+}
+
+/* Pre-start headline — appears below the game area, left-aligned */
+.runner2__prestart {
+  margin-top: 32px;
+  padding: 0;
+  pointer-events: none;
+  text-align: left;
+}
+
+.runner2__prestart-title {
+  font-size: clamp(28px, 4.5vw, 64px);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1;
+  margin: 0 0 8px 0;
+  text-align: left;
+}
+
+.runner2__prestart-sub {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.65;
+  margin: 0;
+  text-align: left;
+  animation: hint-pulse 2s ease-in-out infinite;
+}
+
+/* RTL — Arabic alignment */
+html[dir="rtl"] .runner2__hud {
+  justify-content: flex-end;
+}
+html[dir="rtl"] .runner2__prestart,
+html[dir="rtl"] .runner2__prestart-title,
+html[dir="rtl"] .runner2__prestart-sub {
+  text-align: right;
+}
+
+/* Game over overlay */
+.runner2__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(32, 16, 61, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  text-align: center;
+}
+.runner2__overlay h2 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--accent);
+}
+.runner2__overlay p {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.runner2__button {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 16px 40px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+.runner2__button:hover { transform: scale(1.05); }
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.9; }
+}
+
+.lang-switch {
+  letter-spacing: 0;
+}
+
+/* === DRAWER (sibling of topbar) === */
+.site-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 85vw;
+  height: 100vh;
+  background-color: #20103d;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 60px;
+  gap: 32px;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 100;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.site-drawer.is-open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.site-drawer a {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+}
+.site-drawer a:hover { color: var(--accent); }
+
+html[dir="rtl"] .site-drawer {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+  align-items: flex-end;
+  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.4);
+}
+html[dir="rtl"] .site-drawer.is-open {
+  transform: translateX(0);
+}
+
+/* === Drawer close button === */
+.site-drawer__close {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  background: none;
+  border: none;
+  color: var(--ink);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+.site-drawer__close:hover { background: var(--surface-1); }
+
+html[dir="rtl"] .site-drawer__close {
+  right: auto;
+  left: 32px;
+}
+
+/* === Backdrop — invisible click-outside surface === */
+.site-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 99;
+}
+.site-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   SITE FOOTER — cataloged, airline-style
+   ============================================================ */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 120px;
+  padding: 72px 0 40px;
+}
+
+/* Full-bleed Liquid Glass slab — same material as the top bar, always on */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.02) 22%,
+    rgba(32, 16, 61, 0.16) 100%
+  );
+  /* -webkit- first, standard last (see .topbar::before) so the standard
+     backdrop-filter survives minification for Chromium/Edge. */
+  -webkit-backdrop-filter: blur(24px) saturate(190%) brightness(0.8);
+  backdrop-filter: blur(24px) saturate(190%) brightness(0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.40),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.04),
+    0 -10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.site-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('./assets/skyline.png');
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  background-size: auto 78%;   /* skyline height ≈ 78% of the footer, rising from the bottom edge */
+  opacity: 0.14;               /* faint silhouette — nudge up/down to taste */
+  pointer-events: none;
+  z-index: -1;                 /* sits in front of the glass, behind all the text */
+}
+.site-footer__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+.site-footer__top {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr;
+  gap: 64px;
+  padding-bottom: 56px;
+}
+
+.site-footer__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  direction: ltr;            /* lock the lockup so it stays mark-right in Arabic mode too */
+  color: var(--ink);
+}
+
+.site-footer__wordmark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* was flex-end */
+  gap: 4px;
+  line-height: 1;
+}
+
+.site-footer__name-en {
+  direction: ltr;
+  font-weight: 300;          /* thin, matching the artwork */
+  font-size: 18px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-family: var(--font); 
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.site-footer__name-ar {
+  direction: rtl;
+  font-family: var(--font-ar);
+  font-weight: 400;          /* Mada only ships 400 — avoids faux-bold */
+  font-size: 16px;
+  align-self: flex-end;
+  letter-spacing: 0;         /* Arabic stays connected */
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.site-footer__logo {
+  height: 46px;              /* square mark ≈ the two-line wordmark height */
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+.site-footer__tagline {
+  margin-top: 24px;
+  max-width: 360px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.site-footer__locale {
+  margin-top: 16px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.site-footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+.site-footer__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;     /* logical: left in English, right in Arabic — auto-flips */
+  gap: 14px;
+}
+.site-footer__heading {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.site-footer__col a {
+  font-size: 15px;
+  color: var(--muted);
+  width: fit-content;
+  transition: color 0.2s ease;
+  text-align: start;   /* logical: left in English, right in Arabic */
+}
+.site-footer__col a:hover { color: var(--accent); }
+
+.site-footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 32px;
+  border-top: 1px solid var(--divider);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.site-footer__top-link { color: var(--muted); transition: color 0.2s ease; }
+.site-footer__top-link:hover { color: var(--accent); }
+
+/* Footer body text: off-WHITE, not the purple-tinted --muted. Scoped to the
+   footer only — the global --muted is untouched. Hover states keep the accent. */
+.site-footer__tagline,
+.site-footer__locale,
+.site-footer__col a,
+.site-footer__bottom,
+.site-footer__top-link {
+  color: rgba(240, 235, 224, 0.62);
+}
+
+/* Arabic — keep script connected, no caps */
+html[lang="ar"] .site-footer__heading,
+html[lang="ar"] .site-footer__locale {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 768px) {
+  .site-footer__top { grid-template-columns: 1fr; gap: 48px; }
+  .site-footer__cols { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .site-footer__bottom { justify-content: flex-start; }
+}
+
+/* Footer defaults to Latin font */
+.site-footer { font-family: var(--font); }
+.site-footer .latin { font-family: var(--font); }
+
+/* Arabic-script elements use Mada */
+html[lang="ar"] .site-footer__name-ar,
+html[lang="ar"] .site-footer__heading,
+html[lang="ar"] .site-footer__col a:not(.latin),
+html[lang="ar"] .site-footer__tagline,
+html[lang="ar"] .site-footer__locale,
+html[lang="ar"] .site-footer__bottom {
+  font-family: var(--font-ar);
+}
+
+.site-footer__brand { text-align: start; }
+.site-footer__brand .site-footer__tagline { margin-inline: 0; }
+
+/* …but Latin brand names stay Latin even inside the Arabic column */
+
+
+html[dir="rtl"] .site-footer__name-ar {
+  align-self: flex-end;
+}
+
+/* ------------------------------------------------------------------
+   Phone layout (≤560px)
+   - Header: drop the wordmark, keep just the logo mark.
+   - Footer: centre everything.
+   ------------------------------------------------------------------ */
+@media (max-width: 560px) {
+  /* Header — logo only (the drawer's nav-mark keeps its name) */
+  .topbar > .mark span { display: none; }
+
+  /* Footer — centre the logo/brand and the bottom bar; keep the links in
+     two columns (just centred). */
+  .site-footer__inner { padding-inline: 20px; }
+  .site-footer__top { justify-items: center; text-align: center; }
+  .site-footer__brand { text-align: center; }
+  .site-footer__brand .site-footer__tagline { margin-inline: auto; max-width: 100%; }
+  .site-footer__mark { justify-content: center; }
+
+  /* Shrink the wordmark so the lockup fits (and centres) on a phone */
+  .site-footer__logo { height: 40px; }
+  .site-footer__name-en { font-size: 14px; letter-spacing: 0.06em; }
+  .site-footer__name-ar { font-size: 13px; }
+
+  .site-footer__cols { justify-items: center; }
+  .site-footer__col { align-items: center; text-align: center; }
+  .site-footer__col a { width: auto; text-align: center; }
+
+  .site-footer__bottom {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+  }
+}
+
+/* ============================================================
+   404 — Ha'a plays the oud
+   ============================================================ */
+.e404-wrap { padding: 32px 24px 72px; text-align: center; }
+
+.e404-stage {
+  position: relative; display: inline-block; width: 320px; max-width: 78vw;
+  margin: 8px auto 28px; padding: 30px 30px 22px; border-radius: 32px;
+  background: radial-gradient(120% 120% at 30% 12%, #2d1b69, #1c1147);
+  box-shadow: var(--shadow); cursor: pointer;
+}
+.e404-char { position: relative; display: block; transform-origin: 50% 85%; }
+.e404-base { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+.e404-arm  { position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  transform-origin: 20.2% 42.6%; user-select: none; -webkit-user-drag: none; }
+
+@keyframes e404-bob {
+  0%,100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-8px) rotate(-1.2deg); }
+  50% { transform: translateY(-2px) rotate(0); }
+  75% { transform: translateY(-8px) rotate(1.2deg); }
+}
+@keyframes e404-strum { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(6deg); } }
+@keyframes e404-noteup {
+  0% { transform: translateY(0) scale(.6); opacity: 0; }
+  18% { opacity: .95; } 100% { transform: translateY(-72px) scale(1.05); opacity: 0; }
+}
+.e404-char.is-playing { animation: e404-bob .9s ease-in-out infinite; }
+.e404-char.is-playing .e404-arm { animation: e404-strum .22s ease-in-out infinite; }
+
+.e404-notes { position: absolute; left: 42%; top: 22%; pointer-events: none; z-index: 2; }
+.e404-notes span { position: absolute; font-size: 24px; color: var(--accent); opacity: 0; }
+.e404-char.is-playing .e404-notes span:nth-child(1) { animation: e404-noteup 2s linear infinite; }
+.e404-char.is-playing .e404-notes span:nth-child(2) { animation: e404-noteup 2s linear .6s infinite; left: 28px; }
+.e404-char.is-playing .e404-notes span:nth-child(3) { animation: e404-noteup 2s linear 1.2s infinite; left: -22px; }
+
+.e404-code { font-family: var(--heading); font-weight: 800; color: var(--text-h);
+  font-size: clamp(34px, 6vw, 56px); letter-spacing: -0.02em; margin: 0 0 14px; }
+html[lang="ar"] .e404-code { font-family: var(--font-ar); letter-spacing: 0; }
+
+.e404-copy { max-width: 620px; margin: 0 auto; }
+.e404-lead { font-size: clamp(18px, 2.6vw, 24px); color: var(--text-h); line-height: 1.4; margin: 0; }
+.e404-sub { font-size: clamp(15px, 2vw, 18px); margin-top: 12px; color: var(--text); }
+.e404-ar { font-family: var(--font-ar); line-height: 1.8; }
+.e404-hl { color: var(--accent); font-weight: 700; }
+
+.e404-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; align-items: center; margin-top: 26px; }
+.e404-play { background: var(--accent); color: #fff; border: none; border-radius: 999px;
+  padding: 13px 24px; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; }
+.e404-home { color: var(--text-h); text-decoration: none; border: 1px solid var(--border);
+  border-radius: 999px; padding: 11px 22px; font-size: 15px; font-weight: 600; }
+.e404-home:hover { border-color: var(--accent); }
+.e404-kbd { font-size: 12px; color: var(--text); opacity: .8; margin-top: 14px; letter-spacing: .02em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .e404-char.is-playing, .e404-char.is-playing .e404-arm,
+  .e404-char.is-playing .e404-notes span { animation: none; }
+}
+/* .latin was footer-only — promote it to a site-wide utility so Latin labels
+   (project tags, etc.) keep SF Grandezza even in Arabic mode */
+.latin { font-family: var(--font); }
+
+/* Arabic project-card meta: drop the uppercase + 0.12em tracking so
+   Arabic letters stay connected */
+html[lang="ar"] .project .meta { text-transform: none; letter-spacing: 0; }
+
+
+html[lang="ar"] .project .tags span { font-family: var(--font); letter-spacing: 0.18px; }
+html[lang="ar"] .project .meta { text-transform: none; letter-spacing: 0; }
+
+/* Clickable section headings — render exactly like the About heading */
+.section-link { display: inline-block; text-decoration: none; color: inherit; }
+
+.section-soon { color: var(--muted); font-size: 15px; text-align: start; }
+
+/* Thumbnail for visual-work cards (logo / identity projects) */
+.project-thumb {
+  background: #055c57;
+  border-radius: 16px;
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+  overflow: hidden;
+  /* Paint above the fixed naqsh (z-index 0, mix-blend-mode: screen) so the
+     background pattern can't bleed through the artwork. */
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+/* Project status pill (shown on the project page) — "Current" gets a pulsing
+   live light, "Completed" a steady muted dot. */
+.project-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--ink);
+  background: var(--surface-1); border: 1px solid var(--divider);
+  vertical-align: middle;
+}
+.project-status__dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.project-status--current .project-status__dot {
+  background: #37d67a;
+  animation: project-live 1.8s ease-out infinite;
+}
+.project-status--completed .project-status__dot { background: #b9b2c7; }
+@keyframes project-live {
+  0%   { box-shadow: 0 0 0 0 rgba(55, 214, 122, 0.65); }
+  70%  { box-shadow: 0 0 0 7px rgba(55, 214, 122, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(55, 214, 122, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-status--current .project-status__dot { animation: none; }
+}
+
+.project-thumb img {
+  width: auto;
+  height: 120px;          /* uniform logo size — same height for every project card */
+  max-width: 72%;         /* safety cap so very wide logos never overflow */
+  object-fit: contain;
+  display: block;
+}
+
+/* Coding card thumbnail: artwork on the brand violet panel. Opaque, so the
+   fixed naqsh can't blend through it. Used for real marks and for the Haa
+   placeholder alike, so every coding card reads as one system. */
+.project-thumb--brand {
+  background: linear-gradient(150deg, #2a1652 0%, #1b0f38 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Per-project tone. Rafeeq uses its own deep teal → dark green (#0E7A58 /
+   #132A20) so the mint mark sits on that project's brand colour.
+   Declared after --brand so it wins at equal specificity. */
+.project-thumb--rafeeq {
+  background: linear-gradient(150deg, #0E7A58 0%, #132A20 100%);
+}
+/* Logos/marks keep the base .project-thumb img sizing (fixed 120px height,
+   max-width 72%) so they match the UCSD mark's scale and proportions.
+
+   Full-scene artwork is the exception: it fills the box and letterboxes with
+   object-fit, since a 120px cap would render the scene too small to read.
+   Percentage max-height doesn't resolve against an aspect-ratio box, so the
+   box is filled and object-fit does the letterboxing. */
+.project-thumb--illustration img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  padding: 7% 9%;
+  box-sizing: border-box;
+  opacity: 1;
+}
+
+/* "Coming soon" placeholder panel — matches the card system so an empty
+   section still looks designed rather than unfinished. */
+.coming-soon {
+  position: relative;
+  overflow: hidden;
+  /* Opaque (not var(--surface-1), which is translucent) so the fixed naqsh
+     can't blend through the panel or the driller artwork. */
+  background: #291945;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: var(--r-lg);
+  padding: 48px 40px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: start;
+  gap: 14px;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.coming-soon__mark {
+  position: absolute;
+  inset-inline-end: 40px;
+  inset-block-end: 0;
+  pointer-events: none;
+}
+.coming-soon__mark img {
+  height: 190px;
+  width: auto;
+  opacity: 1;
+  display: block;
+}
+
+.coming-soon__title {
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.coming-soon__note {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 46ch;
+}
+
+/* `flex-start` already resolves to the right edge in RTL — no override needed. */
+
+@media (max-width: 768px) {
+  .coming-soon { padding: 36px 24px; min-height: 220px; }
+  .coming-soon__mark { inset-inline-end: 16px; }
+  .coming-soon__mark img { height: 120px; opacity: 0.45; }
+}
+
+/* ============================================================
+   Accessibility — keyboard focus (WCAG 2.2, items 8 & 9)
+   ============================================================ */
+/* Consistent, high-contrast focus ring for every interactive element. Placed at
+   the end of the file so it wins (equal specificity) over earlier component
+   rules that suppressed the default outline. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+/* Fields that swap the outline for a border on mouse focus still get a ring on
+   keyboard focus. */
+.contact-field input:focus-visible,
+.contact-field textarea:focus-visible,
+.haa-area:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+/* Sticky 84px topbar must never cover a focused heading, the main region, or an
+   in-page anchor target. */
+#main-content { scroll-margin-top: 96px; }
+main :is(h1, h2, h3),
+:target { scroll-margin-top: clamp(90px, 12vh, 112px); }
+
+/* Per-field validation error under a form control (item 12). */
+.field-error { display: block; margin-top: 6px; color: #ff9a9a; font-size: 0.9em; font-weight: 600; }
+
+/* Active primary-nav link (item 14). */
+nav .nav-links a[aria-current="page"] { color: var(--accent); }
+
+/* Runner mini-game pause control (item 10). */
+.runner2__pause {
+  margin-inline-start: auto; padding: 6px 14px; min-height: 32px;
+  border: 1px solid var(--divider); border-radius: 999px;
+  background: var(--surface-2); color: var(--ink); font: inherit; cursor: pointer;
+}
+.runner2__pause:hover { border-color: var(--accent); }
+
+/* Minimum 24×24 target size for small utility links (item 26). */
+.breadcrumb a,
+.site-footer__cols a,
+.site-footer__bottom a,
+.jt__more, .jd__back {
+  display: inline-flex; align-items: center; min-height: 24px;
+}
+
+/* ---- FAQ accordion (native <details>/<summary>) ---- */
+.faq { max-width: 780px; margin-inline: auto; padding-block: 8px 100px; display: grid; gap: 12px; }
+.faq__item {
+  border: 1px solid var(--divider); border-radius: 16px;
+  background: var(--surface-1); overflow: hidden;
+}
+.faq__item[open] { border-color: color-mix(in srgb, var(--accent) 45%, var(--divider)); }
+.faq__q {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 20px; font-weight: 700; font-size: clamp(15px, 2vw, 18px);
+  color: var(--ink);
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__chev { width: 20px; height: 20px; flex: none; color: var(--accent); transition: transform .2s ease; }
+.faq__item[open] .faq__chev { transform: rotate(180deg); }
+.faq__a { padding: 0 20px 20px; color: var(--muted); line-height: 1.65; }
+.faq__a p { margin: 0; }
+.faq__link {
+  display: inline-flex; align-items: center; min-height: 24px; margin-top: 12px;
+  color: var(--accent); font-weight: 700; text-decoration: none;
+}
+.faq__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Global reduced-motion reset (items 30, 31): honor the OS preference across the
+   whole site — no smooth scroll, and animations/transitions collapse to instant.
+   The hero already resolves to its static composition; this covers everything
+   else (hover transforms, card movement, 404 note motion). */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
