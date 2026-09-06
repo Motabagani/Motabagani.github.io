@@ -1,0 +1,11 @@
+# Netlify build config for the Vite SPA.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Security headers (nice-to-have; the site is fully static).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

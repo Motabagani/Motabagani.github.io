@@ -1,43 +1,46 @@
-// Front-end client for the portfolio backend (server/cgi-bin/submit.cgi).
+// Front-end client for the site's forms — backed by Netlify Forms.
 //
-// CIMS runs Python CGI (not PHP), so the endpoint is the suexec collector at
-// cgi-bin/submit.cgi. It is resolved relative to the deployed document, which
-// stays at the web root (e.g. https://cims.nyu.edu/~hm2983/) regardless of the
-// hash route — so it becomes …/~hm2983/cgi-bin/submit.cgi in production and
-// http://localhost:5173/cgi-bin/submit.cgi in dev (no CGI there, so calls fail
-// and the UI shows an error — expected locally).
-
-const ENDPOINT = new URL('cgi-bin/submit.cgi', document.baseURI).toString();
+// The old NYU CIMS backend (Python CGI at cgi-bin/submit.cgi) is gone; the site
+// now runs on Netlify, whose built-in Forms captures submissions (emailed to the
+// owner + a dashboard, with honeypot spam filtering). Netlify provisions the
+// handlers from the hidden static <form> definitions in index.html and receives
+// each submission as a urlencoded POST to "/" carrying a matching `form-name`.
+//
+// In local dev there is no Netlify, so submissions fail and the UI shows an error
+// (expected locally) — same as the old CGI behaved in dev.
 
 /**
- * Send a message to the backend.
+ * Send a message via Netlify Forms.
  * @param {{type:'feedback'|'contact', message:string, name?:string,
  *          email?:string, page?:string, lang?:string, website?:string}} payload
  * @returns {Promise<void>} resolves on success, throws Error on failure.
  */
 export async function sendMessage(payload) {
+  const { type, website, ...rest } = payload;
+  const formName = type === 'feedback' ? 'feedback' : 'contact';
+
+  const params = new URLSearchParams();
+  params.append('form-name', formName);
+  for (const [k, v] of Object.entries(rest)) {
+    if (v !== undefined && v !== null) params.append(k, String(v));
+  }
+  // Honeypot: Netlify silently discards the submission if this is filled.
+  params.append('website', website == null ? '' : String(website));
+
   let res;
   try {
-    res = await fetch(ENDPOINT, {
+    res = await fetch('/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
     });
   } catch {
     throw new Error('network');
   }
 
-  let data = null;
-  try {
-    data = await res.json();
-  } catch {
-    /* non-JSON response (e.g. dev server) */
-  }
-
-  if (!res.ok || !data || !data.ok) {
-    const err = new Error((data && data.error) || `Request failed (${res.status})`);
+  if (!res.ok) {
+    const err = new Error(`Request failed (${res.status})`);
     err.status = res.status;
-    err.code = data && data.error; // 'message' | 'email' | 'rate' | ...
     throw err;
   }
 }
