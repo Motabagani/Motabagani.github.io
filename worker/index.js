@@ -110,24 +110,114 @@ async function handleSubmit(request, env) {
   return json(200, { ok: true });
 }
 
-// ---------- GET /admin ----------
+// ---------- /admin auth (custom login page + signed cookie session) ----------
+async function hmacHex(key, msg) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(key),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+function timingEq(a, b) {
+  if (a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+async function makeSession(env) {
+  const exp = String(Date.now() + 8 * 3600 * 1000); // 8h
+  return `${exp}.${await hmacHex(env.ADMIN_PASSWORD || 'x', exp)}`;
+}
+async function validSession(token, env) {
+  if (!token || !env.ADMIN_PASSWORD) return false;
+  const dot = token.lastIndexOf('.');
+  if (dot < 0) return false;
+  const exp = token.slice(0, dot);
+  const sig = token.slice(dot + 1);
+  if (!/^\d+$/.test(exp) || Number(exp) < Date.now()) return false;
+  return timingEq(sig, await hmacHex(env.ADMIN_PASSWORD, exp));
+}
+function readCookie(request, name) {
+  const m = (request.headers.get('Cookie') || '').match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+function loginPage(error) {
+  return `<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>Admin — Sign in</title>
+<style>
+  :root{color-scheme:dark}*{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#20103d;color:#f0ebe0;
+    font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px}
+  form{width:min(600px,100%)}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:44px}
+  .lead{font-size:clamp(24px,5vw,40px);font-weight:300;line-height:1.05;text-align:start}
+  .lead b{display:block;font-weight:600}
+  .brand{display:flex;align-items:center;gap:14px;border-inline-start:1px solid rgba(255,255,255,.28);padding-inline-start:22px}
+  .brand .t{font-weight:700;letter-spacing:.05em;font-size:clamp(15px,3vw,22px);text-align:end}
+  .brand .t small{display:block;font-weight:400;opacity:.85}
+  .brand img{height:58px;width:58px;object-fit:contain;border:2px solid rgba(255,255,255,.55);border-radius:12px;padding:7px}
+  label{display:flex;justify-content:space-between;gap:12px;font-size:13px;letter-spacing:.14em;
+    text-transform:uppercase;color:#cabfe6;margin:24px 2px 9px}
+  input{width:100%;background:transparent;border:2px solid rgba(255,255,255,.6);border-radius:10px;
+    color:#f0ebe0;font:inherit;padding:14px 16px;outline:none}
+  input:focus{border-color:#f5a05c}
+  button{margin-top:30px;width:100%;padding:15px;border:0;border-radius:999px;cursor:pointer;
+    background:#f5a05c;color:#20103d;font:700 16px/1 inherit;letter-spacing:.02em}
+  button:hover{filter:brightness(1.05)}
+  .err{color:#ff9a9a;font-weight:600;margin:18px 0 0}
+</style></head><body>
+<form method="POST" action="/admin">
+  <div class="head">
+    <div class="lead">Sign In<b lang="ar" dir="rtl">تسجيل الدخول</b></div>
+    <div class="brand">
+      <div class="t">ADMIN DASHBOARD<small lang="ar" dir="rtl">لوحة التحكم</small></div>
+      <img src="/images/logowhite.png" alt="">
+    </div>
+  </div>
+  <label>Username<span lang="ar" dir="rtl">اسم المستخدم</span></label>
+  <input name="username" autocomplete="username" autofocus required>
+  <label>Password<span lang="ar" dir="rtl">كلمة المرور</span></label>
+  <input name="password" type="password" autocomplete="current-password" required>
+  ${error ? `<p class="err">${esc(error)}</p>` : ''}
+  <button type="submit">Sign in · دخول</button>
+</form>
+</body></html>`;
+}
+
+const COOKIE_BASE = 'Path=/admin; HttpOnly; Secure; SameSite=Strict';
+
 async function handleAdmin(request, env, url) {
-  // HTTP Basic Auth against Worker secrets (ADMIN_USER optional, ADMIN_PASSWORD required).
-  const expectedUser = env.ADMIN_USER || 'admin';
-  const expectedPass = env.ADMIN_PASSWORD || '';
-  const auth = request.headers.get('Authorization') || '';
-  let ok = false;
-  if (expectedPass && auth.startsWith('Basic ')) {
-    try {
-      const [u, p] = atob(auth.slice(6)).split(':');
-      ok = u === expectedUser && p === expectedPass;
-    } catch { ok = false; }
+  // Sign out.
+  if (url.pathname === '/admin/logout') {
+    return new Response('', { status: 302, headers: {
+      Location: '/admin',
+      'Set-Cookie': `admin_session=; ${COOKIE_BASE}; Max-Age=0`,
+    } });
   }
-  if (!ok) {
-    return new Response('Authentication required', {
-      status: 401,
-      headers: { 'WWW-Authenticate': 'Basic realm="Messages", charset="UTF-8"' },
+
+  // Login form submission.
+  if (request.method === 'POST') {
+    const form = await request.formData().catch(() => null);
+    const u = form ? String(form.get('username') || '') : '';
+    const p = form ? String(form.get('password') || '') : '';
+    const okUser = u === (env.ADMIN_USER || 'admin');
+    const okPass = !!env.ADMIN_PASSWORD && p === env.ADMIN_PASSWORD;
+    if (okUser && okPass) {
+      const token = await makeSession(env);
+      return new Response('', { status: 302, headers: {
+        Location: '/admin',
+        'Set-Cookie': `admin_session=${token}; ${COOKIE_BASE}; Max-Age=28800`,
+      } });
+    }
+    return new Response(loginPage('Incorrect username or password.'), {
+      status: 401, headers: { 'Content-Type': 'text/html; charset=utf-8' },
     });
+  }
+
+  // Anything else requires a valid session cookie; otherwise show the login page.
+  if (!(await validSession(readCookie(request, 'admin_session'), env))) {
+    return new Response(loginPage(''), { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
 
   const want = ['all', 'contact', 'feedback'].includes(url.searchParams.get('type'))
@@ -191,8 +281,12 @@ async function handleAdmin(request, env, url) {
   .when{color:#9088a8;font-size:12px;white-space:nowrap}
   a.email{color:#f5a05c}.meta{color:#6f6690;font-size:11px}
   .empty{color:#9088a8;padding:40px 0}
+  header .sp{flex:1}
+  a.signout{color:#9088a8;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.16);
+    padding:6px 12px;border-radius:999px}
+  a.signout:hover{color:#f0ebe0;border-color:var(--accent,#f5a05c)}
 </style></head><body><div class="wrap">
-<header><img src="/images/logowhite.png" alt=""><h1>Messages</h1></header>
+<header><img src="/images/logowhite.png" alt=""><h1>Messages</h1><span class="sp"></span><a class="signout" href="/admin/logout">Sign out</a></header>
 <p class="sub">${counts.all} total</p>
 <nav class="tabs">${tab('all', 'All')}${tab('contact', 'Contact')}${tab('feedback', 'Feedback')}</nav>
 ${bodyRows}
