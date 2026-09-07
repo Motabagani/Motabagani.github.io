@@ -141,46 +141,56 @@ function readCookie(request, name) {
   return m ? decodeURIComponent(m[1]) : '';
 }
 
+// The site's own typeface (copied to /fonts with stable names), so the admin
+// pages match the portfolio instead of falling back to a system font.
+const FONT_CSS = `
+@font-face{font-family:'SF Grandezza';src:url('/fonts/sf-grandezza.light.ttf') format('truetype');font-weight:300;font-display:swap}
+@font-face{font-family:'SF Grandezza';src:url('/fonts/sf-grandezza.medium.ttf') format('truetype');font-weight:500;font-display:swap}
+@font-face{font-family:'SF Grandezza';src:url('/fonts/sf-grandezza.heavy.ttf') format('truetype');font-weight:700 900;font-display:swap}
+@font-face{font-family:'Mada';src:url('/fonts/mada.ttf') format('truetype');font-display:swap}`;
+const FONT_STACK = `'SF Grandezza','Mada',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+
 function loginPage(error) {
-  return `<!doctype html><html lang="en"><head>
+  return `<!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><title>Admin — Sign in</title>
+<meta name="robots" content="noindex, nofollow"><title>لوحة التحكم — تسجيل الدخول</title>
 <style>
+  ${FONT_CSS}
   :root{color-scheme:dark}*{box-sizing:border-box}
   body{margin:0;min-height:100vh;display:grid;place-items:center;background:#20103d;color:#f0ebe0;
-    font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px}
-  form{width:min(600px,100%)}
-  .head{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:44px}
-  .lead{font-size:clamp(24px,5vw,40px);font-weight:300;line-height:1.05;text-align:start}
-  .lead b{display:block;font-weight:600}
-  .brand{display:flex;align-items:center;gap:14px;border-inline-start:1px solid rgba(255,255,255,.28);padding-inline-start:22px}
-  .brand .t{font-weight:700;letter-spacing:.05em;font-size:clamp(15px,3vw,22px);text-align:end}
+    font:16px/1.5 ${FONT_STACK};padding:24px;direction:rtl}
+  form{width:min(600px,100%);text-align:right}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:46px}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand img{height:64px;width:auto;display:block}
+  .brand .t{font-weight:700;letter-spacing:.03em;font-size:clamp(16px,3vw,23px);line-height:1.15;text-align:right}
   .brand .t small{display:block;font-weight:400;opacity:.85}
-  .brand img{height:58px;width:58px;object-fit:contain;border:2px solid rgba(255,255,255,.55);border-radius:12px;padding:7px}
-  label{display:flex;justify-content:space-between;gap:12px;font-size:13px;letter-spacing:.14em;
-    text-transform:uppercase;color:#cabfe6;margin:24px 2px 9px}
+  .lead{font-size:clamp(24px,5vw,40px);font-weight:300;line-height:1.1;text-align:right;
+    border-inline-start:1px solid rgba(255,255,255,.28);padding-inline-start:22px}
+  .lead b{display:block;font-weight:600}
+  label{display:block;font-size:14px;letter-spacing:.03em;color:#cabfe6;margin:26px 2px 9px;text-align:right}
   input{width:100%;background:transparent;border:2px solid rgba(255,255,255,.6);border-radius:10px;
-    color:#f0ebe0;font:inherit;padding:14px 16px;outline:none}
+    color:#f0ebe0;font:inherit;padding:14px 16px;outline:none;direction:ltr}
   input:focus{border-color:#f5a05c}
-  button{margin-top:30px;width:100%;padding:15px;border:0;border-radius:999px;cursor:pointer;
-    background:#f5a05c;color:#20103d;font:700 16px/1 inherit;letter-spacing:.02em}
+  button{margin-top:32px;width:100%;padding:15px;border:0;border-radius:999px;cursor:pointer;
+    background:#f5a05c;color:#20103d;font:700 16px/1 ${FONT_STACK};letter-spacing:.02em}
   button:hover{filter:brightness(1.05)}
-  .err{color:#ff9a9a;font-weight:600;margin:18px 0 0}
+  .err{color:#ff9a9a;font-weight:600;margin:18px 0 0;text-align:right}
 </style></head><body>
 <form method="POST" action="/admin">
   <div class="head">
-    <div class="lead">Sign In<b lang="ar" dir="rtl">تسجيل الدخول</b></div>
     <div class="brand">
-      <div class="t">ADMIN DASHBOARD<small lang="ar" dir="rtl">لوحة التحكم</small></div>
       <img src="/images/logowhite.png" alt="">
+      <div class="t">ADMIN DASHBOARD<small>لوحة التحكم</small></div>
     </div>
+    <div class="lead">Sign In<b>تسجيل الدخول</b></div>
   </div>
-  <label>Username<span lang="ar" dir="rtl">اسم المستخدم</span></label>
+  <label>اسم المستخدم · Username</label>
   <input name="username" autocomplete="username" autofocus required>
-  <label>Password<span lang="ar" dir="rtl">كلمة المرور</span></label>
+  <label>كلمة المرور · Password</label>
   <input name="password" type="password" autocomplete="current-password" required>
   ${error ? `<p class="err">${esc(error)}</p>` : ''}
-  <button type="submit">Sign in · دخول</button>
+  <button type="submit">تسجيل الدخول · Sign in</button>
 </form>
 </body></html>`;
 }
@@ -253,7 +263,7 @@ async function handleAdmin(request, env, url) {
         if (!frm) frm = '<span class="meta">&mdash;</span>';
         let page = esc(r.page || '');
         if (r.lang) page += ' &middot; ' + esc(r.lang);
-        return `<tr><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(t)}</span></td><td>${frm}</td><td class="msg">${esc(r.message)}</td><td class="meta">${page}</td></tr>`;
+        return `<tr><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(t)}</span></td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td></tr>`;
       }).join('')
     }</tbody></table>`;
 
@@ -261,8 +271,9 @@ async function handleAdmin(request, env, url) {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>Messages</title>
 <style>
+  ${FONT_CSS}
   :root{color-scheme:dark}*{box-sizing:border-box}
-  body{margin:0;padding:28px;background:#20103d;color:#f0ebe0;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  body{margin:0;padding:28px;background:#20103d;color:#f0ebe0;font:15px/1.5 ${FONT_STACK}}
   .wrap{max-width:1100px;margin:0 auto}
   header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
   header img{height:30px;width:auto}
