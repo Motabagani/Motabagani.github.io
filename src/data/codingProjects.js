@@ -5,7 +5,7 @@
 // screenshot/cover later. `FILLER_IMAGE` is the Haa coding illustration
 // on a light panel so every card has a picture in the meantime.
 
-export const FILLER_IMAGE = 'images/Haacoding.png';
+export const FILLER_IMAGE = '/images/Haacoding.png';
 
 export const codingProjects = [
   {
@@ -18,10 +18,10 @@ export const codingProjects = [
     },
     tags: ['React', 'Vite', 'RTL', 'IndexedDB'],
     status: 'current',
-    image: 'images/rafeeq-bright.png',
+    image: '/images/rafeeq-bright.png',
     // Rafeeq's own deep teal/green, so the mint mark sits on its brand colour
     thumbClass: 'project-thumb--rafeeq',
-    href: (lang) => `#/${lang}/projects/rafeeq`,
+    href: (lang) => `/${lang}/projects/rafeeq`,
   },
   {
     year: { en: '2026', ar: '٢٠٢٦' },
@@ -35,7 +35,7 @@ export const codingProjects = [
     status: 'completed',
     // TODO: replace with a real Course Registration cover image
     image: FILLER_IMAGE,
-    href: (lang) => `#/${lang}/projects/course-registration`,
+    href: (lang) => `/${lang}/projects/course-registration`,
   },
   {
     year: { en: '2025', ar: '٢٠٢٥' },
@@ -47,8 +47,8 @@ export const codingProjects = [
     },
     tags: ['MuJoCo', 'Python', 'Three.js', 'Robotics'],
     status: 'completed',
-    image: 'images/haa robots.png',
+    image: '/images/haa robots.png',
     thumbClass: 'project-thumb--illustration',
-    href: (lang) => `#/${lang}/journey/cmu-riss?from=coding`,
+    href: (lang) => `/${lang}/journey/cmu-riss?from=coding`,
   },
 ];

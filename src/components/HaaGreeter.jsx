@@ -15,14 +15,14 @@ import { sendMessage } from '../api';
    Filenames contain spaces, so encode them into valid URLs.
    Note the names are from Haa's own point of view: "hand right of haa" is the
    character's right arm, which sits on the viewer's left. That's the waver. */
-const LAYER_BODY = encodeURI('images/body and legs.png');
-const LAYER_FACE = encodeURI('images/face.png');
-const LAYER_ARM_STILL = encodeURI('images/Hand left of haa.png');
-const LAYER_ARM_WAVE = encodeURI('images/hand right of haa.png');
+const LAYER_BODY = encodeURI('/images/body and legs.png');
+const LAYER_FACE = encodeURI('/images/face.png');
+const LAYER_ARM_STILL = encodeURI('/images/Hand left of haa.png');
+const LAYER_ARM_WAVE = encodeURI('/images/hand right of haa.png');
 
 // Minimized launcher shows Haa's head (white body carries the dark features,
 // so it reads on the purple square — the flat face-only PNG would vanish).
-const CHIP_FACE = 'images/haaidle.png';
+const CHIP_FACE = '/images/haaidle.png';
 
 const SEEN_KEY = 'haa-greeted';
 
@@ -142,7 +142,7 @@ function HaaGreeter() {
       await sendMessage({
         type: 'feedback',
         message: note.trim(),
-        page: window.location.hash || '/',
+        page: window.location.pathname + window.location.search,
         lang,
         website: hp, // honeypot
       });

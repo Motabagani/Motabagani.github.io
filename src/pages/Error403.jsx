@@ -17,7 +17,7 @@ function Error403() {
     <>
       <TopBar />
       <main id="main-content" tabIndex={-1}>
-        <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+        <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
 
         <div style={{ textAlign: 'center', padding: '32px 24px 80px' }}>
           <HaaBand />
@@ -40,7 +40,7 @@ function Error403() {
           </p>
 
           <p style={{ marginTop: 20 }}>
-            <a href={`#/${lang}`}>{isEn ? '← Back to home' : 'العودة إلى الصفحة الرئيسية ←'}</a>
+            <a href={`/${lang}`}>{isEn ? '← Back to home' : 'العودة إلى الصفحة الرئيسية ←'}</a>
           </p>
         </div>
       </main>

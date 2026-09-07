@@ -59,7 +59,7 @@ function ContactPage() {
         name: form.name.trim(),
         email: form.email.trim(),
         message: form.message.trim(),
-        page: window.location.hash || '/',
+        page: window.location.pathname + window.location.search,
         lang,
         website: hp,
       });
@@ -107,9 +107,9 @@ function ContactPage() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
+          <a href={`/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
           &nbsp;/&nbsp; {c.title}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <header className="project-header container">

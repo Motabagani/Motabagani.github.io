@@ -1,4 +1,5 @@
 import { FilesScreen } from '../screens/Files.jsx';
+import { navigate } from '../../lib/router';
 import { useRafeeq } from '../RafeeqContext.jsx';
 
 export default function FilesPage() {
@@ -9,7 +10,7 @@ export default function FilesPage() {
       userDocs={userDocuments}
       onOpenAttachment={openAttachment}
       onOpenFile={openDocumentFile}
-      onHome={() => { window.location.hash = `#/${lang}/rafeeq`; }}
+      onHome={() => { navigate(`/${lang}/rafeeq`); }}
     />
   );
 }

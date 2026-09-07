@@ -9,7 +9,7 @@
                            own page (#/{lang}/journey/{slug}) with a longer
                            write-up, a photo gallery, and links. To add photos,
                            drop files in public/images/ and reference them as
-                           'images/yourfile.jpg'. */
+                           '/images/yourfile.jpg'. */
 
 export const CATS = {
   academic:        { color: '#f5b74e', en: 'Academic',        ar: 'أكاديمي' },
@@ -26,7 +26,7 @@ export const ITEMS = [
     title: { en: 'KAUST Gifted Student Program (KGSP)', ar: 'برنامج جامعة الملك عبدالله للعلوم والتقنية (كاوست) للطلبة الموهوبين' },
     org: { en: 'King Abdullah University of Science & Technology', ar: 'جامعة الملك عبدالله للعلوم والتقنية' },
     note: { en: 'A prestigious full scholarship — the start of the journey abroad.', ar: 'منحة دراسية كاملة مرموقة — بداية الرحلة للدراسة بالخارج.' },
-    logo: 'images/kgsp_logo.png',
+    logo: '/images/kgsp_logo.png',
   },
   {
     cat: 'academic',
@@ -35,7 +35,7 @@ export const ITEMS = [
     org: { en: 'University of Illinois Urbana-Champaign', ar: 'جامعة إلينوي في أوربانا-شامبين' },
     note: { en: 'A college-prep bridge year — test prep, applications, and college courses.', ar: 'سنة تأسيسية تمهّد للجامعة — اختبارات، وتقديم جامعي، ومواد جامعية.' },
     cert: { en: 'KAUST Leadership Certificate', ar: 'شهادة القيادة من كاوست' },
-    logo: 'images/uiuc_logo.png',
+    logo: '/images/uiuc_logo.png',
   },
   {
     cat: 'academic',
@@ -44,7 +44,7 @@ export const ITEMS = [
     org: { en: 'The Pennsylvania State University', ar: 'جامعة ولاية بنسلفانيا' },
     note: { en: 'Systems programming, data structures & algorithms, OOP.', ar: 'برمجة الأنظمة، وهياكل البيانات والخوارزميات، والبرمجة الكائنية.' },
     honor: { en: "Dean's List · Fall 2023", ar: 'قائمة العميد · خريف ٢٠٢٣' },
-    logo: 'images/psu logo norm.png',
+    logo: '/images/psu logo norm.png',
     // Small badge shown top-corner opposite the logo.
     flag: { en: 'Transferred out', ar: 'انتقلت منها' },
   },
@@ -54,12 +54,12 @@ export const ITEMS = [
     title: { en: "Guide & Organizer — Int'l Chemistry Olympiad", ar: 'مرشد ومنظّم — أولمبياد الكيمياء الدولي' },
     org: { en: 'IChO · Riyadh, Saudi Arabia', ar: 'IChO · الرياض، السعودية' },
     note: { en: 'Guided the German national team and made the event more culturally inclusive.', ar: 'رافقت المنتخب الألماني وجعلت الفعالية أكثر شمولاً ثقافياً.' },
-    logo: 'images/icho_logo.png',
+    logo: '/images/icho_logo.png',
     // Click-to-open photo with the German team's public thank-you + source link.
     // Thumbnail opens a modal with the photo, the FChO thank-you (German +
     // translation), and a link to the original story screenshot page.
     photo: {
-      src: 'images/icho-team.jpg',
+      src: '/images/icho-team.jpg',
       alt: {
         en: 'Hashim mentoring the German national team at the 56th International Chemistry Olympiad, Riyadh 2024',
         ar: 'هاشم مع المنتخب الألماني في أولمبياد الكيمياء الدولي الـ٥٦، الرياض ٢٠٢٤',
@@ -81,13 +81,13 @@ export const ITEMS = [
     title: { en: 'Graphic Designer — Saudi Student Association', ar: 'مصمم جرافيك — نادي الطلبة السعوديين' },
     org: { en: 'UC San Diego', ar: 'جامعة كاليفورنيا، سان دييغو' },
     note: { en: 'Built a new visual-identity guide and led custom merch production.', ar: 'أنشأت دليل هوية بصرية جديد وقُدت إنتاج منتجات مخصصة.' },
-    logo: 'images/ssa-ucsd-logo.png',
+    logo: '/images/ssa-ucsd-logo.png',
     // A short About-timeline page (/journey/ssa-ucsd) with the brief, plus a link
     // out to the full graphic-design case study (projects/ssa-ucsd).
     slug: 'ssa-ucsd',
     to: 'projects/ssa-ucsd',
     // Full-bleed brand hero on the /journey/ssa-ucsd page (white UCSD trident on UCSD Deep Teal).
-    hero: { img: 'images/ssa-ucsd-logo.png', bg: 'linear-gradient(150deg, #006A6E 0%, #04343A 100%)' },
+    hero: { img: '/images/ssa-ucsd-logo.png', bg: 'linear-gradient(150deg, #006A6E 0%, #04343A 100%)' },
     more: {
       body: {
         en: 'As the Saudi Student Association’s graphic designer at UC San Diego, I built a new visual-identity guide and led custom merch production for the community. The full breakdown lives in the graphic-design case study.',
@@ -129,7 +129,7 @@ export const ITEMS = [
     title: { en: 'Robotics Institute Summer Scholar — Zoom Lab', ar: 'باحث صيفي في معهد الروبوتات — مختبر Zoom' },
     org: { en: 'Carnegie Mellon University', ar: 'جامعة كارنيغي ميلون' },
     note: { en: 'Simulated the DeltaZ soft manipulator in MuJoCo and validated it against physical TPU prototypes.', ar: 'حاكيت المناور المرن DeltaZ في MuJoCo وقارنته بنماذج TPU الفيزيائية.' },
-    logo: 'images/cmu_logo.png',
+    logo: '/images/cmu_logo.png',
     slug: 'cmu-riss',
     more: {
       body: {
@@ -137,7 +137,7 @@ export const ITEMS = [
         ar: 'كباحث في برنامج RISS بمختبر Zoom، نمذجت المناور المرن DeltaZ في MuJoCo، والتقطت الانحناء والالتواء وديناميكا التلامس بما يوافق نماذج TPU الحقيقية، ثم قارنت السلوك المحاكى بالنماذج الفيزيائية وأبرزت حدود محاكاة الحركة المغلقة للوصلات المرنة.',
       },
       poster: {
-        src: 'images/riss-poster.png',
+        src: '/images/riss-poster.png',
         alt: { en: 'RISS 2025 poster — Simulating Soft DeltaZ in MuJoCo', ar: 'ملصق RISS 2025 — محاكاة DeltaZ المرن في MuJoCo' },
         caption: { en: 'My RISS 2025 poster — “Simulating Soft DeltaZ in MuJoCo.”', ar: 'ملصقي في RISS 2025 — «محاكاة DeltaZ المرن في MuJoCo».' },
       },
@@ -159,7 +159,7 @@ export const ITEMS = [
     title: { en: 'B.A. Computer Science & Economics', ar: 'بكالوريوس علوم الحاسب والاقتصاد' },
     org: { en: 'New York University', ar: 'جامعة نيويورك' },
     note: { en: 'Transferred to NYU — econometrics, macro & micro, and data structures.', ar: 'انتقلت إلى NYU — الاقتصاد القياسي، والتحليل الكلي والجزئي، وهياكل البيانات.' },
-    logo: 'images/nyu_logo.png',
+    logo: '/images/nyu_logo.png',
   },
 ];
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { LanguageProvider } from './LanguageContext';
+import { navigate } from './lib/router';
 import Home from './pages/Home';
 import CodingPage from './pages/CodingPage';
 import AboutPage from './pages/AboutPage';
@@ -22,18 +23,36 @@ import RafeeqApp from './rafeeq/App.jsx';
 import './App.css';
 
 function App() {
-  const [route, setRoute] = useState(window.location.hash);
+  const [route, setRoute] = useState(window.location.pathname);
 
+  // Re-read the path on SPA navigation (navigate() dispatches popstate), and
+  // intercept internal <a> clicks so they navigate without a full page reload.
   useEffect(() => {
-    const onHashChange = () => setRoute(window.location.hash);
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const onNav = () => setRoute(window.location.pathname);
+    window.addEventListener('popstate', onNav);
+
+    const onClick = (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || !href.startsWith('/') || href.startsWith('//')) return; // internal paths only
+      const target = a.getAttribute('target');
+      if ((target && target !== '_self') || a.hasAttribute('download')) return;
+      e.preventDefault();
+      navigate(href);
+    };
+    document.addEventListener('click', onClick);
+
+    return () => {
+      window.removeEventListener('popstate', onNav);
+      document.removeEventListener('click', onClick);
+    };
   }, []);
 
-  // Route with the language prefix and any ?query stripped, e.g.
-  // '#/en/journey/x?from=coding' -> '/journey/x'
-  const routeWithoutLang = route.replace(/^#\/(en|ar)/, '').replace(/\?.*$/, '');
-  const lang = /^#\/ar(\/|$)/.test(route) ? 'ar' : 'en';
+  // Path with the language prefix stripped, e.g. '/en/journey/x' -> '/journey/x'.
+  const routeWithoutLang = route.replace(/^\/(en|ar)(?=\/|$)/, '').replace(/\/$/, '');
+  const lang = /^\/ar(\/|$)/.test(route) ? 'ar' : 'en';
 
   // On SPA route changes: scroll to top and move focus to <main> so screen readers
   // announce that new content loaded. Skip the very first mount (don't steal focus).

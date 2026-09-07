@@ -3,6 +3,7 @@
 // Pages render as children and know nothing about any of it.
 
 import { useState, useEffect } from 'react';
+import { navigate } from '../../lib/router';
 import { Icon, IC } from '../ui/Icon.jsx';
 import { Mark } from '../ui/Mark.jsx';
 import { Confetti } from '../ui/atoms.jsx';
@@ -27,7 +28,7 @@ export default function Chrome({ bare = false, children }) {
     document.addEventListener('mousedown', away);
     return () => document.removeEventListener('mousedown', away);
   }, [menu]);
-  const go = (page) => { window.location.hash = `#/${lang}/rafeeq${page ? '/' + page : ''}`; };
+  const go = (page) => { navigate(`/${lang}/rafeeq${page ? '/' + page : ''}`); };
 
   return (
     <div className="rafeeq" dir={lang === 'ar' ? 'rtl' : 'ltr'} lang={lang} data-theme={theme}>
@@ -90,7 +91,7 @@ export default function Chrome({ bare = false, children }) {
       {openDoc && <DocumentModal t={t} lang={lang} doc={openDoc} user={user} onClose={() => setOpenDoc(null)} />}
       {confetti && <Confetti />}
 
-      <a className="rq-return" href={`#/${lang}`} onClick={signOut}
+      <a className="rq-return" href={`/${lang}`} onClick={signOut}
         aria-label={lang === 'ar' ? 'العودة لباقي الأعمال' : 'Return to portfolio'}>
         <img src={BRAND.returnMark} alt="" />
         <span className="rq-return-txt">

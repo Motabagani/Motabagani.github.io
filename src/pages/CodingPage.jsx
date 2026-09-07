@@ -13,9 +13,9 @@ function CodingPage() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
+          <a href={`/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
           &nbsp;/&nbsp; {t.sections.coding}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <header className="project-header container">

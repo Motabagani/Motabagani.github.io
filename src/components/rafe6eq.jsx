@@ -1509,10 +1509,10 @@ export default function RafeeqApp() {
       {confetti && <Confetti />}
 
 
-           <a className="rq-return" href={`#/${lang}`}
+           <a className="rq-return" href={`/${lang}`}
          aria-label={lang === "ar" ? "العودة لباقي الأعمال" : "Return to portfolio"}>
         <span>{lang === "ar" ? "العودة لباقي الأعمال" : "Return to portfolio"}</span>
-        <img src="images/logowhite.png" alt="" />
+        <img src="/images/logowhite.png" alt="" />
       </a>
       <div className={"rq-toast" + (toastMsg ? " show" : "")} role="status">{toastMsg}</div>
     </div>

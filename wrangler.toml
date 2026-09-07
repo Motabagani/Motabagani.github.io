@@ -1,0 +1,26 @@
+# Cloudflare Worker: static site + message backend (D1).
+name = "portofolio"
+main = "worker/index.js"
+compatibility_date = "2024-11-06"
+
+# Serve the built Vite site. The Worker's fetch handler runs first; anything it
+# doesn't handle (/api/submit, /admin) falls through to these assets.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+# Clean URLs (e.g. /en, /ar/coding) are client-side routes with no matching file,
+# so serve the SPA shell for any unmatched path.
+not_found_handling = "single-page-application"
+
+# D1 database that stores submissions. Create it once with:
+#   npx wrangler d1 create portfolio-messages
+# then paste the printed database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio-messages"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Admin auth + IP salt are set as secrets, not here:
+#   npx wrangler secret put ADMIN_PASSWORD
+#   npx wrangler secret put ADMIN_USER      (optional; defaults to "admin")
+#   npx wrangler secret put IP_SALT         (optional)

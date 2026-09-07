@@ -537,7 +537,7 @@ export default function JourneyTimeline() {
                     </p>
                   )}
                   {(it.to || (it.slug && it.more)) && (
-                    <a className="jt__more" href={it.slug && it.more ? `#/${lang}/journey/${it.slug}` : `#/${lang}/${it.to}`}>
+                    <a className="jt__more" href={it.slug && it.more ? `/${lang}/journey/${it.slug}` : `/${lang}/${it.to}`}>
                       {isEn ? 'Read more' : 'اقرأ المزيد'}<span aria-hidden="true"> {isEn ? '→' : '←'}</span>
                     </a>
                   )}
@@ -588,7 +588,7 @@ export default function JourneyTimeline() {
                   </blockquote>
                 )}
                 {photo.source && (
-                  <a className="jt-modal__src" href={`#/${lang}/${photo.source.to}`}>
+                  <a className="jt-modal__src" href={`/${lang}/${photo.source.to}`}>
                     {isEn ? photo.source.label.en : photo.source.label.ar}<span aria-hidden="true"> {isEn ? '→' : '←'}</span>
                   </a>
                 )}

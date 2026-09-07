@@ -86,10 +86,10 @@ function JourneyDetail({ slug }) {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{isEn ? 'Home' : 'الرئيسية'}</a>
-          {parent && <>&nbsp;/&nbsp; <a href={`#/${lang}/${parent.path}`}>{isEn ? parent.en : parent.ar}</a></>}
+          <a href={`/${lang}`}>{isEn ? 'Home' : 'الرئيسية'}</a>
+          {parent && <>&nbsp;/&nbsp; <a href={`/${lang}/${parent.path}`}>{isEn ? parent.en : parent.ar}</a></>}
           {it && <>&nbsp;/&nbsp; {isEn ? it.title.en : it.title.ar}</>}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <div className="jd">
@@ -99,7 +99,7 @@ function JourneyDetail({ slug }) {
             <>
               <h1 className="jd__title">{isEn ? 'Entry not found' : 'الصفحة غير موجودة'}</h1>
               <p className="jd__body">{isEn ? 'This journey entry doesn’t exist.' : 'لا توجد هذه الصفحة في رحلتي.'}</p>
-              {!getFrom() && <p className="jd__back"><a href={`#/${lang}/about`}>{backLabel}</a></p>}
+              {!getFrom() && <p className="jd__back"><a href={`/${lang}/about`}>{backLabel}</a></p>}
             </>
           ) : (() => {
             const c = CATS[it.cat];
@@ -175,7 +175,7 @@ function JourneyDetail({ slug }) {
 
                 {it.to && (
                   <div className="jd__links">
-                    <a href={`#/${lang}/${it.to}?from=about`}>
+                    <a href={`/${lang}/${it.to}?from=about`}>
                       {isEn ? 'View the full case study' : 'عرض دراسة الحالة الكاملة'}<span aria-hidden="true"> {isEn ? '→' : '←'}</span>
                     </a>
                   </div>
@@ -199,7 +199,7 @@ function JourneyDetail({ slug }) {
                   </div>
                 )}
 
-                {!getFrom() && <p className="jd__back"><a href={`#/${lang}/about`}>{backLabel}</a></p>}
+                {!getFrom() && <p className="jd__back"><a href={`/${lang}/about`}>{backLabel}</a></p>}
               </div>
             );
           })()}

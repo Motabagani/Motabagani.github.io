@@ -1,7 +1,7 @@
 export const BRAND = {
-  mark:       "images/rafeeq-bright.png",  // light artwork — used on the DARK theme
-  markLight:  "images/rafeeq-dark.png",    // dark artwork  — used on the LIGHT theme
-  returnMark: "images/logowhite.png",  // mark on the "back to portfolio" bar
+  mark:       "/images/rafeeq-bright.png",  // light artwork — used on the DARK theme
+  markLight:  "/images/rafeeq-dark.png",    // dark artwork  — used on the LIGHT theme
+  returnMark: "/images/logowhite.png",  // mark on the "back to portfolio" bar
 
   fontFaces: [
     // { family: "SF Grandezza", src: "/fonts/SFGrandezza-Regular.woff2", weight: 400 },

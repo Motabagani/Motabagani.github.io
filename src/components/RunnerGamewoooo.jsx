@@ -280,7 +280,7 @@ if (playerYRef.current < 0) {
         {obstaclesRef.current.map((obs) => (
           <img
             key={obs.id}
-            src="images/shrine.png"
+            src="/images/shrine.png"
             alt=""
             className="runner2__obstacle"
             style={{
@@ -295,7 +295,7 @@ if (playerYRef.current < 0) {
         {collectiblesRef.current.map((c) => (
           <img
             key={c.id}
-            src="images/logowhite.png"
+            src="/images/logowhite.png"
             alt=""
             className="runner2__collectible"
             style={{
@@ -309,7 +309,7 @@ if (playerYRef.current < 0) {
         {/* Player */}
         <img
           ref={playerElRef}
-          src="images/driller.png"
+          src="/images/driller.png"
           alt="driller"
           className="runner2__player"
           style={{

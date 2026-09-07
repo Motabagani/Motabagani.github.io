@@ -274,7 +274,7 @@ function RunnerGame2() {
         {obstaclesRef.current.map((obs) => (
           <img
             key={obs.id}
-            src="images/shrine.png"
+            src="/images/shrine.png"
             alt=""
             className="runner2__obstacle"
             style={{
@@ -289,7 +289,7 @@ function RunnerGame2() {
         {collectiblesRef.current.map((c) => (
           <img
             key={c.id}
-            src="images/logowhite.png"
+            src="/images/logowhite.png"
             alt=""
             className="runner2__collectible"
             style={{
@@ -303,7 +303,7 @@ function RunnerGame2() {
         {/* Player */}
         <img
           ref={playerElRef}
-          src="images/driller.png"
+          src="/images/driller.png"
           alt="driller"
           className="runner2__player"
           style={{

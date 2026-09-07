@@ -349,7 +349,7 @@ if (playerElRef.current) {
         {obstaclesRef.current.map((obs) => (
           <img
             key={obs.id}
-            src="images/psu_logo.png"
+            src="/images/psu_logo.png"
             alt=""
             className="runner-game__obstacle"
             style={{
@@ -364,7 +364,7 @@ if (playerElRef.current) {
         {collectiblesRef.current.map((c) => (
           <img
             key={c.id}
-            src="images/logowhite.png"
+            src="/images/logowhite.png"
             alt=""
             className="runner-game__collectible"
             style={{
@@ -378,7 +378,7 @@ if (playerElRef.current) {
         {/* Player (driller) */}
         <img
   ref={playerElRef}
-  src="images/driller.png"
+  src="/images/driller.png"
   alt="driller"
   className="runner-game__player"
   style={{
@@ -391,7 +391,7 @@ if (playerElRef.current) {
         {/* Start / Game over overlay */}
         {!started && !gameOver && (
   <div className="runner-game__prestart">
-    <img src="images/driller.png" alt="" className="runner-game__prestart-driller" />
+    <img src="/images/driller.png" alt="" className="runner-game__prestart-driller" />
     <h2 className="runner-game__prestart-title">
       {lang === 'ar' ? 'الأشياء العظيمة تحتاج وقتاً' : 'Great stuff takes time'}
     </h2>

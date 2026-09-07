@@ -3,6 +3,7 @@
 // wrap once in App, then call useRafeeq() from any page.
 
 import { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { navigate } from '../lib/router';
 import { makeT } from './i18n/useT.js';
 import { isoOf } from './lib/dates.js';
 import { makeRef } from './lib/refs.js';
@@ -19,21 +20,21 @@ import { buildDocumentPdf, pdfFilename } from './lib/pdf.js';
 
 const RafeeqContext = createContext();
 
-// Language lives in the URL, exactly like the portfolio: #/en/rafeeq/...
+// Language lives in the URL path, exactly like the portfolio: /en/rafeeq/...
 // so arriving from the English site lands in English, and vice versa.
-function getLangFromHash() {
-  return window.location.hash.startsWith('#/ar') ? 'ar' : 'en';
+function getLangFromPath() {
+  return /^\/ar(\/|$)/.test(window.location.pathname) ? 'ar' : 'en';
 }
 
 export function RafeeqProvider({ children }) {
-  const [lang, setLangState] = useState(getLangFromHash);
+  const [lang, setLangState] = useState(getLangFromPath);
 
-  // Follow the hash — covers the portfolio's switcher, back/forward, and
+  // Follow SPA navigation — covers the portfolio's switcher, back/forward, and
   // anyone pasting a link straight into the address bar.
   useEffect(() => {
-    const onHashChange = () => setLangState(getLangFromHash());
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const onNav = () => setLangState(getLangFromPath());
+    window.addEventListener('popstate', onNav);
+    return () => window.removeEventListener('popstate', onNav);
   }, []);
 
   // Mirror the portfolio: set direction on <html> so global RTL rules apply.
@@ -45,8 +46,8 @@ export function RafeeqProvider({ children }) {
   // Switching inside Rafeeq rewrites the hash and keeps the current page,
   // so the portfolio and the simulator can never disagree about language.
   const setLang = (newLang) => {
-    const sub = window.location.hash.replace(/^#\/(en|ar)\/rafeeq/, '');
-    window.location.hash = `#/${newLang}/rafeeq${sub}`;
+    const sub = window.location.pathname.replace(/^\/(en|ar)\/rafeeq/, '');
+    navigate(`/${newLang}/rafeeq${sub}`);
   };
   const [theme, setThemeState] = useState(() => storage.get('theme', 'dark'));
   const setTheme = (th) => { setThemeState(th); storage.set('theme', th); };
@@ -342,7 +343,7 @@ export function RafeeqProvider({ children }) {
     dependents: data.p1.dependents || [],
     semStart: data.pa.semStart || '',
     semLabel: semLabelOf(data.pa),
-    openFiles: () => { window.location.hash = `#/${lang}/rafeeq/files`; },
+    openFiles: () => { navigate(`/${lang}/rafeeq/files`); },
     fgIssued: (ref) => !!ref && docs.some((x) => x.ref === ref),
     runTask,
   };

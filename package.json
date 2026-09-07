@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "db:schema": "wrangler d1 execute portfolio-messages --remote --file worker/schema.sql",
+    "db:schema:local": "wrangler d1 execute portfolio-messages --local --file worker/schema.sql"
   },
   "dependencies": {
     "jspdf": "^4.2.1",
@@ -24,6 +27,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "wrangler": "^4.129.1"
   }
 }

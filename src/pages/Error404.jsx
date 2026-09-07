@@ -10,7 +10,7 @@ function Error404() {
     <>
       <TopBar />
       <main id="main-content" tabIndex={-1}>
-        <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+        <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
 
         <div style={{ textAlign: 'center', padding: '40px 24px 80px' }}>
           <HaaDancing spaceAnywhere />
@@ -23,7 +23,7 @@ function Error404() {
               : 'تُهت عن الطريق؟ سايق الخير ساقك عند هاء وهو يعزف عود…  🎵'}
           </p>
           <p style={{ marginTop: 20 }}>
-            <a href={`#/${lang}`}>{isEn ? '← Back to home' : 'العودة إلى الصفحة الرئيسية ←'}</a>
+            <a href={`/${lang}`}>{isEn ? '← Back to home' : 'العودة إلى الصفحة الرئيسية ←'}</a>
           </p>
         </div>
       </main>

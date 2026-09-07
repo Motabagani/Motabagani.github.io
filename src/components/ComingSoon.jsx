@@ -11,7 +11,7 @@ function ComingSoon({ note }) {
   return (
     <div className="coming-soon">
       <div className="coming-soon__mark">
-        <img src="images/driller.png" alt="" />
+        <img src="/images/driller.png" alt="" />
       </div>
       <h3 className="coming-soon__title">{ar ? 'قريباً' : 'Coming soon'}</h3>
       <p className="coming-soon__note">

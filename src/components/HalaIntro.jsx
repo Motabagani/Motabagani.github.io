@@ -60,7 +60,7 @@ export default function HalaIntro() {
 
   if (phase === 'done') return null;
 
-  const src = ar ? 'images/hala ar tx.png' : 'images/hala en tx.png';
+  const src = ar ? '/images/hala ar tx.png' : '/images/hala en tx.png';
 
   return (
     <div className={`hala-intro${phase === 'out' ? ' is-out' : ''}`} data-dir={ar ? 'rtl' : 'ltr'} aria-hidden="true">

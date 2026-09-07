@@ -10,9 +10,9 @@ function EconomicModelsPage() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{lang === 'en' ? 'Home' : 'الرئيسية'}</a>
+          <a href={`/${lang}`}>{lang === 'en' ? 'Home' : 'الرئيسية'}</a>
           &nbsp;/&nbsp; {t.sections.economics}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <h1 className="sr-only">{t.sections.economics}</h1>

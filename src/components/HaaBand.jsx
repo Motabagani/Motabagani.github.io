@@ -8,8 +8,8 @@
    original combined canvas (2789×1018), so they line up exactly. The band of
    Ha'a characters lands here later. */
 
-const TOWERS = encodeURI('images/towers.png');
-const PROPS = encodeURI('images/trains and sign_.png');
+const TOWERS = encodeURI('/images/towers.png');
+const PROPS = encodeURI('/images/trains and sign_.png');
 
 // Tower tips (as % of the scene box) — measured from the towers artwork.
 // The tallest, on the left, is the WTC: its tip gets the red beacon.

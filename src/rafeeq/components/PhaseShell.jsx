@@ -2,6 +2,7 @@
 // from context, so a phase page only has to say which phase it is.
 
 import { PhaseWizard } from '../screens/PhaseWizard.jsx';
+import { navigate } from '../../lib/router';
 import { PHASES } from '../phases/registry.js';
 import { useRafeeq } from '../RafeeqContext.jsx';
 
@@ -14,7 +15,7 @@ export default function PhaseShell({ phaseId }) {
   const phase = PHASES.find((p) => p.id === phaseId);
   if (!phase) return null;
 
-  const goHome = () => { window.location.hash = `#/${lang}/rafeeq`; };
+  const goHome = () => { navigate(`/${lang}/rafeeq`); };
 
   return (
     <PhaseWizard

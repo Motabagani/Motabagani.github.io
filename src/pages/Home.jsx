@@ -20,7 +20,7 @@ const halaIntroPlayed = { en: false, ar: false };
 // right, so it mirrors — slides in from the right edge.
 const HALA = {
   en: {
-    img: 'images/hala smu.png',
+    img: '/images/hala smu.png',
     // Start viewport-relative (not a % of the image), so the whole artwork is
     // guaranteed fully past the left edge at ANY width — even wide screens where
     // the height clamps and a fixed % would leave a sliver peeking.
@@ -30,7 +30,7 @@ const HALA = {
     cta: 'See my work',
   },
   ar: {
-    img: 'images/hala ar xl.png',
+    img: '/images/hala ar xl.png',
     rest: '-19%', start: 'calc(50vw + 15%)',   // fully past the right edge, any width
     alt: 'هلا',
     sub: 'أنا هاشم، أبرمج، وأصمّم الجرافيك، وأبني النماذج الاقتصادية',
@@ -44,7 +44,7 @@ const HALA = {
 // word's entry (off the left edge for English, off the right for Arabic).
 // Deterministic layout so positions don't jump on re-render; negative delays
 // pre-distribute them along the path. `stroke: true` renders a dash, not a glyph.
-const RIYAL = 'images/ريال.png';
+const RIYAL = '/images/ريال.png';
 // `band` (0..1) is the token's vertical position WITHIN the streak band, mapped to
 // the real band per language (English fills the height; Arabic's streak is only the
 // lower ~38–92%, so tokens must stay there or they float in the empty dark above).
@@ -112,7 +112,7 @@ function Home() {
 
       <main id="main-content" tabIndex={-1}>
         <section className={`hero container hero--hala${lang === 'ar' ? ' hero--hala-ar' : ''}${!playHalaIntro ? ' is-static' : ''}${heroReady ? ' is-ready' : ''}`}>
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
           <style>{`
             .hero--hala { text-align: center; overflow: visible; }
             /* One baked artwork: the "hala" handwriting with its purple sonic-speed
@@ -303,7 +303,7 @@ function Home() {
         <section className="section" id="coding">
           <div className="container">
             <div className="section-head">
-              <a className="section-link" href={`#/${lang}/coding`}>
+              <a className="section-link" href={`/${lang}/coding`}>
                 <h2>{t.sections.coding}</h2>
               </a>
             </div>
@@ -330,7 +330,7 @@ function Home() {
         <section className="section" id="economics">
           <div className="container">
             <div className="section-head">
-              <a className="section-link" href={`#/${lang}/economic-models`}>
+              <a className="section-link" href={`/${lang}/economic-models`}>
                 <h2>{t.sections.economics}</h2>
               </a>
             </div>
@@ -342,15 +342,15 @@ function Home() {
         <section className="section" id="design">
           <div className="container">
             <div className="section-head">
-              <a className="section-link" href={`#/${lang}/graphic-design`}>
+              <a className="section-link" href={`/${lang}/graphic-design`}>
                 <h2>{t.sections.design}</h2>
               </a>
             </div>
             <div className="projects">
-              <a className="project" href={`#/${lang}/projects/ssa-ucsd?from=graphic-design`}>
+              <a className="project" href={`/${lang}/projects/ssa-ucsd?from=graphic-design`}>
                 <div className="project-thumb">
                   <img
-                    src="images/ssa-ucsd-logo.png"
+                    src="/images/ssa-ucsd-logo.png"
                     alt={lang === 'ar' ? 'شعار النادي السعودي' : 'Saudi Student Association mark'}
                   />
                 </div>
@@ -373,7 +373,7 @@ function Home() {
         <section className="section" id="about">
           <div className="container">
             <div className="section-head">
-              <a className="section-link" href={`#/${lang}/about`}>
+              <a className="section-link" href={`/${lang}/about`}>
                 <h2>{t.sections.about}</h2>
               </a>
             </div>

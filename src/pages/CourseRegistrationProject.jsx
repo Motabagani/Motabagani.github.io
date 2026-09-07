@@ -48,13 +48,13 @@ function CourseRegistrationProject() {
       <TopBar />
 
       <div className="breadcrumb breadcrumb--narrow">
-        <a href={`#/${lang}`}>{L.home}</a>
+        <a href={`/${lang}`}>{L.home}</a>
         &nbsp;/&nbsp;
-        <a href={`#/${lang}/coding`}>{L.work}</a>
+        <a href={`/${lang}/coding`}>{L.work}</a>
         &nbsp;/&nbsp;
         {L.project}
       </div>
-      <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+      <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
       
 
 
@@ -104,7 +104,7 @@ function CourseRegistrationProject() {
         {lang === 'ar' && <ArabicProse />}
 
         <section className="back-link case-col">
-          <a href={`#/${lang}/coding`}>{L.back}</a>
+          <a href={`/${lang}/coding`}>{L.back}</a>
         </section>
       </main>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { navigate } from '../../lib/router';
 import { Icon, IC } from '../ui/Icon.jsx';
 import { Field } from '../ui/atoms.jsx';
 import { useRafeeq } from '../RafeeqContext.jsx';
@@ -10,7 +11,7 @@ import { digitsOnly } from '../lib/num.js';
    edited. Contact details are the student's own, so those are editable. */
 export default function ProfilePage() {
   const { t, lang, user, updateUser } = useRafeeq();
-  const go = () => { window.location.hash = `#/${lang}/rafeeq`; };
+  const go = () => { navigate(`/${lang}/rafeeq`); };
 
   const [form, setForm] = useState({ email: user.email || '', phone: user.phone || '' });
   const [saved, setSaved] = useState(false);

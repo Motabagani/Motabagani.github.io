@@ -114,13 +114,13 @@ export default function HaaDancing({
 
       <img
         className="haa-base"
-        src="images/base.png"
+        src="/images/base.png"
         alt="Ha'a the character playing an oud"
         style={{ display: 'block', width: '100%', height: 'auto', userSelect: 'none', WebkitUserDrag: 'none' }}
       />
       <img
         className="haa-arm"
-        src="images/arm.png"
+        src="/images/arm.png"
         alt=""
         style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', transformOrigin: '20.2% 42.6%', userSelect: 'none', WebkitUserDrag: 'none' }}
       />

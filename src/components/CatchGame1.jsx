@@ -244,7 +244,7 @@ function CatchGame() {
         {items.map((item) => (
           <img
             key={item.id}
-            src={item.type === 'lion' ? 'images/psu_logo.png' : 'images/logowhite.png'}
+            src={item.type === 'lion' ? '/images/psu_logo.png' : '/images/logowhite.png'}
             alt=""
             className={`catch-game__item catch-game__item--${item.type}`}
             style={{
@@ -258,7 +258,7 @@ function CatchGame() {
 
         {/* Player (driller) */}
         <img
-          src="images/driller.png"
+          src="/images/driller.png"
           alt="driller"
           className="catch-game__player"
           style={{

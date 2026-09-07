@@ -20,12 +20,12 @@ function Footer() {
         <div className="site-footer__top">
           {/* Brand block */}
           <div className="site-footer__brand">
-            <a href={`#/${lang}`} className="site-footer__mark">
+            <a href={`/${lang}`} className="site-footer__mark">
   <span className="site-footer__wordmark">
     <span className="site-footer__name-en">Hashim Motabagani</span>
     <span className="site-footer__name-ar">هــــاشـم مــطـبـقــاني</span>
   </span>
-  <img src="images/logowhite.png" alt="" className="site-footer__logo" />
+  <img src="/images/logowhite.png" alt="" className="site-footer__logo" />
 </a>
             <p className="site-footer__tagline">
               {lang === 'en'
@@ -41,16 +41,16 @@ function Footer() {
           <nav className="site-footer__cols" aria-label={lang === 'ar' ? 'روابط التذييل' : 'Footer'}>
             <div className="site-footer__col">
               <h2 className="site-footer__heading">{lang === 'en' ? 'Explore' : 'استكشف'}</h2>
-              <a href={`#/${lang}/coding`}>{t.nav.coding}</a>
-              <a href={`#/${lang}/economic-models`}>{t.nav.economics}</a>
-              <a href={`#/${lang}/graphic-design`}>{t.nav.design}</a>
-              <a href={`#/${lang}/about`}>{t.nav.about}</a>
-              <a href={`#/${lang}/faq`}>{lang === 'en' ? 'FAQ' : 'الأسئلة الشائعة'}</a>
+              <a href={`/${lang}/coding`}>{t.nav.coding}</a>
+              <a href={`/${lang}/economic-models`}>{t.nav.economics}</a>
+              <a href={`/${lang}/graphic-design`}>{t.nav.design}</a>
+              <a href={`/${lang}/about`}>{t.nav.about}</a>
+              <a href={`/${lang}/faq`}>{lang === 'en' ? 'FAQ' : 'الأسئلة الشائعة'}</a>
             </div>
 
             <div className="site-footer__col">
               <h2 className="site-footer__heading">{t.legal.heading}</h2>
-              <a href={`#/${lang}/legal/privacy`}>{t.legal.privacy}</a>
+              <a href={`/${lang}/legal/privacy`}>{t.legal.privacy}</a>
             </div>
 
             <div className="site-footer__col">

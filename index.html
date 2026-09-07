@@ -3,32 +3,14 @@
 
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="apple-touch-icon" href="favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- The site is dark by design; opt out of browser auto-dark/light re-adaptation. -->
     <meta name="color-scheme" content="dark" />
     <title>Hashim Motabagani — Portfolio</title>
   </head>
   <body>
-    <!-- Netlify Forms detection: static hidden forms so Netlify provisions the
-         handlers at deploy time. The React UI submits to these by name via fetch
-         (see src/api.js). Field names must match what the app sends. -->
-    <form name="contact" data-netlify="true" netlify-honeypot="website" hidden>
-      <input type="text" name="name" />
-      <input type="email" name="email" />
-      <textarea name="message"></textarea>
-      <input type="text" name="page" />
-      <input type="text" name="lang" />
-      <input type="text" name="website" />
-    </form>
-    <form name="feedback" data-netlify="true" netlify-honeypot="website" hidden>
-      <textarea name="message"></textarea>
-      <input type="text" name="page" />
-      <input type="text" name="lang" />
-      <input type="text" name="website" />
-    </form>
-
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

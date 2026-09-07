@@ -84,9 +84,9 @@ function FaqPage() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
+          <a href={`/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
           &nbsp;/&nbsp; {title}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <header className="project-header container">
@@ -108,7 +108,7 @@ function FaqPage() {
               <div className="faq__a">
                 <p>{ar ? f.a.ar : f.a.en}</p>
                 {f.link && (
-                  <a className="faq__link" href={`#/${lang}/${f.link.to}`}>
+                  <a className="faq__link" href={`/${lang}/${f.link.to}`}>
                     {ar ? f.link.label.ar : f.link.label.en}
                     <span aria-hidden="true"> {ar ? '←' : '→'}</span>
                   </a>

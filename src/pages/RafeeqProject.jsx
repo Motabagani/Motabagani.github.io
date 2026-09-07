@@ -95,18 +95,18 @@ function RafeeqProject() {
       <TopBar />
 
       <div className="breadcrumb breadcrumb--narrow">
-        <a href={`#/${lang}`}>{L.home}</a>
+        <a href={`/${lang}`}>{L.home}</a>
         &nbsp;/&nbsp;
-        <a href={`#/${lang}/coding`}>{L.work}</a>
+        <a href={`/${lang}/coding`}>{L.work}</a>
         &nbsp;/&nbsp;
         {L.project}
       </div>
-      <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+      <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
 
       <main id="main-content" tabIndex={-1}>
         <header className="project-header narrow">
           <div className="rq-proj-hero">
-            <img src="images/rafeeq-bright.png" alt={L.title} className="rq-proj-mark" />
+            <img src="/images/rafeeq-bright.png" alt={L.title} className="rq-proj-mark" />
           </div>
           <div className="eyebrow">
             <span>{L.year}</span>
@@ -126,7 +126,7 @@ function RafeeqProject() {
 
           {/* The point of the page: go use the thing. */}
           <div className="rq-cta-wrap">
-            <a className="rq-cta" href={`#/${lang}/rafeeq`}>
+            <a className="rq-cta" href={`/${lang}/rafeeq`}>
               {L.cta}<span className="rq-cta-arrow" aria-hidden="true">→</span>
             </a>
             <p className="rq-cta-note">{L.ctaNote}</p>
@@ -157,13 +157,13 @@ function RafeeqProject() {
 
         {/* Second chance to launch, for anyone who read to the bottom. */}
         <section className="case-col" style={{ paddingBlock: '8px 44px' }}>
-          <a className="rq-cta" href={`#/${lang}/rafeeq`}>
+          <a className="rq-cta" href={`/${lang}/rafeeq`}>
             {L.cta}<span className="rq-cta-arrow" aria-hidden="true">→</span>
           </a>
         </section>
 
         <section className="back-link case-col">
-          <a href={`#/${lang}/coding`}>{L.back}</a>
+          <a href={`/${lang}/coding`}>{L.back}</a>
         </section>
       </main>
     </>

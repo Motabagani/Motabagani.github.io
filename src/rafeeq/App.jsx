@@ -25,16 +25,16 @@ import ProfilePage from './pages/ProfilePage.jsx';
 
 function Router() {
   const { signedIn, ready, t, theme } = useRafeeq();
-  const [route, setRoute] = useState(window.location.hash);
+  const [route, setRoute] = useState(window.location.pathname);
 
   useEffect(() => {
-    const onHashChange = () => setRoute(window.location.hash);
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const onNav = () => setRoute(window.location.pathname);
+    window.addEventListener('popstate', onNav);
+    return () => window.removeEventListener('popstate', onNav);
   }, []);
 
-  // '#/en/rafeeq/visa' -> '/visa'
-  const sub = route.replace(/^#\/(en|ar)\/rafeeq/, '');
+  // '/en/rafeeq/visa' -> '/visa'
+  const sub = route.replace(/^\/(en|ar)\/rafeeq/, '');
 
   useEffect(() => { window.scrollTo(0, 0); }, [sub]);
 
@@ -76,5 +76,5 @@ export default function RafeeqApp() {
 }
 
 /* Route helpers so pages never hardcode a hash string. */
-export const rafeeqPath = (lang, page = '') => `#/${lang}/rafeeq${page ? '/' + page : ''}`;
+export const rafeeqPath = (lang, page = '') => `/${lang}/rafeeq${page ? '/' + page : ''}`;
 export const PHASE_PAGE = { p1: 'preparation', pa: 'academic', p2: 'visa', p3: 'arrival' };

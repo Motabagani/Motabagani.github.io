@@ -10,10 +10,10 @@ const SECTIONS = {
   about: { path: 'about', en: 'About Me', ar: 'عني' },
 };
 
-// Read ?from=... out of the current hash (e.g. '#/en/projects/x?from=coding').
+// Read ?from=... out of the current query string (e.g. '/en/projects/x?from=coding').
 export function getFrom() {
-  const m = (window.location.hash || '').match(/[?&]from=([^&]+)/);
-  return m ? decodeURIComponent(m[1]) : null;
+  const v = new URLSearchParams(window.location.search).get('from');
+  return v || null;
 }
 
 // Resolve the breadcrumb parent: the ?from section if valid, else a fallback key.

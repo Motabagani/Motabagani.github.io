@@ -1,10 +1,11 @@
 import { Home } from '../screens/Home.jsx';
+import { navigate } from '../../lib/router';
 import { useRafeeq } from '../RafeeqContext.jsx';
 import { PHASE_PAGE } from '../App.jsx';
 
 export default function RafeeqHome() {
   const { t, lang, user, statuses, refs, docs, phaseProgress, guaranteeReady, allDone } = useRafeeq();
-  const go = (page) => { window.location.hash = `#/${lang}/rafeeq${page ? '/' + page : ''}`; };
+  const go = (page) => { navigate(`/${lang}/rafeeq${page ? '/' + page : ''}`); };
 
   return (
     <Home

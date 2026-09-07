@@ -1,4 +1,5 @@
 import { Icon, IC } from '../ui/Icon.jsx';
+import { navigate } from '../../lib/router';
 import { Pill } from '../ui/atoms.jsx';
 import { useRafeeq } from '../RafeeqContext.jsx';
 import { isoToDmy } from '../lib/dates.js';
@@ -7,7 +8,7 @@ import { isoToDmy } from '../lib/dates.js';
    it. Grouped by status so what still needs attention sits at the top. */
 export default function RequestsPage() {
   const { t, lang, requests, cancelRequest } = useRafeeq();
-  const go = () => { window.location.hash = `#/${lang}/rafeeq`; };
+  const go = () => { navigate(`/${lang}/rafeeq`); };
 
   const pending = requests.filter((r) => r.status !== 'approved');
   const done = requests.filter((r) => r.status === 'approved');

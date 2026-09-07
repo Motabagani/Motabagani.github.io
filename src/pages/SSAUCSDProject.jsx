@@ -22,7 +22,7 @@ const PALETTE = [
   { hex: '#a9691f', en: 'Bronze',    ar: 'برونزي' },
 ];
 
-const LOGO = 'images/ssa-ucsd-logo.png';
+const LOGO = '/images/ssa-ucsd-logo.png';
 
 // Sadu-inspired cross-weave, rebuilt as an SVG pattern
 function Weave({ id, color, opacity = 1 }) {
@@ -55,11 +55,11 @@ function SSAUCSDProject() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb breadcrumb--ssa">
-          <a href={`#/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
+          <a href={`/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
           &nbsp;/&nbsp;
-          {parent && <><a href={`#/${lang}/${parent.path}`}>{ar ? parent.ar : parent.en}</a>&nbsp;/&nbsp; </>}
+          {parent && <><a href={`/${lang}/${parent.path}`}>{ar ? parent.ar : parent.en}</a>&nbsp;/&nbsp; </>}
           {ar ? 'النادي السعودي – UCSD' : 'SSA — UCSD'}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <article className="ssa">
@@ -193,7 +193,7 @@ function SSAUCSDProject() {
             </p>
             <div className="ssa-graphics">
               <figure className="ssa-figure">
-                <img src="images/ssa-graphics-ucsd.png" alt={ar ? 'رسومات حرم جامعة كاليفورنيا سان دييغو' : 'UC San Diego campus graphics'} />
+                <img src="/images/ssa-graphics-ucsd.png" alt={ar ? 'رسومات حرم جامعة كاليفورنيا سان دييغو' : 'UC San Diego campus graphics'} />
                 <figcaption>{ar ? 'حرم جامعة كاليفورنيا سان دييغو' : 'UC San Diego — campus'}</figcaption>
               </figure>
               <div className="ssa-slot">

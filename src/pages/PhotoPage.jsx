@@ -7,7 +7,7 @@ import { useLanguage } from '../LanguageContext';
 
 const STORIES = {
   'icho-team': {
-    src: 'images/icho-team.jpg',
+    src: '/images/icho-team.jpg',
     alt: {
       en: 'Hashim mentoring the German national team at the 56th International Chemistry Olympiad, Riyadh 2024',
       ar: 'هاشم مع المنتخب الألماني في أولمبياد الكيمياء الدولي الـ٥٦، الرياض ٢٠٢٤',
@@ -23,7 +23,7 @@ const STORIES = {
     },
   },
   icho: {
-    src: 'images/icho-story.jpg',
+    src: '/images/icho-story.jpg',
     alt: {
       en: 'Friends of the Chemistry Olympiad — Instagram story',
       ar: 'أصدقاء أولمبياد الكيمياء — قصة إنستغرام',
@@ -64,9 +64,9 @@ function PhotoPage({ slug }) {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{isEn ? 'Home' : 'الرئيسية'}</a>
-          &nbsp;/&nbsp; <a href={`#/${lang}/about`}>{isEn ? 'About Me' : 'عني'}</a>
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <a href={`/${lang}`}>{isEn ? 'Home' : 'الرئيسية'}</a>
+          &nbsp;/&nbsp; <a href={`/${lang}/about`}>{isEn ? 'About Me' : 'عني'}</a>
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <h1 className="sr-only">{isEn ? 'Photo story' : 'قصة مصوّرة'}</h1>
@@ -89,14 +89,14 @@ function PhotoPage({ slug }) {
 
               {story.source && (
                 <p className="photopage__src">
-                  <a href={`#/${lang}/${story.source.to}`}>
+                  <a href={`/${lang}/${story.source.to}`}>
                     — {isEn ? story.source.label.en : story.source.label.ar}<span aria-hidden="true"> {isEn ? '→' : '←'}</span>
                   </a>
                 </p>
               )}
             </>
           )}
-          <p className="photopage__back"><a href={`#/${lang}/about`}>{back}</a></p>
+          <p className="photopage__back"><a href={`/${lang}/about`}>{back}</a></p>
         </div>
       </main>
     </>

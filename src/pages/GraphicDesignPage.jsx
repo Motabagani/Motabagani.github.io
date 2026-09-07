@@ -16,9 +16,9 @@ function GraphicDesignPage() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-          <a href={`#/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
+          <a href={`/${lang}`}>{ar ? 'الرئيسية' : 'Home'}</a>
           &nbsp;/&nbsp; {t.sections.design}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <header className="project-header container">
@@ -30,10 +30,10 @@ function GraphicDesignPage() {
             <div className="projects">
 
               {/* Saudi Student Association at UC San Diego */}
-              <a className="project" href={`#/${lang}/projects/ssa-ucsd?from=graphic-design`}>
+              <a className="project" href={`/${lang}/projects/ssa-ucsd?from=graphic-design`}>
                 <div className="project-thumb">
                   <img
-                    src="images/ssa-ucsd-logo.png"
+                    src="/images/ssa-ucsd-logo.png"
                     alt={ar ? 'شعار النادي السعودي' : 'Saudi Student Association mark'}
                   />
                 </div>

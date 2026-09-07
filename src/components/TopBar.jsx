@@ -21,11 +21,11 @@ function TopBar() {
   // would otherwise be lost; nav-link clicks navigate and focus <main> instead).
   const closeAndRefocus = () => { setIsOpen(false); menuBtnRef.current?.focus(); };
   const toggleLang = () => switchLang(ar ? 'en' : 'ar');
-  const link = (section) => `#/${lang}/${section}`;
+  const link = (section) => `/${lang}/${section}`;
 
   // Which primary-nav section is active, for aria-current="page".
-  const route = typeof window !== 'undefined' ? window.location.hash : '';
-  const isActive = (section) => new RegExp(`^#/(en|ar)/${section}(?:[/?]|$)`).test(route);
+  const route = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isActive = (section) => new RegExp(`^/(en|ar)/${section}(?:[/]|$)`).test(route);
   const current = (section) => (isActive(section) ? 'page' : undefined);
 
   // Lock body scroll + support Escape while the drawer is open.
@@ -41,8 +41,8 @@ function TopBar() {
 
   return (
     <header className={`topbar ${scrolled ? 'is-scrolled' : ''}`}>
-      <a href={`#/${lang}`} className="mark" onClick={closeMenu}>
-        <img src="images/logowhite.png" alt="" className="logo" />
+      <a href={`/${lang}`} className="mark" onClick={closeMenu}>
+        <img src="/images/logowhite.png" alt="" className="logo" />
         <span>{t.name}</span>
       </a>
 
@@ -82,8 +82,8 @@ function TopBar() {
         aria-label={ar ? 'التنقل الرئيسي' : 'Primary'}
         className={isOpen ? 'is-open' : ''}
       >
-        <a href={`#/${lang}`} className="nav-mark" onClick={closeMenu}>
-          <img src="images/logowhite.png" alt="" className="logo" />
+        <a href={`/${lang}`} className="nav-mark" onClick={closeMenu}>
+          <img src="/images/logowhite.png" alt="" className="logo" />
           <span>{t.name}</span>
         </a>
         <div className="nav-links">

@@ -93,7 +93,7 @@ export default function ExternalLinkGuard() {
       `}</style>
       <div className="xlg__card" onClick={(e) => e.stopPropagation()}>
         <div className="xlg__brand">
-          <img className="xlg__logo" src="images/logowhite.png" alt="" />
+          <img className="xlg__logo" src="/images/logowhite.png" alt="" />
         </div>
         <h2 className="xlg__title">{t.title}</h2>
         <p className="xlg__body">{t.body}</p>

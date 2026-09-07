@@ -12,9 +12,9 @@ function AboutPage() {
       <TopBar />
       <main id="main-content" tabIndex={-1}>
         <div className="breadcrumb">
-<a href={`#/${lang}`}>{lang === 'en' ? 'Home' : 'الرئيسية'}</a>
+<a href={`/${lang}`}>{lang === 'en' ? 'Home' : 'الرئيسية'}</a>
           &nbsp;/&nbsp; {t.sections.about}
-          <img src="images/naqsh.png" alt="" className="hero-naqsh" />
+          <img src="/images/naqsh.png" alt="" className="hero-naqsh" />
         </div>
 
         <div className="about-mobile-pad" style={{ maxWidth: 760, margin: '0 auto' }}>
@@ -48,7 +48,7 @@ function AboutPage() {
           `}</style>
           <div className="about-intro">
             <div className="about-photo-wrap">
-              <img className="about-photo" src="images/hashim.png" alt="Hashim Motabagani" />
+              <img className="about-photo" src="/images/hashim.png" alt="Hashim Motabagani" />
             </div>
             <div>
               <h1 className="about-hala">{isEn ? 'Hala, I’m Hashim.' : 'هلا، أنا هاشم.'}</h1>

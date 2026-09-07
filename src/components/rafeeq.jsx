@@ -958,7 +958,7 @@ const BANK_COUNTRIES = [
 
    LOGO
      Put image files in  public/images/  and reference them from the web root,
-     e.g. "images/rafeeq-mark.svg". Any path left as "" falls back to the
+     e.g. "/images/rafeeq-mark.svg". Any path left as "" falls back to the
      built-in inline SVG mark, so the app still runs with no assets present.
 
    FONTS
@@ -971,9 +971,9 @@ const BANK_COUNTRIES = [
      Arabic stack is applied automatically whenever dir="rtl".
    ========================================================================== */
 const BRAND = {
-  mark:       "",   // header logo, e.g. "images/rafeeq-mark.svg"
+  mark:       "",   // header logo, e.g. "/images/rafeeq-mark.svg"
   markLight:  "",   // optional: different mark for light theme; "" reuses `mark`
-  returnMark: "images/logowhite.png",  // mark on the "back to portfolio" bar
+  returnMark: "/images/logowhite.png",  // mark on the "back to portfolio" bar
 
   fontFaces: [
     // { family: "SF Grandezza", src: "/fonts/SFGrandezza-Regular.woff2", weight: 400 },
@@ -3394,7 +3394,7 @@ export default function RafeeqApp() {
       {confetti && <Confetti />}
 
 
-           <a className="rq-return" href={`#/${lang}`} onClick={() => userStore.endSession()}
+           <a className="rq-return" href={`/${lang}`} onClick={() => userStore.endSession()}
          aria-label={lang === "ar" ? "العودة لباقي الأعمال" : "Return to portfolio"}>
         <img src={BRAND.returnMark} alt="" />
         <span className="rq-return-txt">{lang === "ar" ? "العودة لباقي الأعمال" : "Return to portfolio"}</span>

@@ -1,47 +1,41 @@
-// Language context — gives every component access to the current language
-// and a function to switch it. Uses URL hash (#/en or #/ar) for persistence.
+// Language context — gives every component the current language and a way to
+// switch it. Language lives in the URL PATH now (/en/…, /ar/…), no hash. Default
+// (no prefix, e.g. "/") is English.
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { translations } from './translations';
+import { navigate } from './lib/router';
 
 const LanguageContext = createContext();
 
-// Read the language from the URL hash. Defaults to English.
-function getLangFromHash() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#/ar')) return 'ar';
-  return 'en';
+function getLangFromPath() {
+  return /^\/ar(\/|$)/.test(window.location.pathname) ? 'ar' : 'en';
 }
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(getLangFromHash);
+  const [lang, setLang] = useState(getLangFromPath);
 
-  // Listen for hash changes so back/forward buttons work
+  // Re-read the language on any SPA navigation (navigate() dispatches popstate).
   useEffect(() => {
-    const onHashChange = () => setLang(getLangFromHash());
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    const onNav = () => setLang(getLangFromPath());
+    window.addEventListener('popstate', onNav);
+    return () => window.removeEventListener('popstate', onNav);
   }, []);
 
-  // Whenever language changes, update the <html> tag's dir and lang attributes.
-  // This is what tells the browser to flip layout direction for Arabic.
+  // Reflect language on <html> so layout direction flips for Arabic.
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }, [lang]);
 
   const switchLang = (newLang) => {
-    // Update the URL hash to reflect the new language
-    const currentRoute = window.location.hash.replace(/^#\/(en|ar)/, '');
-    window.location.hash = `#/${newLang}${currentRoute}`;
+    const { pathname, search } = window.location;
+    let rest = pathname.replace(/^\/(en|ar)(?=\/|$)/, ''); // keep the sub-path
+    if (rest === '/') rest = '';
+    navigate(`/${newLang}${rest}${search}`);
   };
 
-  // `t` is the translations object for the current language — easy access in components
-  const value = {
-    lang,
-    t: translations[lang],
-    switchLang,
-  };
+  const value = { lang, t: translations[lang], switchLang };
 
   return (
     <LanguageContext.Provider value={value}>
@@ -50,7 +44,6 @@ export function LanguageProvider({ children }) {
   );
 }
 
-// Custom hook so components can just write: const { lang, t, switchLang } = useLanguage();
 export function useLanguage() {
   return useContext(LanguageContext);
 }

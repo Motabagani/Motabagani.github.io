@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   // Relative asset URLs keep the build portable: it works both as a GitHub
   // user site (/<file>) and as a project site (/<repository>/<file>).
-  base: './',
+  base: '/',
   plugins: [react()],
   // Honor a PORT assigned by the harness (autoPort) instead of always grabbing
   // 5173, which may already be taken by another dev server.
