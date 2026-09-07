@@ -18,7 +18,7 @@ not_found_handling = "single-page-application"
 [[d1_databases]]
 binding = "DB"
 database_name = "portfolio-messages"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "94da8bc2-503f-4816-9ce3-a4e83f0f8ba9"
 
 # Admin auth + IP salt are set as secrets, not here:
 #   npx wrangler secret put ADMIN_PASSWORD
