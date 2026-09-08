@@ -57,6 +57,8 @@ export const translations = {
         toolsValue: 'Code, models, design',
         elsewhere: 'Elsewhere',
       },
+      resumeCta: 'Explore my interactive résumé',
+      resumeBlurb: 'A clickable timeline of where I’ve studied, built, and competed — from Riyadh to New York.',
     },
 
     // Legal
@@ -149,6 +151,8 @@ export const translations = {
         toolsValue: 'الكود، النماذج، التصميم',
         elsewhere: 'في أماكن أخرى',
       },
+      resumeCta: 'استكشف سيرتي التفاعلية',
+      resumeBlurb: 'خط زمني تفاعلي لأماكن دراستي ومشاريعي ومسابقاتي — من الرياض إلى نيويورك.',
     },
 
     legal: {

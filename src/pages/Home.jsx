@@ -299,6 +299,47 @@ function Home() {
           </button>
         </section>
 
+        {/* About Me — first section: a quick, informative intro that leads into
+            the interactive résumé (the About page's clickable journey timeline). */}
+        <section className="section section--about-first" id="about">
+          <div className="container">
+            <div className="section-head">
+              <a className="section-link" href={`/${lang}/about`}>
+                <h2>{t.sections.about}</h2>
+              </a>
+            </div>
+            <div className="about-grid">
+              <div className="about-lead">
+                <div className="about-lead__head">
+                  <img className="about-avatar" src="/images/hashim.png" alt="Hashim Motabagani" />
+                  <div>
+                    <p>{t.about.bio1}</p>
+                  </div>
+                </div>
+                <a className="about-resume-cta" href={`/${lang}/about`}>
+                  {t.about.resumeCta}
+                  <span className="about-resume-cta__arrow" aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span>
+                </a>
+              </div>
+              <div className="about-meta">
+                <dl>
+                  <dt>{t.about.meta.based}</dt>
+                  <dd>{t.about.meta.basedValue}</dd>
+                  <dt>{t.about.meta.currently}</dt>
+                  <dd>{t.about.meta.currentlyValue}</dd>
+                  <dt>{t.about.meta.tools}</dt>
+                  <dd>{t.about.meta.toolsValue}</dd>
+                  <dt>{t.about.meta.elsewhere}</dt>
+                  <dd>
+                    <a href="https://github.com/Motabagani" target="_blank" rel="noreferrer">GitHub</a> ·{' '}
+                    <a href="https://www.linkedin.com/in/almutabaganih/" target="_blank" rel="noreferrer">LinkedIn</a>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Coding */}
         <section className="section" id="coding">
           <div className="container">
@@ -365,38 +406,6 @@ function Home() {
                 </h3>
                 <div className="arrow">{lang === 'ar' ? 'اقرأ المزيد ←' : 'Read more →'}</div>
               </a>
-            </div>
-          </div>
-        </section>
-
-        {/* About Me */}
-        <section className="section" id="about">
-          <div className="container">
-            <div className="section-head">
-              <a className="section-link" href={`/${lang}/about`}>
-                <h2>{t.sections.about}</h2>
-              </a>
-            </div>
-            <div className="about-grid">
-              <div>
-                <p>{t.about.bio1}</p>
-                <p>{t.about.bio2}</p>
-              </div>
-              <div className="about-meta">
-                <dl>
-                  <dt>{t.about.meta.based}</dt>
-                  <dd>{t.about.meta.basedValue}</dd>
-                  <dt>{t.about.meta.currently}</dt>
-                  <dd>{t.about.meta.currentlyValue}</dd>
-                  <dt>{t.about.meta.tools}</dt>
-                  <dd>{t.about.meta.toolsValue}</dd>
-                  <dt>{t.about.meta.elsewhere}</dt>
-                  <dd>
-                    <a href="https://github.com/Motabagani" target="_blank" rel="noreferrer">GitHub</a> ·{' '}
-                    <a href="https://www.linkedin.com/in/almutabaganih/" target="_blank" rel="noreferrer">LinkedIn</a>
-                  </dd>
-                </dl>
-              </div>
             </div>
           </div>
         </section>
