@@ -198,6 +198,21 @@ export default function MujocoControl({ src, height = 480, labels }) {
         .mjc__reset:hover { background: rgba(255,255,255,0.2); }
         .mjc__hint { position: absolute; inset-inline-end: 12px; bottom: 12px; font-size: 12px; color: rgba(255,255,255,0.55); }
         .mjc__msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 14px; }
+
+        /* Phones: the controls overlaid the model on a narrow screen, so stack
+           them below the canvas as a normal block instead. */
+        @media (max-width: 640px) {
+          .mjc__canvas { height: 300px; }
+          .mjc__panel {
+            position: static; inset: auto; width: auto;
+            flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px;
+            border: 0; border-top: 1px solid rgba(255,255,255,0.12); border-radius: 0;
+            background: rgba(10,6,20,0.6); -webkit-backdrop-filter: none; backdrop-filter: none;
+          }
+          .mjc__row { flex: 1 1 120px; }
+          .mjc__reset { flex: 0 0 auto; align-self: center; }
+          .mjc__hint { display: none; }
+        }
       `}</style>
       <div className="mjc__canvas" ref={wrapRef} />
       {status === 'ok' && (
