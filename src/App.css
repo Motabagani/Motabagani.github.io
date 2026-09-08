@@ -592,9 +592,10 @@ html[dir="rtl"] .topbar nav.is-open {
 
 /* About as the homepage's first section: photo + bio, a prominent résumé
    button, and the facts card alongside. */
+/* Column so the résumé button lines up with the picture's left edge; the head
+   itself is a row (photo on the left, bio beside it). */
 .about-lead { display: flex; flex-direction: column; align-items: flex-start; }
-/* Photo on top, bio below — everything shares the picture's left edge. */
-.about-lead__head { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; align-self: stretch; }
+.about-lead__head { display: flex; gap: 22px; align-items: flex-start; align-self: stretch; }
 .about-lead__head p { text-align: start; }
 .about-avatar {
   width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex: none;
