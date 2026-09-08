@@ -152,7 +152,7 @@ export default function AshomShowcase() {
       `}</style>
 
       <div className="ashom__hero">
-        <img src="/images/ashom-hero.png" alt={ar ? 'أسهم ١ — نموذج الأسهم الكمّي' : 'Ashom 1 — Quantum Equity Model'} />
+        <img src="/images/ashom-hero-v2.png" alt={ar ? 'أسهم ١ — نموذج الأسهم الكمّي' : 'Ashom 1 — Quantum Equity Model'} />
       </div>
 
       <span className="ashom__eyebrow"><span className="ashom__dot" aria-hidden="true" />
