@@ -239,9 +239,13 @@ function loginPage(error, action = '/admin') {
   ${FONT_CSS}
   :root{color-scheme:dark}*{box-sizing:border-box}
   body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:flex-end;direction:ltr;
-    background:#20103d;color:#f0ebe0;font:15px/1.5 ${FONT_STACK};
-    padding:24px clamp(24px,8vw,140px) 24px 24px}
-  form{width:min(600px,100%);direction:rtl;text-align:right}
+    color:#f0ebe0;font:15px/1.5 ${FONT_STACK};
+    background:linear-gradient(90deg, rgba(16,8,32,.35) 0%, rgba(16,8,32,.15) 45%, rgba(16,8,32,.10) 100%), #16081f url('/images/admin-bg.jpg') center/cover no-repeat fixed;
+    padding:clamp(20px,4vw,56px)}
+  form{width:min(560px,100%);direction:rtl;text-align:right;
+    background:rgba(32,16,61,.90);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.10);border-radius:22px;
+    padding:clamp(28px,4vw,52px);box-shadow:0 24px 70px rgba(0,0,0,.5)}
   .head{display:flex;align-items:center;justify-content:flex-start;gap:16px;margin-bottom:40px}
   .brand{display:flex;align-items:center;gap:12px}
   .brand img{height:46px;width:auto;display:block}
