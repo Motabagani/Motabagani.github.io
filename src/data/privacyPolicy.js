@@ -87,7 +87,7 @@ export const privacyPolicy = {
       { h: '14. Your Choices and Requests', blocks: [
         { t: 'p', c: 'You may:' },
         { t: 'ul', c: ['Avoid submitting contact or feedback information;', 'Use fictional information in demonstrations;', 'Reset Rafeeq using its Reset Demo control;', 'Clear the Site’s data through your browser settings;', 'Block cookies or browser storage, subject to possible loss of functionality; and', 'Request access to, correction of, or deletion of contact or feedback information retained by the Site Operator.'] },
-        { t: 'p', c: 'To make a privacy request, email [info@motabagani.com](mailto:info@motabagani.com). The Site Operator may need enough information to identify the relevant communication, but will not ask for unnecessary sensitive information.' },
+        { t: 'p', c: 'To make a privacy request, email [info@motabagani.com](mailto:info@motabagani.com) or use the [Contact page](/en/contact) on this Site. The Site Operator may need enough information to identify the relevant communication, but will not ask for unnecessary sensitive information.' },
         { t: 'p', c: 'Information stored solely in your browser must generally be managed or deleted through that browser because the Site Operator does not possess it.' },
       ] },
       { h: '15. Changes to This Policy', blocks: [
@@ -98,6 +98,7 @@ export const privacyPolicy = {
         { t: 'p', c: 'For privacy questions or requests:' },
         { t: 'p', c: 'Hashim Motabagani' },
         { t: 'p', c: 'Email: [info@motabagani.com](mailto:info@motabagani.com)' },
+        { t: 'p', c: 'Contact form: [Contact page](/en/contact)' },
         { t: 'p', c: 'Website: https://motabagani.com' },
       ] },
     ],
@@ -185,7 +186,7 @@ export const privacyPolicy = {
       { h: '١٤. خياراتك وطلباتك', blocks: [
         { t: 'p', c: 'يمكنك:' },
         { t: 'ul', c: ['عدم إرسال رسائل أو ملاحظات؛', 'استخدام معلومات خيالية في التجارب؛', 'إعادة ضبط «رفيق» من خلال زر إعادة ضبط العرض؛', 'مسح بيانات الموقع من إعدادات متصفحك؛', 'حظر ملفات تعريف الارتباط أو تخزين المتصفح، مع احتمال فقدان بعض الوظائف؛', 'طلب الوصول إلى رسائل التواصل أو الملاحظات التي يحتفظ بها مشغّل الموقع أو تصحيحها أو حذفها.'] },
-        { t: 'p', c: 'لتقديم طلب متعلق بالخصوصية، أرسل بريدًا إلى [info@motabagani.com](mailto:info@motabagani.com). وقد يحتاج مشغّل الموقع إلى معلومات كافية لتحديد الرسالة المعنية، لكنه لن يطلب معلومات حساسة غير ضرورية.' },
+        { t: 'p', c: 'لتقديم طلب متعلق بالخصوصية، أرسل بريدًا إلى [info@motabagani.com](mailto:info@motabagani.com) أو استخدم [صفحة التواصل](/ar/contact) في هذا الموقع. وقد يحتاج مشغّل الموقع إلى معلومات كافية لتحديد الرسالة المعنية، لكنه لن يطلب معلومات حساسة غير ضرورية.' },
         { t: 'p', c: 'أما المعلومات المخزنة داخل متصفحك فقط، فيجب عادةً إدارتها أو حذفها من خلال ذلك المتصفح لأن مشغّل الموقع لا يمتلكها.' },
       ] },
       { h: '١٥. التغييرات على السياسة', blocks: [
@@ -196,6 +197,7 @@ export const privacyPolicy = {
         { t: 'p', c: 'للأسئلة والطلبات المتعلقة بالخصوصية:' },
         { t: 'p', c: 'هاشم مطبقاني' },
         { t: 'p', c: 'البريد الإلكتروني: [info@motabagani.com](mailto:info@motabagani.com)' },
+        { t: 'p', c: 'نموذج التواصل: [صفحة التواصل](/ar/contact)' },
         { t: 'p', c: 'الموقع: https://motabagani.com' },
       ] },
     ],
