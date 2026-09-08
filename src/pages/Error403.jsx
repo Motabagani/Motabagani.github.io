@@ -32,10 +32,10 @@ function Error403() {
           <p style={{ margin: '16px auto 0', maxWidth: 560, fontSize: 14, color: 'rgba(240, 235, 224, 0.72)', lineHeight: 1.6 }}>
             {isEn ? (
               <>You don’t have permission to view this page. If you think that’s a mistake, please
-                contact the <a href="mailto:hm2983@nyu.edu,helpdesk@cims.nyu.edu?subject=Portfolio%20403%20—%20access%20issue">webmaster</a>.</>
+                contact the <a href="mailto:info@motabagani.com?subject=Portfolio%20403%20—%20access%20issue">webmaster</a>.</>
             ) : (
               <>ما عندك صلاحية لعرض هذي الصفحة. إذا تظن أنها غلطة، تواصل مع{' '}
-                <a href="mailto:hm2983@nyu.edu,helpdesk@cims.nyu.edu?subject=Portfolio%20403%20—%20access%20issue">مسؤول الموقع</a>.</>
+                <a href="mailto:info@motabagani.com?subject=Portfolio%20403%20—%20access%20issue">مسؤول الموقع</a>.</>
             )}
           </p>
 
