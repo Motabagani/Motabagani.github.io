@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
    Props (all optional):
      size          number(px) or CSS length     default 320
-     audioSrc      path to your mp3              default 'audio/oud.mp3'
+     audioSrc      path to your mp3              default '/audio/oud.mp3'
      spaceAnywhere true = spacebar works without focusing first
                    (good for a full-screen 404; leave off elsewhere
                    so it won't hijack space on scrollable pages)
@@ -39,7 +39,7 @@ function injectStyles() {
 
 export default function HaaDancing({
   size = 320,
-  audioSrc = 'audio/oud.mp3',
+  audioSrc = '/audio/oud.mp3',
   spaceAnywhere = false,
   className = '',
   style = {},
