@@ -57,7 +57,7 @@ function Footer() {
   <h2 className="site-footer__heading">{lang === 'en' ? 'Elsewhere' : 'روابط'}</h2>
   <a href="https://github.com/Motabagani" target="_blank" rel="noreferrer" className="latin">GitHub</a>
   <a href="https://www.linkedin.com/in/almutabaganih/" target="_blank" rel="noreferrer" className="latin">LinkedIn</a>
-  <a href="mailto:hm2983@nyu.edu" className="latin">Email</a>
+  <a href="mailto:info@motabagani.com" className="latin">Email</a>
 </div>
           </nav>
         </div>

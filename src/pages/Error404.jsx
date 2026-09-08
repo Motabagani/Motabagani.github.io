@@ -15,6 +15,10 @@ function Error404() {
         <div style={{ textAlign: 'center', padding: '40px 24px 80px' }}>
           <HaaDancing spaceAnywhere />
 
+          <p style={{ margin: '10px auto 0', fontSize: 13, letterSpacing: '.02em', fontStyle: 'italic', color: 'rgba(240, 235, 224, 0.6)' }}>
+            {isEn ? 'psst… press on Ha’a 🎵' : '…بسّ، اضغط على هاء 🎵'}
+          </p>
+
           {/* --- optional: 404 message + way home. Delete this block for just Ha'a --- */}
           <h1 style={{ marginTop: 24 }}>{isEn ? 'ERROR 404' : 'خطأ ٤٠٤'}</h1>
           <p className="deck" style={{ margin: '8px auto 0', maxWidth: 560 }}>

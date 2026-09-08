@@ -57,7 +57,7 @@ function AboutPage() {
               <p className="about-social">
                 <a href="https://github.com/Motabagani" target="_blank" rel="noreferrer">GitHub ↗</a>
                 <a href="https://www.linkedin.com/in/almutabaganih/" target="_blank" rel="noreferrer">LinkedIn ↗</a>
-                <a href="mailto:hm2983@nyu.edu">Email ↗</a>
+                <a href="mailto:info@motabagani.com">Email ↗</a>
               </p>
             </div>
           </div>
