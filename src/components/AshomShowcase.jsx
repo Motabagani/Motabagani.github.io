@@ -77,6 +77,38 @@ const OUTCOMES = [
   { c: { en: 'Both', ar: 'كلاهما' }, w: { en: 'Both horizons clear their lower-bound hurdles.', ar: 'يتجاوز كلا الأفقين عتبتيهما.' } },
 ];
 
+const METHOD = [
+  {
+    h: { en: '1 · The target', ar: '١ · الهدف' },
+    p: { en: 'It forecasts the net benchmark-relative return over a 20- or 252-session horizon — the stock’s return, minus the benchmark’s, minus estimated transaction costs.', ar: 'يتنبّأ بالعائد الصافي النسبي مقابل المؤشر على أفق ٢٠ أو ٢٥٢ جلسة — عائد السهم ناقص عائد المؤشر ناقص تكاليف التداول المقدّرة.' },
+    eq: 'NXR(h) = R[i, t→t+h] − R[benchmark, t→t+h] − TC(h)     ·  h ∈ {20, 252} sessions',
+  },
+  {
+    h: { en: '2 · Disclosure-anchored network score', ar: '٢ · درجة الشبكة المثبّتة بالإفصاح' },
+    p: { en: 'Each related-company event is weighted by relationship strength r, classifier confidence c, source quality q, and a 30-day time decay. Directions d ∈ {−1,0,1} and tones T (0–100) are pooled, then squashed to a 0–100 shift capped at ±20 points around neutral (50).', ar: 'يُوزَن كل حدث لشركة مرتبطة بقوة العلاقة r وثقة المصنّف c وجودة المصدر q وتضاؤل زمني ٣٠ يومًا. تُجمع الاتجاهات d ∈ {−١،٠،١} والنبرات T (٠–١٠٠)، ثم تُضغط إلى إزاحة ٠–١٠٠ بحدٍّ ±٢٠ حول الحياد (٥٠).' },
+    eq: 'w = r · c · q · exp(−ln2 · age / 30)\nN = clip[ 50 + 20 · Σ w·d·(T−50) / (50 · Σ w),  0, 100 ]',
+  },
+  {
+    h: { en: '3 · Quantum feature map & fidelity kernel', ar: '٣ · خريطة السمات الكمّية ونواة الإخلاص' },
+    p: { en: 'The ten factors are standardized, clipped to [−3,3], turned into rotation angles, and loaded into a 10-qubit circuit (Hadamard + data-reuploading Ry/Rz + ring-connected Rzz). Similarity between two observations is the squared overlap of their quantum states.', ar: 'تُوحّد العوامل العشرة وتُقصّ إلى [−٣،٣] وتُحوّل إلى زوايا دوران وتُحمّل في دائرة بعشرة كيوبتات (Hadamard + إعادة رفع Ry/Rz + Rzz حلقي). والتشابه بين مشاهدتين هو مربّع تداخل حالتيهما الكمّيتين.' },
+    eq: 'θ = (π/3) · clip((x − μ)/s, −3, 3)\nK(x, z) = |⟨φ(x)|φ(z)⟩|²      ·  0 ≤ K ≤ 1',
+  },
+  {
+    h: { en: '4 · From similarity to a forecast', ar: '٤ · من التشابه إلى تنبؤ' },
+    p: { en: 'A benchmark-weighted kernel-ridge regression (review penalty λ = 1e−3) maps the vector of kernel similarities to a predicted net-excess return. The quantum circuit only builds the kernel; the regression, risk gates, and governance stay classical.', ar: 'انحدار ريدج نووي مُرجّح بالمؤشر (عقوبة λ = ١e−٣) يربط متجه أوجه التشابه بعائد صافٍ متوقّع. تبني الدائرة الكمّية النواة فقط؛ أما الانحدار وبوابات المخاطر والحوكمة فتبقى كلاسيكية.' },
+    eq: 'f(x) = β₀ + k(x)ᵀ β',
+  },
+  {
+    h: { en: '5 · Uncertainty & the decision bound', ar: '٥ · عدم اليقين وحدّ القرار' },
+    p: { en: 'A full-pipeline wild-cluster bootstrap re-fits the model many times to build a forecast distribution. The decision statistic is its 5th-percentile lower bound — not a single point estimate.', ar: 'يعيد bootstrap عنقودي لكامل المسار تقدير النموذج مرارًا لبناء توزيع تنبؤ. وإحصاء القرار هو الحد الأدنى عند المئين الخامس — لا تقديرًا نقطيًا واحدًا.' },
+    eq: 'L(h) = Q(0.05) { NXR̂₁, …, NXR̂_B }',
+  },
+  {
+    h: { en: '6 · Classification hurdles', ar: '٦ · عتبات التصنيف' },
+    p: { en: 'The lower bound must clear a hurdle — 0.5% for the 20-session horizon, 3.0% for the 252-session horizon. A −8.0% expected-shortfall veto, plus liquidity and coverage gates, can override a pass. The visible 0–100 figure is a qualitative display index, never the fitted return.', ar: 'يجب أن يتجاوز الحد الأدنى عتبة — ٠٫٥٪ لأفق ٢٠ جلسة و٣٫٠٪ لأفق ٢٥٢ جلسة. ويمكن لعتبة عجز متوقع −٨٫٠٪، مع بوابتي السيولة والتغطية، أن تنقض التجاوز. والرقم الظاهر ٠–١٠٠ مؤشر عرض وصفي، وليس العائد المُقدَّر أبدًا.' },
+  },
+];
+
 export default function AshomShowcase() {
   const { lang } = useLanguage();
   const ar = lang === 'ar';
@@ -139,6 +171,13 @@ export default function AshomShowcase() {
         .ashom__outcomes li { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 14px 16px; }
         .ashom__outcomes b { display: block; color: var(--accent); font-size: 14px; margin-bottom: 4px; }
         .ashom__outcomes span { font-size: 13px; color: var(--muted); line-height: 1.5; }
+        .ashom__method { margin: 0; padding: 0; list-style: none; }
+        .ashom__method li { padding: 16px 0; border-bottom: 1px solid var(--divider); }
+        .ashom__method li:last-child { border-bottom: 0; }
+        .ashom__method h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--ink); }
+        .ashom__method p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
+        .ashom__eq { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; white-space: pre-wrap;
+          background: rgba(0,0,0,.24); border: 1px solid var(--divider); border-radius: 10px; padding: 12px 14px; margin: 10px 0 0; color: var(--ink); overflow-x: auto; }
         .ashom__fine { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--divider);
           font-size: 12px; line-height: 1.7; color: var(--muted); max-width: 80ch; }
         .ashom__fine code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; color: var(--ink); opacity: .82; }
@@ -208,6 +247,17 @@ export default function AshomShowcase() {
         </div>
       </div>
 
+      <h2 className="ashom__h2">{ar ? 'المنهجية — كيف تُبنى الدرجة' : 'Methodology — how the score is built'}</h2>
+      <ol className="ashom__method">
+        {METHOD.map((m, i) => (
+          <li key={i}>
+            <h3>{ar ? m.h.ar : m.h.en}</h3>
+            <p>{ar ? m.p.ar : m.p.en}</p>
+            {m.eq && <div className="ashom__eq" dir="ltr">{m.eq}</div>}
+          </li>
+        ))}
+      </ol>
+
       <h2 className="ashom__h2">{ar ? 'كيف يُصنَّف السهم' : 'How a stock is classified'}</h2>
       <ul className="ashom__outcomes">
         {OUTCOMES.map((o, i) => (
@@ -215,11 +265,16 @@ export default function AshomShowcase() {
         ))}
       </ul>
 
-      <h2 className="ashom__h2">{ar ? 'أين وصل العمل' : 'Where it stands'}</h2>
+      <h2 className="ashom__h2">{ar ? 'التنفيذ الحالي وخطة التحسين' : 'Current implementation & roadmap'}</h2>
       <p className="ashom__abstract">
         {ar
-          ? 'تعمل دائرة الكيوبتات العشرة ونواة الإخلاص اليوم على مرجع دقيق (statevector)، وجامِعات الإفصاح والأخبار حيّة. الإنتاج ما زال يحتاج إلى بيانات مثبّتة زمنيًا، وأوزان مؤشر تاريخية، ومعاملات مقدّرة، وتوزيع كامل لعدم اليقين. أُطوّره تدريجيًا — هذه الصفحة تعرض المفهوم بينما يكتمل الماسح التفاعلي.'
-          : 'The ten-qubit circuit and fidelity kernel run today on an exact statevector reference, and the disclosure + news collectors are live. Production still needs a frozen point-in-time panel, historical benchmark weights, fitted coefficients, and the full uncertainty artifact. I’m building it out incrementally — this page showcases the concept while the interactive scanner is finished.'}
+          ? 'حاليًا: تعمل دائرة الكيوبتات العشرة ونواة الإخلاص على مرجعٍ دقيق (statevector). تأتي المدخلات المنظَّمة من الإفصاحات الرسمية (السوق المالية السعودية وSEC EDGAR) ومن بيانات السوق العامة وسلاسل البنك الدولي الكلية؛ أمّا نبرة الأخبار واستخراج العلاقات المثبّتة بالإفصاح فيتمّان اليوم عبر واجهة Gemini من Google. إنه نموذج بحثي مستقل أبنيه تدريجيًا.'
+          : 'Today: the ten-qubit circuit and fidelity kernel run on an exact statevector reference. Structured inputs come from official disclosures (Saudi Exchange, SEC EDGAR), public market feeds, and World Bank macro series; the qualitative news tone and the disclosure-anchored relationship extraction currently run through Google’s Gemini API. It’s an independent research prototype I’m building out incrementally.'}
+      </p>
+      <p className="ashom__abstract" style={{ marginTop: 12 }}>
+        {ar
+          ? 'الخطة: استبدال المصادر المؤقتة ببيانات مثبّتة زمنيًا ومرخَّصة، وتثبيت معاملات النموذج، وإضافة أثر عدم اليقين الكامل، وتقليل الاعتماد على نموذج لغوي عام في طبقة الأخبار عبر مكوّنات مخصّصة. وتشغيل دائرة كمّية ليس دليلًا على تفوّق كمّي — لا يُحتسب ذلك إلا بعد أن تتغلّب اختبارات مغلقة على النماذج الكلاسيكية بعد التكاليف.'
+          : 'The plan: replace the ad-hoc feeds with a frozen point-in-time, licensed panel; fit and freeze the model coefficients; add the full uncertainty artifact; and reduce reliance on a general LLM for the news layer with purpose-built components. Running a quantum circuit is not evidence of quantum advantage — that only counts once sealed tests beat the classical baselines after costs.'}
       </p>
 
       {/* Provenance kept as fine print, not a headline feature. */}
