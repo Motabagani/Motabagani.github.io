@@ -21,6 +21,12 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // Force HTTPS so the padlock always shows and connections can't be downgraded.
+    const proto = request.headers.get('X-Forwarded-Proto') || url.protocol.replace(':', '');
+    if (proto === 'http') {
+      return Response.redirect(`https://${url.host}${path}${url.search}`, 301);
+    }
+
     // Canonical host is www.motabagani.com; send the bare apex there (and land the
     // root on /en in the same hop).
     if (url.hostname === 'motabagani.com') {
@@ -39,8 +45,12 @@ export default {
     if (path === '/admin' || path.startsWith('/admin/') || path.startsWith('/admin?')) {
       return handleAdmin(request, env, url);
     }
-    // Fall through to the static site (the built dist/).
-    return env.ASSETS.fetch(request);
+    // Fall through to the static site (the built dist/), adding HSTS so browsers
+    // stick to HTTPS for a year.
+    const assetRes = await env.ASSETS.fetch(request);
+    const res = new Response(assetRes.body, assetRes);
+    res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    return res;
   },
 };
 
@@ -80,6 +90,7 @@ function adminSecHeaders(extra = {}) {
   return {
     'Content-Type': 'text/html; charset=utf-8',
     'Cache-Control': 'no-store, max-age=0',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'no-referrer',
