@@ -480,6 +480,23 @@ html[dir="rtl"] .topbar nav.is-open {
 }
 .projects::-webkit-scrollbar { height: 8px; }
 .projects::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 999px; }
+
+/* Coding collections: filter chips + a titled section per collection. */
+.coll-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 30px; }
+.coll-chip {
+  padding: 8px 16px; border-radius: 999px; border: 1px solid var(--divider);
+  background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.coll-chip:hover { color: var(--ink); }
+.coll-chip.is-active {
+  color: var(--accent); border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.coll-chip .n { opacity: .6; font-weight: 500; margin-inline-start: 4px; }
+.coll-group { margin: 0 0 40px; }
+.coll-group:last-child { margin-bottom: 0; }
+.coll-title { font-size: 19px; font-weight: 600; color: var(--ink); margin: 0 0 16px; }
 .projects > .project {
   flex: 0 0 clamp(260px, 74vw, 360px);
   scroll-snap-align: start;

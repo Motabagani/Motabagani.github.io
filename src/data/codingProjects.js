@@ -7,6 +7,16 @@
 
 export const FILLER_IMAGE = '/images/Haacoding.png';
 
+// Collections group the projects on the Coding page (filter chips + sections).
+// Order here is the display order; a collection with no projects is hidden
+// automatically, so new buckets (or a first Penn State project) just appear.
+export const CODING_COLLECTIONS = [
+  { id: 'nyu',        label: { en: 'New York University', ar: 'جامعة نيويورك' } },
+  { id: 'penn-state', label: { en: 'Penn State',          ar: 'جامعة ولاية بنسلفانيا' } },
+  { id: 'research',   label: { en: 'Research',            ar: 'أبحاث' } },
+  { id: 'personal',   label: { en: 'Personal',            ar: 'مشاريع شخصية' } },
+];
+
 export const codingProjects = [
   {
     year: { en: '2026', ar: '٢٠٢٦' },
@@ -18,6 +28,7 @@ export const codingProjects = [
     },
     tags: ['React', 'Vite', 'RTL', 'IndexedDB'],
     status: 'current',
+    collection: 'personal',
     image: '/images/rafeeq-bright.png',
     // Rafeeq's own deep teal/green, so the mint mark sits on its brand colour
     thumbClass: 'project-thumb--rafeeq',
@@ -33,6 +44,7 @@ export const codingProjects = [
     },
     tags: ['Java', 'OOP', 'Serialization', 'CSV'],
     status: 'completed',
+    collection: 'nyu',
     // TODO: replace with a real Course Registration cover image
     image: FILLER_IMAGE,
     href: (lang) => `/${lang}/projects/course-registration`,
@@ -47,6 +59,7 @@ export const codingProjects = [
     },
     tags: ['MuJoCo', 'Python', 'Three.js', 'Robotics'],
     status: 'completed',
+    collection: 'research',
     image: '/images/haa robots.png',
     thumbClass: 'project-thumb--illustration',
     href: (lang) => `/${lang}/journey/cmu-riss?from=coding`,
