@@ -227,6 +227,16 @@ function Home() {
             @media (max-width: 640px) {
               .hala-stage { height: clamp(78px, 15vh, 130px); }
               .hero--hala-ar .hala-stage { height: clamp(94px, 18vh, 156px); }
+              /* Fill the phone screen and center the hero so the next section
+                 (About) starts on the following scroll instead of peeking in. */
+              .hero--hala {
+                min-height: calc(100vh - 78px);
+                min-height: calc(100lvh - 78px);   /* fill the tallest state so About never peeks */
+                display: flex; flex-direction: column; justify-content: center; align-items: center;
+                padding-top: 0; padding-bottom: 0;
+              }
+              .hero--hala .hala-stage { align-self: stretch; }   /* keep the streak full-bleed */
+              .hero--hala .hala-sub, .hero--hala .hala-cta { align-self: center; }
             }
             /* Intro animations run only on a language's first appearance (no
                .is-static) and never for reduced-motion — otherwise the hero shows
