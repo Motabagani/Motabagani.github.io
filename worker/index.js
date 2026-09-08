@@ -267,6 +267,13 @@ function loginPage(error, action = '/admin') {
   .back{display:inline-flex;gap:8px;align-items:center;margin-top:22px;color:#b7aecb;
     text-decoration:none;font-size:14px;direction:ltr}
   .back:hover{color:#f5a05c}
+  /* Phones: the header can't fit "Sign In | ADMIN DASHBOARD" on one line, so
+     stack it — brand on top, a thin rule, then the Sign In lead — all right-aligned. */
+  @media (max-width: 560px){
+    .head{flex-direction:column;align-items:stretch;gap:16px}
+    .brand{justify-content:flex-start}
+    .lead{border-inline-start:0;padding-inline-start:0;border-top:1px solid rgba(255,255,255,.16);padding-top:14px}
+  }
 </style></head><body>
 <form method="POST" action="${action}">
   <div class="head">
