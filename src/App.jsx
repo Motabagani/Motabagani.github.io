@@ -95,6 +95,13 @@ function App() {
     } else {
       document.title = lang === 'ar' ? `غير موجود · ${brand}` : `Not Found · ${brand}`;
     }
+
+    // Per-route canonical URL so /, /en, and deep links don't read as duplicates.
+    const path = window.location.pathname.replace(/\/$/, '');
+    const canonical = `https://motabagani.com${path || '/en'}`;
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) { link = document.createElement('link'); link.rel = 'canonical'; document.head.appendChild(link); }
+    link.setAttribute('href', canonical);
   }, [routeWithoutLang, lang]);
 
   if (routeWithoutLang.startsWith('/rafeeq')) {

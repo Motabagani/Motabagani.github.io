@@ -21,6 +21,15 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // Canonicalize the host: www.motabagani.com -> motabagani.com (permanent).
+    if (url.hostname === 'www.motabagani.com') {
+      return Response.redirect(`https://motabagani.com${path}${url.search}`, 301);
+    }
+    // Resolve the "/" vs "/en" duplicate: the bare root permanently lands on /en.
+    if (path === '/') {
+      return Response.redirect(`${url.origin}/en`, 301);
+    }
+
     if (path === '/api/submit') {
       if (request.method !== 'POST') return json(405, { ok: false, error: 'method' });
       return handleSubmit(request, env);

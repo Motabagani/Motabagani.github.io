@@ -13,7 +13,7 @@ import Error404 from './Error404';
    public/images/ and listing them under that entry's `more.photos`. */
 
 const CSS = `
-.jd { max-width: 820px; margin: 8px auto 0; text-align: start; }
+.jd { max-width: 820px; margin: 8px auto 0; padding-inline: clamp(20px, 5vw, 32px); text-align: start; }
 /* Full-bleed brand hero band (logo centred on the entry's brand gradient),
    extended to the viewport edges out of the centred column. */
 .jd__hero {
