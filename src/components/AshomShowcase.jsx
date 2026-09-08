@@ -136,6 +136,15 @@ export default function AshomShowcase() {
         .ashom__outcomes li { background: var(--surface-1); border: 1px solid var(--divider); border-radius: 12px; padding: 14px 16px; }
         .ashom__outcomes b { display: block; color: var(--accent); font-size: 14px; margin-bottom: 4px; }
         .ashom__outcomes span { font-size: 13px; color: var(--muted); line-height: 1.5; }
+        .ashom__fine { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--divider);
+          font-size: 12px; line-height: 1.7; color: var(--muted); max-width: 80ch; }
+        .ashom__fine code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; color: var(--ink); opacity: .82; }
+        .ashom__fine a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+        .ashom__fine a:hover { color: var(--accent); }
+        .ashom__fine details { display: inline; }
+        .ashom__fine summary { display: inline; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+        .ashom__fine pre { margin: 8px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px;
+          line-height: 1.5; background: rgba(0,0,0,.22); border: 1px solid var(--divider); border-radius: 8px; padding: 10px; overflow-x: auto; color: var(--ink); }
         @media (max-width: 720px) { .ashom__panels, .ashom__flow { grid-template-columns: 1fr; } }
       `}</style>
 
@@ -199,52 +208,29 @@ export default function AshomShowcase() {
         ))}
       </ul>
 
-      <div className="ashom__panels">
-        {/* Authenticated timestamp / provenance */}
-        <div className="ashom__panel">
-          <h3>🔏 {ar ? 'ختم زمني موثّق' : 'Authenticated timestamp'}</h3>
-          <p>
-            {ar
-              ? 'وُثِّقت بايتات ورقة العمل تشفيريًا عبر سلطة ختم زمني مستقلة (RFC 3161)، ما يثبت وجود هذا المحتوى بالضبط في ذلك الوقت.'
-              : 'The working paper’s exact bytes were cryptographically notarized by an independent Time-Stamp Authority (RFC 3161), proving this content existed at that moment.'}
-          </p>
-          <p className="ashom__meta">
-            <span className="k">{ar ? 'الختم الزمني:' : 'Timestamped:'}</span> {ar ? PAPER.stampedAr : PAPER.stampedEn} · freetsa.org
-          </p>
-          <p className="ashom__meta" style={{ margin: '6px 0 2px' }}><span className="k">SHA-256</span></p>
-          <div className="ashom__hash">{PAPER.sha256}</div>
-          <div className="ashom__links">
-            <a href={PAPER.url} target="_blank" rel="noreferrer">{ar ? 'الورقة (PDF) ↗' : 'Working paper (PDF) ↗'}</a>
-            <a href={PAPER.tsr} target="_blank" rel="noreferrer">{ar ? 'رمز الختم (.tsr)' : 'Timestamp token (.tsr)'}</a>
-          </div>
-          <details className="ashom__verify">
-            <summary>{ar ? 'كيف تتحقق بنفسك' : 'Verify it yourself'}</summary>
-            <pre>{`# needs the token + freetsa certs (in /docs)
-openssl ts -verify \\
-  -in ashom1.tsr \\
+      <h2 className="ashom__h2">{ar ? 'أين وصل العمل' : 'Where it stands'}</h2>
+      <p className="ashom__abstract">
+        {ar
+          ? 'تعمل دائرة الكيوبتات العشرة ونواة الإخلاص اليوم على مرجع دقيق (statevector)، وجامِعات الإفصاح والأخبار حيّة. الإنتاج ما زال يحتاج إلى بيانات مثبّتة زمنيًا، وأوزان مؤشر تاريخية، ومعاملات مقدّرة، وتوزيع كامل لعدم اليقين. أُطوّره تدريجيًا — هذه الصفحة تعرض المفهوم بينما يكتمل الماسح التفاعلي.'
+          : 'The ten-qubit circuit and fidelity kernel run today on an exact statevector reference, and the disclosure + news collectors are live. Production still needs a frozen point-in-time panel, historical benchmark weights, fitted coefficients, and the full uncertainty artifact. I’m building it out incrementally — this page showcases the concept while the interactive scanner is finished.'}
+      </p>
+
+      {/* Provenance kept as fine print, not a headline feature. */}
+      <p className="ashom__fine">
+        {ar
+          ? 'إثبات الأسبقية: وُثِّقت ورقة العمل تشفيريًا (RFC 3161 · freetsa.org) في '
+          : 'Provenance: the working paper was cryptographically timestamped (RFC 3161 · freetsa.org) on '}
+        {ar ? PAPER.stampedAr : PAPER.stampedEn}. SHA-256 <code title={PAPER.sha256}>{PAPER.sha256.slice(0, 8)}…{PAPER.sha256.slice(-8)}</code>.{' '}
+        <a href={PAPER.url} target="_blank" rel="noreferrer">{ar ? 'الورقة (PDF)' : 'paper (PDF)'}</a> · <a href={PAPER.tsr} target="_blank" rel="noreferrer">{ar ? 'رمز الختم' : 'token'}</a> ·{' '}
+        <details>
+          <summary>{ar ? 'التحقق' : 'verify'}</summary>
+          <pre>{`# needs the token + freetsa certs (in /docs)
+openssl ts -verify -in ashom1.tsr \\
   -data ashom1-quantum-equity-model.pdf \\
-  -CAfile freetsa-cacert.pem \\
-  -untrusted freetsa-tsa.crt
+  -CAfile freetsa-cacert.pem -untrusted freetsa-tsa.crt
 # → Verification: OK`}</pre>
-          </details>
-        </div>
-
-        {/* Current status */}
-        <div className="ashom__panel">
-          <h3>🧭 {ar ? 'أين وصل العمل' : 'Where it stands'}</h3>
-          <p>
-            {ar
-              ? 'تعمل دائرة الكيوبتات العشرة ونواة الإخلاص اليوم على مرجع دقيق (statevector)، وجامِعات الإفصاح والأخبار حيّة. الإنتاج ما زال يحتاج إلى بيانات مثبّتة زمنيًا، وأوزان مؤشر تاريخية، ومعاملات مقدّرة، وتوزيع كامل لعدم اليقين.'
-              : 'The ten-qubit circuit and fidelity kernel run today on an exact statevector reference, and the disclosure + news collectors are live. Production still needs a frozen point-in-time panel, historical benchmark weights, fitted coefficients, and the full uncertainty artifact.'}
-          </p>
-          <p>
-            {ar
-              ? 'أُطوّره تدريجيًا — هذه الصفحة تعرض المفهوم بينما يكتمل الماسح التفاعلي.'
-              : 'I’m building it out incrementally — this page showcases the concept while the interactive scanner is finished.'}
-          </p>
-        </div>
-
-      </div>
+        </details>
+      </p>
     </section>
   );
 }
