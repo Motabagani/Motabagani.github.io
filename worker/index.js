@@ -33,8 +33,9 @@ export default {
       const dest = path === '/' ? '/en' : path;
       return Response.redirect(`https://www.motabagani.com${dest}${url.search}`, 301);
     }
-    // Resolve the "/" vs "/en" duplicate: the bare root permanently lands on /en.
-    if (path === '/') {
+    // Resolve the "/" vs "/en" duplicate: the bare root permanently lands on /en
+    // (but not on the admin host, whose root is the dashboard).
+    if (path === '/' && url.hostname !== 'admin.motabagani.com') {
       return Response.redirect(`${url.origin}/en`, 301);
     }
 
@@ -42,8 +43,16 @@ export default {
       if (request.method !== 'POST') return json(405, { ok: false, error: 'method' });
       return handleSubmit(request, env);
     }
-    if (path === '/admin' || path.startsWith('/admin/') || path.startsWith('/admin?')) {
-      return handleAdmin(request, env, url);
+    // Admin lives on its own subdomain (admin.motabagani.com). Its pages route to
+    // the admin handler; the static assets it references (fonts/images/favicon)
+    // fall through to ASSETS so the page can style itself.
+    if (url.hostname === 'admin.motabagani.com') {
+      const isAsset = /^\/(fonts|images|assets)\//.test(path) || path.startsWith('/favicon');
+      if (!isAsset) return handleAdmin(request, env, url, '');
+    } else if (path === '/admin' || path.startsWith('/admin/') || path.startsWith('/admin?')) {
+      // Old /admin links -> the subdomain (kept working).
+      const rest = path.replace(/^\/admin/, '') || '/';
+      return Response.redirect(`https://admin.motabagani.com${rest}${url.search}`, 301);
     }
     // Fall through to the static site (the built dist/), adding HSTS so browsers
     // stick to HTTPS for a year.
@@ -222,7 +231,7 @@ const FONT_CSS = `
 @font-face{font-family:'Mada';src:url('/fonts/mada.ttf') format('truetype');font-display:swap}`;
 const FONT_STACK = `'SF Grandezza','Mada',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
 
-function loginPage(error) {
+function loginPage(error, action = '/admin') {
   return `<!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>لوحة التحكم — تسجيل الدخول</title>
@@ -255,7 +264,7 @@ function loginPage(error) {
     text-decoration:none;font-size:14px;direction:ltr}
   .back:hover{color:#f5a05c}
 </style></head><body>
-<form method="POST" action="/admin">
+<form method="POST" action="${action}">
   <div class="head">
     <div class="brand">
       <img src="/images/logowhite.png" alt="">
@@ -269,12 +278,11 @@ function loginPage(error) {
   <input name="password" type="password" autocomplete="current-password" required>
   ${error ? `<p class="err">${esc(error)}</p>` : ''}
   <button type="submit">تسجيل الدخول · Sign in</button>
-  <a class="back" href="/">← Back to website · العودة إلى الموقع</a>
+  <a class="back" href="https://www.motabagani.com">← Back to website · العودة إلى الموقع</a>
 </form>
 </body></html>`;
 }
 
-const COOKIE_BASE = 'Path=/admin; HttpOnly; Secure; SameSite=Strict';
 
 // Dashboard UI strings (the login page is bilingual on one screen; the dashboard
 // switches with a toggle and remembers the choice in a cookie).
@@ -301,12 +309,16 @@ function adminLang(url, request) {
   return readCookie(request, 'admin_lang') === 'ar' ? 'ar' : 'en';
 }
 
-async function handleAdmin(request, env, url) {
+async function handleAdmin(request, env, url, base = '') {
+  const home = base || '/';                 // where sign-in / sign-out land
+  const logoutPath = `${base}/logout`;      // '/logout' on the subdomain
+  const cookieBase = `Path=${base || '/'}; HttpOnly; Secure; SameSite=Strict`;
+
   // Sign out.
-  if (url.pathname === '/admin/logout') {
+  if (url.pathname === logoutPath) {
     return new Response('', { status: 302, headers: {
-      Location: '/admin',
-      'Set-Cookie': `admin_session=; ${COOKIE_BASE}; Max-Age=0`,
+      Location: home,
+      'Set-Cookie': `admin_session=; ${cookieBase}; Max-Age=0`,
     } });
   }
 
@@ -317,7 +329,7 @@ async function handleAdmin(request, env, url) {
     // Brute-force lockout: refuse once too many recent failures from this IP.
     if (await loginLocked(env, ipHash)) {
       return new Response(
-        loginPage('Too many attempts. Try again later. · محاولات كثيرة، حاول لاحقًا.'),
+        loginPage('Too many attempts. Try again later. · محاولات كثيرة، حاول لاحقًا.', home),
         { status: 429, headers: adminSecHeaders({ 'Retry-After': '900' }) },
       );
     }
@@ -330,19 +342,19 @@ async function handleAdmin(request, env, url) {
       await clearLoginFails(env, ipHash);
       const token = await makeSession(env);
       return new Response('', { status: 302, headers: {
-        Location: '/admin',
-        'Set-Cookie': `admin_session=${token}; ${COOKIE_BASE}; Max-Age=${SESSION_MS / 1000}`,
+        Location: home,
+        'Set-Cookie': `admin_session=${token}; ${cookieBase}; Max-Age=${SESSION_MS / 1000}`,
       } });
     }
     await noteLoginFail(env, ipHash);
-    return new Response(loginPage('Incorrect username or password. · بيانات الدخول غير صحيحة.'), {
+    return new Response(loginPage('Incorrect username or password. · بيانات الدخول غير صحيحة.', home), {
       status: 401, headers: adminSecHeaders(),
     });
   }
 
   // Anything else requires a valid session cookie; otherwise show the login page.
   if (!(await validSession(readCookie(request, 'admin_session'), env))) {
-    return new Response(loginPage(''), { headers: adminSecHeaders() });
+    return new Response(loginPage('', home), { headers: adminSecHeaders() });
   }
 
   const lang = adminLang(url, request);
@@ -430,9 +442,9 @@ async function handleAdmin(request, env, url) {
   <img src="/images/logowhite.png" alt="">
   <h1>${esc(T.h1)}</h1>
   <span class="sp"></span>
-  <a class="hbtn" href="/">${esc(T.back)}</a>
+  <a class="hbtn" href="https://www.motabagani.com">${esc(T.back)}</a>
   <a class="hbtn" href="?${q({ type: want, lang: rtl ? 'en' : 'ar' })}">${esc(T.toggle)}</a>
-  <a class="hbtn" href="/admin/logout">${esc(T.signout)}</a>
+  <a class="hbtn" href="${logoutPath}">${esc(T.signout)}</a>
 </header>
 <p class="sub">${esc(T.welcome)} &middot; ${counts.all} ${esc(T.total)}</p>
 <nav class="tabs">${tab('all', T.all)}${tab('contact', T.contact)}${tab('feedback', T.feedback)}</nav>
@@ -441,7 +453,7 @@ ${bodyRows}
 
   // Persist the language choice when it came in on the query string.
   const extra = url.searchParams.get('lang')
-    ? { 'Set-Cookie': `admin_lang=${lang}; ${COOKIE_BASE}; Max-Age=31536000` }
+    ? { 'Set-Cookie': `admin_lang=${lang}; ${cookieBase}; Max-Age=31536000` }
     : {};
   return new Response(htmlDoc, { headers: adminSecHeaders(extra) });
 }
