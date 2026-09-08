@@ -86,6 +86,9 @@ export default function AshomShowcase() {
     <section className="ashom container" aria-labelledby="ashom-title">
       <style>{`
         .ashom { padding-block: clamp(8px, 3vh, 28px) clamp(40px, 8vh, 88px); text-align: start; }
+        /* Full-bleed brand banner (its own purple gradient matches the page). */
+        .ashom__hero { margin-inline: calc(50% - 50vw); margin-bottom: clamp(24px, 4vh, 44px); }
+        .ashom__hero img { display: block; width: 100vw; height: auto; }
         .ashom__eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700;
           letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
           border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 999px; padding: 6px 13px; }
@@ -147,6 +150,10 @@ export default function AshomShowcase() {
           line-height: 1.5; background: rgba(0,0,0,.22); border: 1px solid var(--divider); border-radius: 8px; padding: 10px; overflow-x: auto; color: var(--ink); }
         @media (max-width: 720px) { .ashom__panels, .ashom__flow { grid-template-columns: 1fr; } }
       `}</style>
+
+      <div className="ashom__hero">
+        <img src="/images/ashom-hero.png" alt={ar ? 'أسهم ١ — نموذج الأسهم الكمّي' : 'Ashom 1 — Quantum Equity Model'} />
+      </div>
 
       <span className="ashom__eyebrow"><span className="ashom__dot" aria-hidden="true" />
         {ar ? 'مشروع بحثي مستقل · قيد التطوير' : 'Independent research project · in progress'}
