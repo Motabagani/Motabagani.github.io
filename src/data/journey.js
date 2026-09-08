@@ -148,8 +148,8 @@ export const ITEMS = [
       // "control" = drive the 3 arms live (pose grid baked with scripts/bake_grid.py,
       // trilinearly interpolated). "playback" = replay a recorded soft-body motion.
       sim: [
-        { kind: 'control', label: { en: 'Drive the 3 arms', ar: 'حرّك الأذرع الثلاثة' }, src: 'data/cmu-rigid-grid.json' },
-        { kind: 'control', label: { en: 'Deformable hand', ar: 'اليد المرنة' }, src: 'data/cmu-soft-grid.json' },
+        { kind: 'control', label: { en: 'Drive the 3 arms', ar: 'حرّك الأذرع الثلاثة' }, src: '/data/cmu-rigid-grid.json' },
+        { kind: 'control', label: { en: 'Deformable hand', ar: 'اليد المرنة' }, src: '/data/cmu-soft-grid.json' },
       ],
     },
   },
