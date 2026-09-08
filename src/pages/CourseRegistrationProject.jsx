@@ -92,7 +92,7 @@ function CourseRegistrationProject() {
               <div>
                 <dt>{L.metaSource}</dt>
                 <dd>
-                  <a href="#" target="_blank" rel="noreferrer">{L.viewGithub}</a>
+                  <a href="https://github.com/Motabagani/Course-Regestration-System-CSCI-UA-102" target="_blank" rel="noreferrer">{L.viewGithub}</a>
                 </dd>
               </div>
             </dl>
