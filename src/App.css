@@ -592,7 +592,10 @@ html[dir="rtl"] .topbar nav.is-open {
 
 /* About as the homepage's first section: photo + bio, a prominent résumé
    button, and the facts card alongside. */
-.about-lead__head { display: flex; gap: 22px; align-items: flex-start; }
+.about-lead { display: flex; flex-direction: column; align-items: flex-start; }
+/* Photo on top, bio below — everything shares the picture's left edge. */
+.about-lead__head { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; align-self: stretch; }
+.about-lead__head p { text-align: start; }
 .about-avatar {
   width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex: none;
   object-position: 50% 18%;   /* portrait crop -> keep the face, not the body, centered */
@@ -605,7 +608,9 @@ html[dir="rtl"] .topbar nav.is-open {
   box-shadow: 0 8px 24px rgba(245, 160, 92, .32);
   transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
 }
-.about-resume-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(245, 160, 92, .44); filter: brightness(1.05); }
+/* Keep the dark text on hover — the global `a:hover{color:accent}` would otherwise
+   turn it amber (same as the button), making the label vanish. */
+.about-resume-cta:hover { color: #20103D; transform: translateY(-2px); box-shadow: 0 12px 30px rgba(245, 160, 92, .44); filter: brightness(1.05); }
 .about-resume-cta:focus-visible { outline: 3px solid var(--ink, #f0ebe0); outline-offset: 4px; }
 .about-resume-cta__arrow { transition: transform .16s ease; }
 .about-resume-cta:hover .about-resume-cta__arrow { transform: translateX(3px); }
