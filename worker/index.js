@@ -242,17 +242,17 @@ function loginPage(error, action = '/admin') {
     color:#f0ebe0;font:15px/1.5 ${FONT_STACK};
     background:linear-gradient(90deg, rgba(16,8,32,.35) 0%, rgba(16,8,32,.15) 45%, rgba(16,8,32,.10) 100%), #16081f url('/images/admin-bg.jpg') center/cover no-repeat fixed;
     padding:clamp(20px,4vw,56px)}
-  form{width:min(560px,100%);direction:rtl;text-align:right;
+  form{width:min(620px,100%);direction:rtl;text-align:right;
     background:rgba(32,16,61,.90);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
     border:1px solid rgba(255,255,255,.10);border-radius:22px;
-    padding:clamp(28px,4vw,52px);box-shadow:0 24px 70px rgba(0,0,0,.5)}
-  .head{display:flex;align-items:center;justify-content:flex-start;gap:16px;margin-bottom:40px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand img{height:46px;width:auto;display:block}
-  .brand .t{font-weight:700;letter-spacing:.01em;font-size:clamp(17px,3.2vw,25px);line-height:1.12;text-align:right;white-space:nowrap}
+    padding:clamp(24px,3.4vw,44px);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+  .head{display:flex;align-items:center;justify-content:flex-start;gap:14px;margin-bottom:36px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand img{height:42px;width:auto;display:block}
+  .brand .t{font-weight:500;letter-spacing:.01em;font-size:clamp(15px,2.6vw,20px);line-height:1.12;text-align:right;white-space:nowrap}
   .brand .t small{display:block;font-weight:500;opacity:.9;font-size:.82em}
-  .lead{font-size:clamp(17px,3.2vw,25px);font-weight:300;line-height:1.14;text-align:right;white-space:nowrap;
-    border-inline-start:1px solid rgba(255,255,255,.3);padding-inline-start:16px}
+  .lead{font-size:clamp(15px,2.6vw,20px);font-weight:300;line-height:1.14;text-align:right;white-space:nowrap;
+    border-inline-start:1px solid rgba(255,255,255,.3);padding-inline-start:14px}
   .lead b{display:block;font-weight:600}
   label{display:flex;justify-content:flex-end;align-items:baseline;gap:9px;direction:ltr;
     font-size:15px;font-weight:500;color:#e7e0f4;margin:28px 2px 10px}
@@ -276,7 +276,7 @@ function loginPage(error, action = '/admin') {
     </div>
     <div class="lead">Sign In<b>تسجيل الدخول</b></div>
   </div>
-  <label dir="ltr"><span>USERNAME</span><span class="ar" dir="rtl">اسم المستخدم</span></label>
+  <label dir="ltr"><span>Username</span><span class="ar" dir="rtl">اسم المستخدم</span></label>
   <input name="username" autocomplete="username" autofocus required>
   <label dir="ltr"><span>Password</span><span class="ar" dir="rtl">كلمة المرور</span></label>
   <input name="password" type="password" autocomplete="current-password" required>
