@@ -21,9 +21,11 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Canonicalize the host: www.motabagani.com -> motabagani.com (permanent).
-    if (url.hostname === 'www.motabagani.com') {
-      return Response.redirect(`https://motabagani.com${path}${url.search}`, 301);
+    // Canonical host is www.motabagani.com; send the bare apex there (and land the
+    // root on /en in the same hop).
+    if (url.hostname === 'motabagani.com') {
+      const dest = path === '/' ? '/en' : path;
+      return Response.redirect(`https://www.motabagani.com${dest}${url.search}`, 301);
     }
     // Resolve the "/" vs "/en" duplicate: the bare root permanently lands on /en.
     if (path === '/') {

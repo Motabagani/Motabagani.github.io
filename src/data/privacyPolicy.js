@@ -7,7 +7,7 @@ export const privacyPolicy = {
   en: {
     effective: 'Effective date: September 8, 2026',
     intro:
-      'This Privacy Policy explains how Hashim Motabagani (“I,” “me,” or the “Site Operator”) handles information in connection with the personal portfolio available at https://motabagani.com, including its English and Arabic pages, contact and feedback features, interactive demonstrations, games, and the Rafeeq scholarship-journey simulator (collectively, the “Site”).',
+      'This Privacy Policy explains how Hashim Motabagani (“I,” “me,” or the “Site Operator”) handles information in connection with the personal portfolio available at https://www.motabagani.com, including its English and Arabic pages, contact and feedback features, interactive demonstrations, games, and the Rafeeq scholarship-journey simulator (collectively, the “Site”).',
     sections: [
       { h: '1. Scope', blocks: [
         { t: 'p', c: 'This Policy applies only to this Site and its features. It does not govern external websites, services, or platforms linked from the Site, including GitHub, LinkedIn, New York University, or other third parties.' },
@@ -99,14 +99,14 @@ export const privacyPolicy = {
         { t: 'p', c: 'Hashim Motabagani' },
         { t: 'p', c: 'Email: [info@motabagani.com](mailto:info@motabagani.com)' },
         { t: 'p', c: 'Contact form: [Contact page](/en/contact)' },
-        { t: 'p', c: 'Website: https://motabagani.com' },
+        { t: 'p', c: 'Website: https://www.motabagani.com' },
       ] },
     ],
   },
   ar: {
     effective: 'تاريخ السريان: ٨ سبتمبر ٢٠٢٦',
     intro:
-      'توضح سياسة الخصوصية هذه كيفية تعامل هاشم مطبقاني («أنا» أو «مشغّل الموقع») مع المعلومات المرتبطة بمعرض الأعمال الشخصي المتاح على https://motabagani.com، بما في ذلك الصفحات العربية والإنجليزية، ووسائل التواصل وإرسال الملاحظات، والتجارب التفاعلية، والألعاب، ومحاكي رحلة الابتعاث «رفيق» (ويُشار إليها مجتمعةً بـ«الموقع»).',
+      'توضح سياسة الخصوصية هذه كيفية تعامل هاشم مطبقاني («أنا» أو «مشغّل الموقع») مع المعلومات المرتبطة بمعرض الأعمال الشخصي المتاح على https://www.motabagani.com، بما في ذلك الصفحات العربية والإنجليزية، ووسائل التواصل وإرسال الملاحظات، والتجارب التفاعلية، والألعاب، ومحاكي رحلة الابتعاث «رفيق» (ويُشار إليها مجتمعةً بـ«الموقع»).',
     sections: [
       { h: '١. نطاق السياسة', blocks: [
         { t: 'p', c: 'تنطبق هذه السياسة على هذا الموقع وميزاته فقط. ولا تنطبق على المواقع أو الخدمات أو المنصات الخارجية المرتبطة به، بما فيها GitHub وLinkedIn وجامعة نيويورك وأي جهات خارجية أخرى.' },
@@ -198,7 +198,7 @@ export const privacyPolicy = {
         { t: 'p', c: 'هاشم مطبقاني' },
         { t: 'p', c: 'البريد الإلكتروني: [info@motabagani.com](mailto:info@motabagani.com)' },
         { t: 'p', c: 'نموذج التواصل: [صفحة التواصل](/ar/contact)' },
-        { t: 'p', c: 'الموقع: https://motabagani.com' },
+        { t: 'p', c: 'الموقع: https://www.motabagani.com' },
       ] },
     ],
   },
