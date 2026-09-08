@@ -157,23 +157,26 @@ function loginPage(error) {
 <style>
   ${FONT_CSS}
   :root{color-scheme:dark}*{box-sizing:border-box}
-  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#20103d;color:#f0ebe0;
-    font:16px/1.5 ${FONT_STACK};padding:24px;direction:rtl}
-  form{width:min(600px,100%);text-align:right}
-  .head{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:46px}
-  .brand{display:flex;align-items:center;gap:16px}
-  .brand img{height:64px;width:auto;display:block}
-  .brand .t{font-weight:700;letter-spacing:.03em;font-size:clamp(16px,3vw,23px);line-height:1.15;text-align:right}
-  .brand .t small{display:block;font-weight:400;opacity:.85}
-  .lead{font-size:clamp(24px,5vw,40px);font-weight:300;line-height:1.1;text-align:right;
-    border-inline-start:1px solid rgba(255,255,255,.28);padding-inline-start:22px}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:flex-end;direction:ltr;
+    background:#20103d;color:#f0ebe0;font:15px/1.5 ${FONT_STACK};
+    padding:24px clamp(24px,8vw,140px) 24px 24px}
+  form{width:min(600px,100%);direction:rtl;text-align:right}
+  .head{display:flex;align-items:center;justify-content:flex-start;gap:16px;margin-bottom:40px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img{height:46px;width:auto;display:block}
+  .brand .t{font-weight:700;letter-spacing:.01em;font-size:clamp(17px,3.2vw,25px);line-height:1.12;text-align:right;white-space:nowrap}
+  .brand .t small{display:block;font-weight:500;opacity:.9;font-size:.82em}
+  .lead{font-size:clamp(17px,3.2vw,25px);font-weight:300;line-height:1.14;text-align:right;white-space:nowrap;
+    border-inline-start:1px solid rgba(255,255,255,.3);padding-inline-start:16px}
   .lead b{display:block;font-weight:600}
-  label{display:block;font-size:14px;letter-spacing:.03em;color:#cabfe6;margin:26px 2px 9px;text-align:right}
-  input{width:100%;background:transparent;border:2px solid rgba(255,255,255,.6);border-radius:10px;
-    color:#f0ebe0;font:inherit;padding:14px 16px;outline:none;direction:ltr}
+  label{display:flex;justify-content:flex-end;align-items:baseline;gap:9px;direction:ltr;
+    font-size:15px;font-weight:500;color:#e7e0f4;margin:28px 2px 10px}
+  label .ar{opacity:.92}
+  input{width:100%;background:transparent;border:2px solid rgba(255,255,255,.6);border-radius:9px;
+    color:#f0ebe0;font:inherit;padding:12px 14px;outline:none;direction:ltr}
   input:focus{border-color:#f5a05c}
-  button{margin-top:32px;width:100%;padding:15px;border:0;border-radius:999px;cursor:pointer;
-    background:#f5a05c;color:#20103d;font:700 16px/1 ${FONT_STACK};letter-spacing:.02em}
+  button{margin-top:28px;width:100%;padding:14px;border:0;border-radius:999px;cursor:pointer;
+    background:#f5a05c;color:#20103d;font:700 15px/1 ${FONT_STACK};letter-spacing:.02em}
   button:hover{filter:brightness(1.05)}
   .err{color:#ff9a9a;font-weight:600;margin:18px 0 0;text-align:right}
 </style></head><body>
@@ -185,9 +188,9 @@ function loginPage(error) {
     </div>
     <div class="lead">Sign In<b>تسجيل الدخول</b></div>
   </div>
-  <label>اسم المستخدم · Username</label>
+  <label dir="ltr"><span>USERNAME</span><span class="ar" dir="rtl">اسم المستخدم</span></label>
   <input name="username" autocomplete="username" autofocus required>
-  <label>كلمة المرور · Password</label>
+  <label dir="ltr"><span>Password</span><span class="ar" dir="rtl">كلمة المرور</span></label>
   <input name="password" type="password" autocomplete="current-password" required>
   ${error ? `<p class="err">${esc(error)}</p>` : ''}
   <button type="submit">تسجيل الدخول · Sign in</button>
