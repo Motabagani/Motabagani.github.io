@@ -67,10 +67,64 @@ function Router() {
   return <Chrome>{page}</Chrome>;
 }
 
+// One-time interstitial so nobody mistakes the demo for a real service: shows
+// Hashim's mark beside the Rafeeq mark and states it's a concept redesign.
+function RafeeqIntro({ onEnter }) {
+  const { t, lang, theme } = useRafeeq();
+  const rafeeqMark = theme === 'light' ? '/images/rafeeq-dark.png' : '/images/rafeeq-bright.png';
+  return (
+    <div className="rafeeq" dir={lang === 'ar' ? 'rtl' : 'ltr'} lang={lang} data-theme={theme}>
+      <style>{`
+        .rq-intro-scrim{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:24px;
+          background:radial-gradient(120% 120% at 50% 0%, #0f3b30 0%, #071c17 70%);}
+        .rq-intro{width:min(520px,100%);text-align:center;background:rgba(8,24,20,.72);
+          border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:clamp(26px,5vw,44px);
+          box-shadow:0 24px 70px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#eafaf4}
+        .rq-intro__logos{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:22px}
+        .rq-intro__logos img{height:56px;width:auto;display:block}
+        .rq-intro__x{font-size:22px;opacity:.5;font-weight:300}
+        .rq-intro h1{margin:0 0 12px;font-size:clamp(20px,3.4vw,26px);font-weight:700;line-height:1.2}
+        .rq-intro p{margin:0 auto;max-width:42ch;font-size:15px;line-height:1.6;opacity:.9}
+        .rq-intro__enter{margin-top:26px;width:100%;padding:15px;border:0;border-radius:999px;cursor:pointer;
+          background:#2FD6B0;color:#06231b;font:700 16px/1 inherit;letter-spacing:.01em}
+        .rq-intro__enter:hover{filter:brightness(1.06)}
+        .rq-intro__back{display:inline-block;margin-top:16px;color:#bfe9dc;text-decoration:none;font-size:14px}
+        .rq-intro__back:hover{color:#2FD6B0}
+      `}</style>
+      <div className="rq-intro-scrim">
+        <div className="rq-intro" role="dialog" aria-modal="true" aria-label={t('intro.title')}>
+          <div className="rq-intro__logos">
+            <img src="/images/logowhite.png" alt="Hashim Motabagani" />
+            <span className="rq-intro__x" aria-hidden="true">×</span>
+            <img src={rafeeqMark} alt="Rafeeq" />
+          </div>
+          <h1>{t('intro.title')}</h1>
+          <p>{t('intro.body')}</p>
+          <button type="button" className="rq-intro__enter" onClick={onEnter}>{t('intro.cta')}</button>
+          <div><a className="rq-intro__back" href={`/${lang}`}>{t('intro.back')}</a></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RafeeqGate() {
+  const [ack, setAck] = useState(() => {
+    try { return sessionStorage.getItem('rafeeqIntroAck') === '1'; } catch { return false; }
+  });
+  if (!ack) {
+    return <RafeeqIntro onEnter={() => {
+      try { sessionStorage.setItem('rafeeqIntroAck', '1'); } catch { /* ignore */ }
+      setAck(true);
+    }} />;
+  }
+  return <Router />;
+}
+
 export default function RafeeqApp() {
   return (
     <RafeeqProvider>
-      <Router />
+      <RafeeqGate />
     </RafeeqProvider>
   );
 }
