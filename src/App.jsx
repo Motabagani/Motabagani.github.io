@@ -10,6 +10,7 @@ import ContactPage from './pages/ContactPage';
 import LegalPage from './pages/LegalPage';
 import FaqPage from './pages/FaqPage';
 import CourseRegistrationProject from './pages/CourseRegistrationProject';
+import Ashom1Project from './pages/Ashom1Project';
 import RafeeqProject from './pages/RafeeqProject';
 import SSAUCSDProject from './pages/SSAUCSDProject';
 import EconomicModelsPage from './pages/EconomicModelsPage';
@@ -72,6 +73,7 @@ function App() {
           '/coding': 'البرمجة', '/economic-models': 'النماذج الاقتصادية',
           '/graphic-design': 'التصميم الجرافيكي', '/about': 'عني', '/contact': 'تواصل',
           '/projects/rafeeq': 'رفيق', '/rafeeq': 'رفيق',
+          '/projects/ashom1': 'أسهم ١',
           '/projects/course-registration': 'نظام تسجيل المقررات',
           '/projects/ssa-ucsd': 'النادي السعودي في UCSD',
           '/journey': 'رحلتي', '/story': 'صورة', '/legal/privacy': 'سياسة الخصوصية',
@@ -81,6 +83,7 @@ function App() {
           '/coding': 'Coding', '/economic-models': 'Economic Models',
           '/graphic-design': 'Graphic Design', '/about': 'About', '/contact': 'Contact',
           '/projects/rafeeq': 'Rafeeq', '/rafeeq': 'Rafeeq',
+          '/projects/ashom1': 'Ashom 1',
           '/projects/course-registration': 'Course Registration System',
           '/projects/ssa-ucsd': 'SSA at UC San Diego',
           '/journey': 'My Journey', '/story': 'Photo', '/legal/privacy': 'Privacy Policy',
@@ -110,7 +113,9 @@ function App() {
 
   let page;
   // Project case studies
-  if (routeWithoutLang.startsWith('/projects/course-registration')) {
+  if (routeWithoutLang.startsWith('/projects/ashom1')) {
+    page = <Ashom1Project />;
+  } else if (routeWithoutLang.startsWith('/projects/course-registration')) {
     page = <CourseRegistrationProject />;
   } else if (routeWithoutLang.startsWith('/projects/rafeeq')) {
     page = <RafeeqProject />;

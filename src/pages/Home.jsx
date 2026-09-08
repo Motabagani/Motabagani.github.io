@@ -3,7 +3,7 @@ import TopBar from '../components/TopBar';
 import ProjectCard from '../components/ProjectCard';
 import { useLanguage } from '../LanguageContext';
 import { codingProjects } from '../data/codingProjects';
-import ComingSoon from '../components/ComingSoon';
+import { economicProjects } from '../data/economicProjects';
 // NOTE: SubwayDestinationSign (src/components/SubwayDestinationSign.jsx/.css) is
 // intentionally kept in the codebase for possible later reuse, but is not
 // currently rendered on the homepage.
@@ -385,7 +385,22 @@ function Home() {
                 <h2>{t.sections.economics}</h2>
               </a>
             </div>
-            <ComingSoon />
+            <div className="projects">
+              {economicProjects.map((p) => (
+                <ProjectCard
+                  key={pick(p.title)}
+                  year={pick(p.year)}
+                  type={pick(p.type)}
+                  title={pick(p.title)}
+                  description={pick(p.description)}
+                  tags={p.tags}
+                  image={p.image}
+                  thumbClass={p.thumbClass}
+                  hideDescription
+                  href={p.href(lang)}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
