@@ -129,11 +129,14 @@ function ContactPage() {
               <p>{c.success}</p>
               {ticket && (
                 <p className="contact-ticket">
-                  {ar ? 'رقم تذكرتك:' : 'Your ticket:'} <strong>{ticket}</strong>
-                  {' — '}
+                  {ar ? 'رقم تذكرتك: ' : 'Your ticket: '}<strong>{ticket}</strong><br />
                   <a href={`/${lang}/track?id=${encodeURIComponent(ticket)}`}>
                     {ar ? 'تابع طلبك' : 'track your request'}
                   </a>
+                  {' '}
+                  <span style={{ color: 'var(--muted)', fontSize: 13 }}>
+                    {ar ? '(تحقّق ببريدك الإلكتروني، وسيصلك ردّي عليه)' : '(verify with your email — my reply will also be sent there)'}
+                  </span>
                 </p>
               )}
               <button className="contact-btn" onClick={reset}>

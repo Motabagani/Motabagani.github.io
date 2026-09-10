@@ -47,6 +47,10 @@ export default {
       if (request.method !== 'GET') return json(405, { ok: false, error: 'method' });
       return handleTicket(request, env, url);
     }
+    if (path === '/api/emailticket') {
+      if (request.method !== 'POST') return json(405, { ok: false, error: 'method' });
+      return handleEmailTicket(request, env);
+    }
     // Admin lives on its own subdomain (admin.motabagani.com). Its pages route to
     // the admin handler; the static assets it references (fonts/images/favicon)
     // fall through to ASSETS so the page can style itself.
@@ -74,6 +78,7 @@ function json(status, body) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': 'no-store',
     },
   });
 }
@@ -146,6 +151,9 @@ async function handleSubmit(request, env) {
   let lang = [...String(data.lang ?? '').slice(0, 5)].filter((c) => /[a-z]/i.test(c)).join('');
   if (lang !== 'en' && lang !== 'ar') lang = '';
   const ua = clean(request.headers.get('User-Agent'), 255);
+  // Submitter's local date (YYYY-MM-DD) — the verifier for anonymous feedback.
+  const rawLocalDate = clean(data.localDate, 10);
+  const localDate = /^\d{4}-\d{2}-\d{2}$/.test(rawLocalDate) ? rawLocalDate : '';
 
   const ipHash = await clientIpHash(request, env);
 
@@ -164,9 +172,9 @@ async function handleSubmit(request, env) {
   const ticket = await makeTicket(env, type === 'contact' ? 'C' : 'F');
   try {
     await env.DB.prepare(
-      `INSERT INTO messages (ts, type, name, email, message, page, lang, user_agent, ip_hash, ticket)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(ts, type, name, email, message, page, lang, ua, ipHash, ticket).run();
+      `INSERT INTO messages (ts, type, name, email, message, page, lang, user_agent, ip_hash, ticket, localdate)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(ts, type, name, email, message, page, lang, ua, ipHash, ticket, localDate).run();
   } catch {
     return json(500, { ok: false, error: 'store' });
   }
@@ -200,29 +208,89 @@ async function makeTicket(env, prefix) {
 async function handleTicket(request, env, url) {
   const id = String(url.searchParams.get('id') || '').trim().toUpperCase();
   if (!TICKET_RE.test(id)) return json(400, { ok: false, error: 'format' });
+  const verifier = String(url.searchParams.get('v') || '').trim();
   let row;
   try {
     row = await env.DB.prepare(
-      'SELECT type, ts, status, message, deleted FROM messages WHERE ticket = ?'
+      'SELECT type, ts, status, message, reply, email, localdate, deleted FROM messages WHERE ticket = ?'
     ).bind(id).first();
   } catch {
     return json(500, { ok: false, error: 'lookup' });
   }
+  // Don't reveal existence without the right verifier (blocks ticket enumeration).
   if (!row || row.deleted) return json(200, { ok: true, found: false });
+  const isContact = row.type === 'contact';
+  const verified = isContact
+    ? (!!verifier && verifier.toLowerCase() === String(row.email || '').toLowerCase())
+    : (!!verifier && verifier === String(row.localdate || (typeof row.ts === 'string' ? row.ts.slice(0, 10) : '')));
+  if (!verified) return json(200, { ok: true, found: false });
+
   return json(200, {
     ok: true,
     found: true,
     ticket: id,
-    type: row.type === 'contact' ? 'contact' : 'feedback',
+    type: isContact ? 'contact' : 'feedback',
     status: STATUS_SET.has(row.status) ? row.status : 'received',
-    submittedAt: typeof row.ts === 'string' ? row.ts : '', // full ISO; client formats NYC/Riyadh
+    submittedAt: typeof row.ts === 'string' ? row.ts : '',
     content: typeof row.message === 'string' ? row.message : '',
+    reply: typeof row.reply === 'string' ? row.reply : '',
   });
 }
 
-// Request phases, in order. `rejected` is a terminal branch off `approved`.
-const STATUS_KEYS = ['received', 'under_consideration', 'approved', 'rejected', 'implemented'];
-const STATUS_SET = new Set(STATUS_KEYS);
+// POST /api/emailticket {ticket, email} — one-time send of a ticket to the user
+// (Ha'a feedback doesn't store an email). Nothing is stored.
+async function handleEmailTicket(request, env) {
+  let data;
+  try { data = await request.json(); } catch { return json(400, { ok: false, error: 'parse' }); }
+  const id = String(data.ticket || '').trim().toUpperCase();
+  const to = clean(data.email, 190);
+  if (!TICKET_RE.test(id)) return json(400, { ok: false, error: 'format' });
+  if (!to || !EMAIL_RE.test(to)) return json(422, { ok: false, error: 'email' });
+  let row;
+  try {
+    row = await env.DB.prepare('SELECT type, localdate, ts, deleted FROM messages WHERE ticket = ?').bind(id).first();
+  } catch { return json(500, { ok: false, error: 'lookup' }); }
+  if (!row || row.deleted) return json(404, { ok: false, error: 'notfound' });
+  const date = row.localdate || (typeof row.ts === 'string' ? row.ts.slice(0, 10) : '');
+  const sent = await sendEmail(env, {
+    to,
+    subject: `Your tracking ticket ${id}`,
+    text: `Here's your tracking ticket for the feedback you sent Hashim Motabagani.\n\nTicket: ${id}\nSubmitted (your local date): ${date}\n\nTrack it any time at https://www.motabagani.com/en/track — you'll be asked for this ticket and the date above.\n\n— This is a one-time message; your email was not stored.`,
+  });
+  if (!sent.ok) return json(sent.error === 'unconfigured' ? 503 : 502, { ok: false, error: 'send' });
+  return json(200, { ok: true });
+}
+
+// Request phases, per type. Feedback: received→under_consideration→approved/rejected→implemented.
+// Contact: received→under_review→replied.
+const STATUS_BY_TYPE = {
+  feedback: ['received', 'under_consideration', 'approved', 'rejected', 'implemented'],
+  contact: ['received', 'under_review', 'replied'],
+};
+const STATUS_SET = new Set([...STATUS_BY_TYPE.feedback, ...STATUS_BY_TYPE.contact]);
+
+// Outbound mail from feedback@motabagani.com via Resend (set RESEND_API_KEY as a
+// Worker secret). No-ops gracefully when the key isn't configured.
+async function sendEmail(env, { to, subject, text }) {
+  if (!env.RESEND_API_KEY) return { ok: false, error: 'unconfigured' };
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
+      body: JSON.stringify({
+        from: 'Hashim Motabagani <feedback@motabagani.com>',
+        to: [to],
+        subject,
+        text,
+      }),
+    });
+    if (!res.ok) { console.error('Resend error', res.status); return { ok: false, error: 'send' }; }
+    return { ok: true };
+  } catch (e) {
+    console.error('Resend request failed', e);
+    return { ok: false, error: 'network' };
+  }
+}
 
 // ---------- /admin auth (custom login page + signed cookie session) ----------
 async function hmacHex(key, msg) {
@@ -359,10 +427,10 @@ const DASH_T = {
     when: 'When', type: 'Type', from: 'From', message: 'Message', page: 'Page',
     empty: 'No messages yet.', signout: 'Sign out', back: 'Back to website',
     toggle: 'العربية', pill: { contact: 'contact', feedback: 'feedback' },
-    actions: 'Actions', pin: 'Pin', unpin: 'Unpin', set: 'Set',
+    actions: 'Actions', pin: 'Pin', unpin: 'Unpin', set: 'Set', send: 'Send reply', replyPh: 'Write a reply (emailed + shown on tracking)…',
     del: 'Delete', restore: 'Restore', purge: 'Delete forever', trash: 'Trash',
     emptyTrash: 'Trash is empty.', pinned: 'Pinned',
-    st: { received: 'Received', under_consideration: 'Under consideration', approved: 'Approved', rejected: 'Rejected', implemented: 'Implemented' },
+    st: { received: 'Received', under_consideration: 'Under consideration', approved: 'Approved', rejected: 'Rejected', implemented: 'Implemented', under_review: 'Under review', replied: 'Replied' },
   },
   ar: {
     dir: 'rtl', title: 'لوحة التحكم', h1: 'لوحة التحكم', welcome: 'مرحبًا هاشم', total: 'الإجمالي',
@@ -370,10 +438,10 @@ const DASH_T = {
     when: 'الوقت', type: 'النوع', from: 'من', message: 'الرسالة', page: 'الصفحة',
     empty: 'لا توجد رسائل بعد.', signout: 'تسجيل الخروج', back: 'العودة إلى الموقع',
     toggle: 'English', pill: { contact: 'تواصل', feedback: 'ملاحظة' },
-    actions: 'إجراءات', pin: 'تثبيت', unpin: 'إلغاء التثبيت', set: 'تحديث',
+    actions: 'إجراءات', pin: 'تثبيت', unpin: 'إلغاء التثبيت', set: 'تحديث', send: 'إرسال الرد', replyPh: 'اكتب ردًا (يُرسل بالبريد ويظهر في التتبّع)…',
     del: 'حذف', restore: 'استعادة', purge: 'حذف نهائي', trash: 'المحذوفات',
     emptyTrash: 'سلة المحذوفات فارغة.', pinned: 'مثبّت',
-    st: { received: 'تم الاستلام', under_consideration: 'قيد الدراسة', approved: 'معتمد', rejected: 'مرفوض', implemented: 'تم التنفيذ' },
+    st: { received: 'تم الاستلام', under_consideration: 'قيد الدراسة', approved: 'معتمد', rejected: 'مرفوض', implemented: 'تم التنفيذ', under_review: 'قيد المراجعة', replied: 'تم الرد' },
   },
 };
 
@@ -421,6 +489,17 @@ async function handleAdmin(request, env, url, base = '') {
           else if (action === 'setstatus') {
             const st = String(form.get('status') || '');
             if (STATUS_SET.has(st)) await env.DB.prepare('UPDATE messages SET status = ? WHERE id = ?').bind(st, id).run();
+          } else if (action === 'reply') {
+            const replyText = clean(form.get('reply'), 5000);
+            const rr = await env.DB.prepare('SELECT email, ticket FROM messages WHERE id = ?').bind(id).first();
+            await env.DB.prepare('UPDATE messages SET reply = ?, status = ? WHERE id = ?').bind(replyText, 'replied', id).run();
+            if (rr && rr.email && replyText) {
+              await sendEmail(env, {
+                to: rr.email,
+                subject: `Re: your request ${rr.ticket}`,
+                text: `${replyText}\n\n—\nYou can also view this reply and your request's status at https://www.motabagani.com/en/track (ticket ${rr.ticket} + the email you used).`,
+              });
+            }
           } else if (SETS[action]) await env.DB.prepare(`UPDATE messages SET ${SETS[action]} WHERE id = ?`).bind(id).run();
         } catch { /* ignore */ }
       }
@@ -467,7 +546,7 @@ async function handleAdmin(request, env, url, base = '') {
   let rows = [];
   try {
     const res = await env.DB.prepare(
-      'SELECT id, ts, type, name, email, message, page, lang, pinned, deleted, ticket, status FROM messages ORDER BY pinned DESC, ts DESC'
+      'SELECT id, ts, type, name, email, message, page, lang, pinned, deleted, ticket, status, reply FROM messages ORDER BY pinned DESC, ts DESC'
     ).all();
     rows = res.results || [];
   } catch { rows = []; }
@@ -501,12 +580,16 @@ async function handleAdmin(request, env, url, base = '') {
   const actForm = (id, action, label, cls = '') =>
     `<form method="POST" action="${home}"><input type="hidden" name="action" value="${esc(action)}"><input type="hidden" name="id" value="${id}"><input type="hidden" name="back" value="${esc(backQ)}"><button class="act${cls ? ' ' + cls : ''}" type="submit">${label}</button></form>`;
 
-  // Phase dropdown + Set (one form, no JS): admin picks the phase, clicks Set.
+  // Phase dropdown + Set (one form, no JS): options match the row's type.
   const statusForm = (r) => {
-    const cur = STATUS_SET.has(r.status) ? r.status : 'received';
-    const opts = STATUS_KEYS.map((s) => `<option value="${s}"${s === cur ? ' selected' : ''}>${esc(T.st[s])}</option>`).join('');
+    const keys = STATUS_BY_TYPE[r.type === 'contact' ? 'contact' : 'feedback'];
+    const cur = keys.includes(r.status) ? r.status : 'received';
+    const opts = keys.map((s) => `<option value="${s}"${s === cur ? ' selected' : ''}>${esc(T.st[s])}</option>`).join('');
     return `<form method="POST" action="${home}" class="stform"><input type="hidden" name="action" value="setstatus"><input type="hidden" name="id" value="${r.id}"><input type="hidden" name="back" value="${esc(backQ)}"><select name="status" class="stsel">${opts}</select><button class="act" type="submit">${esc(T.set)}</button></form>`;
   };
+
+  // Reply box for contact requests (emails the sender + shows on /track).
+  const replyForm = (r) => `<form method="POST" action="${home}" class="rpform"><input type="hidden" name="action" value="reply"><input type="hidden" name="id" value="${r.id}"><input type="hidden" name="back" value="${esc(backQ)}"><textarea name="reply" class="rpta" rows="2" placeholder="${esc(T.replyPh)}">${esc(r.reply || '')}</textarea><button class="act" type="submit">${esc(T.send)}</button></form>`;
 
   const rowActions = (r) => {
     if (inTrash) {
@@ -514,7 +597,8 @@ async function handleAdmin(request, env, url, base = '') {
     }
     return statusForm(r)
       + (r.pinned ? actForm(r.id, 'unpin', T.unpin) : actForm(r.id, 'pin', T.pin))
-      + actForm(r.id, 'trash', T.del, 'act--danger');
+      + actForm(r.id, 'trash', T.del, 'act--danger')
+      + (r.type === 'contact' ? replyForm(r) : '');
   };
 
   const bodyRows = shown.length === 0
@@ -535,7 +619,8 @@ async function handleAdmin(request, env, url, base = '') {
         const tick = r.ticket ? `<div class="tick">${esc(r.ticket)}</div>` : '';
         const isDone = st === 'implemented' || st === 'approved';
         const cls = [r.pinned ? 'is-pinned' : '', isDone ? 'is-resolved' : '', st === 'rejected' ? 'is-rejected' : ''].filter(Boolean).join(' ');
-        return `<tr class="${cls}"><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span>${badges}${tick}</td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td><td class="acts">${rowActions(r)}</td></tr>`;
+        const replyShow = r.reply ? `<div class="rpshow" dir="auto">↳ ${esc(r.reply)}</div>` : '';
+        return `<tr class="${cls}"><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span>${badges}${tick}</td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}${replyShow}</td><td class="meta">${page}</td><td class="acts">${rowActions(r)}</td></tr>`;
       }).join('')
     }</tbody></table>`;
 
@@ -579,11 +664,18 @@ async function handleAdmin(request, env, url, base = '') {
   .st--approved{background:rgba(120,200,150,.18);color:#7fd6a3}
   .st--rejected{background:rgba(255,120,120,.18);color:#ff9a9a}
   .st--implemented{background:rgba(120,170,255,.18);color:#9fc0ff}
+  .st--under_review{background:rgba(245,160,92,.22);color:#f5a05c}
+  .st--replied{background:rgba(120,200,150,.18);color:#7fd6a3}
   tr.is-rejected td.msg{opacity:.6}
+  .rpshow{margin-top:8px;padding-inline-start:10px;border-inline-start:2px solid #7fd6a3;color:#bfe9dc;font-size:13px;white-space:pre-wrap}
   .stform{display:inline-flex;gap:4px;margin:0 6px 4px 0;vertical-align:top}
   .stsel{background:rgba(255,255,255,.06);color:#e9e4f2;border:1px solid rgba(255,255,255,.16);border-radius:8px;
     padding:6px 8px;font:600 12px/1 ${FONT_STACK}}
   .stsel option{background:#20103d;color:#f0ebe0}
+  .rpform{display:flex;flex-direction:column;gap:5px;margin:6px 0 0;min-width:200px}
+  .rpta{background:rgba(255,255,255,.06);color:#e9e4f2;border:1px solid rgba(255,255,255,.16);border-radius:8px;
+    padding:8px 10px;font:400 12.5px/1.45 ${FONT_STACK};resize:vertical}
+  .rpform .act{align-self:flex-start}
   tr.is-pinned{background:rgba(245,160,92,.06)}
   tr.is-resolved td.msg,tr.is-resolved td:nth-child(3){opacity:.55}
   td.acts{white-space:nowrap}

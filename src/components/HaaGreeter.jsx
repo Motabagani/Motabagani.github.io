@@ -42,6 +42,9 @@ function HaaGreeter() {
   });
   const [note, setNote] = useState('');
   const [ticket, setTicket] = useState('');
+  const [localDate, setLocalDate] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [emailState, setEmailState] = useState('idle'); // idle | sending | sent | error
   const [error, setError] = useState('');
   const [hp, setHp] = useState(''); // honeypot — must stay empty
   const areaRef = useRef(null);
@@ -139,15 +142,18 @@ function HaaGreeter() {
     if (!note.trim()) return;
     setError('');
     setStage('sending');
+    const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, viewer's local date
     try {
       const data = await sendMessage({
         type: 'feedback',
         message: note.trim(),
         page: window.location.pathname + window.location.search,
         lang,
+        localDate: today,
         website: hp, // honeypot
       });
       setTicket((data && data.ticket) || '');
+      setLocalDate(today);
       setStage('thanks');
       remember();
     } catch (e) {
@@ -254,12 +260,58 @@ function HaaGreeter() {
           <>
             <p className="haa-hello">{t.thanks}</p>
             {ticket && (
-              <p className="haa-ticket">
-                {ar ? 'رقم تذكرتك:' : 'Your ticket:'} <strong>{ticket}</strong><br />
+              <div className="haa-ticket">
+                <p style={{ margin: '0 0 6px' }}>
+                  {ar ? 'رقم تذكرتك: ' : 'Your ticket: '}<strong>{ticket}</strong>
+                  {localDate && <><br />{ar ? 'أُرسلت بتاريخك: ' : 'Submitted (your date): '}<strong dir="ltr">{localDate}</strong></>}
+                </p>
+                <p style={{ margin: '0 0 10px', fontSize: 12.5, opacity: 0.85 }}>
+                  {ar
+                    ? 'احتفظ برقم التذكرة والتاريخ لتتبّع ملاحظتك — أو أرسلهما إلى بريدك (رسالة واحدة من feedback@motabagani.com، ولا يُحفظ بريدك).'
+                    : 'Keep your ticket and date to track it — or have them emailed to you (a one-time message from feedback@motabagani.com; your email isn’t stored).'}
+                </p>
                 <a href={`/${lang}/track?id=${encodeURIComponent(ticket)}`}>
-                  {ar ? 'تابع ملاحظتك' : 'track your feedback'}
+                  {ar ? 'صفحة التتبّع' : 'Open the tracking page'}
                 </a>
-              </p>
+
+                {emailState === 'sent' ? (
+                  <p style={{ marginTop: 10, color: '#7fd6a3', fontSize: 13 }}>
+                    {ar ? '📧 أُرسلت التذكرة إلى بريدك.' : '📧 Ticket emailed.'}
+                  </p>
+                ) : (
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const to = emailInput.trim();
+                      if (!to) return;
+                      setEmailState('sending');
+                      try {
+                        const res = await fetch('/api/emailticket', {
+                          method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ ticket, email: to }),
+                        });
+                        setEmailState(res.ok ? 'sent' : 'error');
+                      } catch { setEmailState('error'); }
+                    }}
+                    style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}
+                  >
+                    <input
+                      type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder={ar ? 'بريدك (اختياري)' : 'your email (optional)'} dir="ltr"
+                      style={{ flex: '1 1 160px', minWidth: 0, background: 'rgba(255,255,255,.08)', color: '#fff',
+                        border: '1px solid rgba(255,255,255,.2)', borderRadius: 8, padding: '8px 10px', font: 'inherit', fontSize: 13 }}
+                    />
+                    <button className="haa-btn" type="submit" disabled={emailState === 'sending' || !emailInput.trim()}>
+                      {emailState === 'sending' ? (ar ? '…' : '…') : (ar ? 'أرسل التذكرة' : 'Email it')}
+                    </button>
+                    {emailState === 'error' && (
+                      <span style={{ flexBasis: '100%', color: '#ff9a9a', fontSize: 12 }}>
+                        {ar ? 'تعذّر الإرسال الآن — احتفظ برقم التذكرة.' : 'Couldn’t send right now — please keep your ticket.'}
+                      </span>
+                    )}
+                  </form>
+                )}
+              </div>
             )}
             <div className="haa-actions">
               <button className="haa-btn haa-btn--primary" onClick={close}>

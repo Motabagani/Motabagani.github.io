@@ -49,7 +49,9 @@ function Footer() {
             </div>
 
             <div className="site-footer__col">
-              <h2 className="site-footer__heading">{t.legal.heading}</h2>
+              <h2 className="site-footer__heading">{lang === 'en' ? 'Requests' : 'الطلبات'}</h2>
+              <a href={`/${lang}/contact`}>{t.nav.contact}</a>
+              <a href={`/${lang}/track`}>{lang === 'en' ? 'Track a request' : 'تتبّع طلبًا'}</a>
               <a href={`/${lang}/legal/privacy`}>{t.legal.privacy}</a>
             </div>
 
