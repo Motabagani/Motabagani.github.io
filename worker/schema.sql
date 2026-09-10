@@ -12,8 +12,9 @@ CREATE TABLE IF NOT EXISTS messages (
   user_agent  TEXT,
   ip_hash     TEXT,
   pinned      INTEGER NOT NULL DEFAULT 0,   -- admin: pin to top
-  resolved    INTEGER NOT NULL DEFAULT 0,   -- admin: mark handled
-  deleted     INTEGER NOT NULL DEFAULT 0    -- admin: soft-delete (trash basket)
+  resolved    INTEGER NOT NULL DEFAULT 0,   -- admin: legacy handled flag
+  deleted     INTEGER NOT NULL DEFAULT 0,   -- admin: soft-delete (trash basket)
+  status      TEXT NOT NULL DEFAULT 'received' -- phase: received|under_consideration|approved|rejected|implemented
 );
 CREATE INDEX IF NOT EXISTS idx_messages_ts ON messages (ts);
 CREATE INDEX IF NOT EXISTS idx_messages_iphash_ts ON messages (ip_hash, ts);

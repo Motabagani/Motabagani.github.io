@@ -203,7 +203,7 @@ async function handleTicket(request, env, url) {
   let row;
   try {
     row = await env.DB.prepare(
-      'SELECT type, ts, resolved, deleted FROM messages WHERE ticket = ?'
+      'SELECT type, ts, status, message, deleted FROM messages WHERE ticket = ?'
     ).bind(id).first();
   } catch {
     return json(500, { ok: false, error: 'lookup' });
@@ -214,10 +214,15 @@ async function handleTicket(request, env, url) {
     found: true,
     ticket: id,
     type: row.type === 'contact' ? 'contact' : 'feedback',
-    status: row.resolved ? 'resolved' : 'received',
-    submittedAt: typeof row.ts === 'string' ? row.ts.slice(0, 10) : '',
+    status: STATUS_SET.has(row.status) ? row.status : 'received',
+    submittedAt: typeof row.ts === 'string' ? row.ts : '', // full ISO; client formats NYC/Riyadh
+    content: typeof row.message === 'string' ? row.message : '',
   });
 }
+
+// Request phases, in order. `rejected` is a terminal branch off `approved`.
+const STATUS_KEYS = ['received', 'under_consideration', 'approved', 'rejected', 'implemented'];
+const STATUS_SET = new Set(STATUS_KEYS);
 
 // ---------- /admin auth (custom login page + signed cookie session) ----------
 async function hmacHex(key, msg) {
@@ -354,9 +359,10 @@ const DASH_T = {
     when: 'When', type: 'Type', from: 'From', message: 'Message', page: 'Page',
     empty: 'No messages yet.', signout: 'Sign out', back: 'Back to website',
     toggle: 'العربية', pill: { contact: 'contact', feedback: 'feedback' },
-    actions: 'Actions', pin: 'Pin', unpin: 'Unpin', resolve: 'Resolve', reopen: 'Reopen',
+    actions: 'Actions', pin: 'Pin', unpin: 'Unpin', set: 'Set',
     del: 'Delete', restore: 'Restore', purge: 'Delete forever', trash: 'Trash',
-    emptyTrash: 'Trash is empty.', pinned: 'Pinned', resolvedTag: 'Resolved',
+    emptyTrash: 'Trash is empty.', pinned: 'Pinned',
+    st: { received: 'Received', under_consideration: 'Under consideration', approved: 'Approved', rejected: 'Rejected', implemented: 'Implemented' },
   },
   ar: {
     dir: 'rtl', title: 'لوحة التحكم', h1: 'لوحة التحكم', welcome: 'مرحبًا هاشم', total: 'الإجمالي',
@@ -364,9 +370,10 @@ const DASH_T = {
     when: 'الوقت', type: 'النوع', from: 'من', message: 'الرسالة', page: 'الصفحة',
     empty: 'لا توجد رسائل بعد.', signout: 'تسجيل الخروج', back: 'العودة إلى الموقع',
     toggle: 'English', pill: { contact: 'تواصل', feedback: 'ملاحظة' },
-    actions: 'إجراءات', pin: 'تثبيت', unpin: 'إلغاء التثبيت', resolve: 'تم', reopen: 'إعادة فتح',
+    actions: 'إجراءات', pin: 'تثبيت', unpin: 'إلغاء التثبيت', set: 'تحديث',
     del: 'حذف', restore: 'استعادة', purge: 'حذف نهائي', trash: 'المحذوفات',
-    emptyTrash: 'سلة المحذوفات فارغة.', pinned: 'مثبّت', resolvedTag: 'تم',
+    emptyTrash: 'سلة المحذوفات فارغة.', pinned: 'مثبّت',
+    st: { received: 'تم الاستلام', under_consideration: 'قيد الدراسة', approved: 'معتمد', rejected: 'مرفوض', implemented: 'تم التنفيذ' },
   },
 };
 
@@ -411,7 +418,10 @@ async function handleAdmin(request, env, url, base = '') {
         };
         try {
           if (action === 'purge') await env.DB.prepare('DELETE FROM messages WHERE id = ?').bind(id).run();
-          else if (SETS[action]) await env.DB.prepare(`UPDATE messages SET ${SETS[action]} WHERE id = ?`).bind(id).run();
+          else if (action === 'setstatus') {
+            const st = String(form.get('status') || '');
+            if (STATUS_SET.has(st)) await env.DB.prepare('UPDATE messages SET status = ? WHERE id = ?').bind(st, id).run();
+          } else if (SETS[action]) await env.DB.prepare(`UPDATE messages SET ${SETS[action]} WHERE id = ?`).bind(id).run();
         } catch { /* ignore */ }
       }
       return new Response('', { status: 303, headers: adminSecHeaders({ Location: back }) });
@@ -457,7 +467,7 @@ async function handleAdmin(request, env, url, base = '') {
   let rows = [];
   try {
     const res = await env.DB.prepare(
-      'SELECT id, ts, type, name, email, message, page, lang, pinned, resolved, deleted, ticket FROM messages ORDER BY pinned DESC, ts DESC'
+      'SELECT id, ts, type, name, email, message, page, lang, pinned, deleted, ticket, status FROM messages ORDER BY pinned DESC, ts DESC'
     ).all();
     rows = res.results || [];
   } catch { rows = []; }
@@ -491,12 +501,19 @@ async function handleAdmin(request, env, url, base = '') {
   const actForm = (id, action, label, cls = '') =>
     `<form method="POST" action="${home}"><input type="hidden" name="action" value="${esc(action)}"><input type="hidden" name="id" value="${id}"><input type="hidden" name="back" value="${esc(backQ)}"><button class="act${cls ? ' ' + cls : ''}" type="submit">${label}</button></form>`;
 
+  // Phase dropdown + Set (one form, no JS): admin picks the phase, clicks Set.
+  const statusForm = (r) => {
+    const cur = STATUS_SET.has(r.status) ? r.status : 'received';
+    const opts = STATUS_KEYS.map((s) => `<option value="${s}"${s === cur ? ' selected' : ''}>${esc(T.st[s])}</option>`).join('');
+    return `<form method="POST" action="${home}" class="stform"><input type="hidden" name="action" value="setstatus"><input type="hidden" name="id" value="${r.id}"><input type="hidden" name="back" value="${esc(backQ)}"><select name="status" class="stsel">${opts}</select><button class="act" type="submit">${esc(T.set)}</button></form>`;
+  };
+
   const rowActions = (r) => {
     if (inTrash) {
       return actForm(r.id, 'restore', T.restore) + actForm(r.id, 'purge', T.purge, 'act--danger');
     }
-    return (r.pinned ? actForm(r.id, 'unpin', T.unpin) : actForm(r.id, 'pin', T.pin))
-      + (r.resolved ? actForm(r.id, 'unresolve', T.reopen) : actForm(r.id, 'resolve', T.resolve))
+    return statusForm(r)
+      + (r.pinned ? actForm(r.id, 'unpin', T.unpin) : actForm(r.id, 'pin', T.pin))
       + actForm(r.id, 'trash', T.del, 'act--danger');
   };
 
@@ -512,10 +529,12 @@ async function handleAdmin(request, env, url, base = '') {
         let page = esc(r.page || '');
         if (r.lang) page += ' &middot; ' + esc(r.lang);
         const pill = T.pill[t] || t;
+        const st = STATUS_SET.has(r.status) ? r.status : 'received';
         const badges = (r.pinned ? `<span class="badge badge--pin">${esc(T.pinned)}</span>` : '')
-          + (r.resolved ? `<span class="badge badge--done">${esc(T.resolvedTag)}</span>` : '');
+          + `<span class="badge st--${st}">${esc(T.st[st])}</span>`;
         const tick = r.ticket ? `<div class="tick">${esc(r.ticket)}</div>` : '';
-        const cls = [r.pinned ? 'is-pinned' : '', r.resolved ? 'is-resolved' : ''].filter(Boolean).join(' ');
+        const isDone = st === 'implemented' || st === 'approved';
+        const cls = [r.pinned ? 'is-pinned' : '', isDone ? 'is-resolved' : '', st === 'rejected' ? 'is-rejected' : ''].filter(Boolean).join(' ');
         return `<tr class="${cls}"><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span>${badges}${tick}</td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td><td class="acts">${rowActions(r)}</td></tr>`;
       }).join('')
     }</tbody></table>`;
@@ -555,6 +574,16 @@ async function handleAdmin(request, env, url, base = '') {
   .badge--pin{background:rgba(245,160,92,.22);color:#f5a05c}
   .badge--done{background:rgba(120,200,150,.18);color:#7fd6a3}
   .tick{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;color:#9088a8;margin-top:5px;letter-spacing:.03em}
+  .st--received{background:rgba(255,255,255,.1);color:#c9c2da}
+  .st--under_consideration{background:rgba(245,160,92,.22);color:#f5a05c}
+  .st--approved{background:rgba(120,200,150,.18);color:#7fd6a3}
+  .st--rejected{background:rgba(255,120,120,.18);color:#ff9a9a}
+  .st--implemented{background:rgba(120,170,255,.18);color:#9fc0ff}
+  tr.is-rejected td.msg{opacity:.6}
+  .stform{display:inline-flex;gap:4px;margin:0 6px 4px 0;vertical-align:top}
+  .stsel{background:rgba(255,255,255,.06);color:#e9e4f2;border:1px solid rgba(255,255,255,.16);border-radius:8px;
+    padding:6px 8px;font:600 12px/1 ${FONT_STACK}}
+  .stsel option{background:#20103d;color:#f0ebe0}
   tr.is-pinned{background:rgba(245,160,92,.06)}
   tr.is-resolved td.msg,tr.is-resolved td:nth-child(3){opacity:.55}
   td.acts{white-space:nowrap}
