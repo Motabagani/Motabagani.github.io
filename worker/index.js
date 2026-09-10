@@ -43,6 +43,10 @@ export default {
       if (request.method !== 'POST') return json(405, { ok: false, error: 'method' });
       return handleSubmit(request, env);
     }
+    if (path === '/api/ticket') {
+      if (request.method !== 'GET') return json(405, { ok: false, error: 'method' });
+      return handleTicket(request, env, url);
+    }
     // Admin lives on its own subdomain (admin.motabagani.com). Its pages route to
     // the admin handler; the static assets it references (fonts/images/favicon)
     // fall through to ASSETS so the page can style itself.
@@ -157,16 +161,62 @@ async function handleSubmit(request, env) {
   }
 
   const ts = new Date().toISOString();
+  const ticket = await makeTicket(env, type === 'contact' ? 'C' : 'F');
   try {
     await env.DB.prepare(
-      `INSERT INTO messages (ts, type, name, email, message, page, lang, user_agent, ip_hash)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(ts, type, name, email, message, page, lang, ua, ipHash).run();
+      `INSERT INTO messages (ts, type, name, email, message, page, lang, user_agent, ip_hash, ticket)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(ts, type, name, email, message, page, lang, ua, ipHash, ticket).run();
   } catch {
     return json(500, { ok: false, error: 'store' });
   }
 
-  return json(200, { ok: true });
+  return json(200, { ok: true, ticket });
+}
+
+// ---------- tickets ----------
+// Public tracking id: F-<letter>-<5 digits> (feedback) or C-… (contact).
+// I and O are dropped so it can't be misread.
+const TICKET_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const TICKET_RE = /^[FC]-[A-HJ-NP-Z]-\d{5}$/;
+
+function randomTicket(prefix) {
+  const letter = TICKET_LETTERS[Math.floor(Math.random() * TICKET_LETTERS.length)];
+  const num = String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+  return `${prefix}-${letter}-${num}`;
+}
+async function makeTicket(env, prefix) {
+  for (let i = 0; i < 6; i++) {
+    const t = randomTicket(prefix);
+    try {
+      const row = await env.DB.prepare('SELECT 1 FROM messages WHERE ticket = ?').bind(t).first();
+      if (!row) return t;
+    } catch { return t; }
+  }
+  return randomTicket(prefix);
+}
+
+// GET /api/ticket?id=C-K-04821 -> minimal status (no message content or PII).
+async function handleTicket(request, env, url) {
+  const id = String(url.searchParams.get('id') || '').trim().toUpperCase();
+  if (!TICKET_RE.test(id)) return json(400, { ok: false, error: 'format' });
+  let row;
+  try {
+    row = await env.DB.prepare(
+      'SELECT type, ts, resolved, deleted FROM messages WHERE ticket = ?'
+    ).bind(id).first();
+  } catch {
+    return json(500, { ok: false, error: 'lookup' });
+  }
+  if (!row || row.deleted) return json(200, { ok: true, found: false });
+  return json(200, {
+    ok: true,
+    found: true,
+    ticket: id,
+    type: row.type === 'contact' ? 'contact' : 'feedback',
+    status: row.resolved ? 'resolved' : 'received',
+    submittedAt: typeof row.ts === 'string' ? row.ts.slice(0, 10) : '',
+  });
 }
 
 // ---------- /admin auth (custom login page + signed cookie session) ----------
@@ -407,7 +457,7 @@ async function handleAdmin(request, env, url, base = '') {
   let rows = [];
   try {
     const res = await env.DB.prepare(
-      'SELECT id, ts, type, name, email, message, page, lang, pinned, resolved, deleted FROM messages ORDER BY pinned DESC, ts DESC'
+      'SELECT id, ts, type, name, email, message, page, lang, pinned, resolved, deleted, ticket FROM messages ORDER BY pinned DESC, ts DESC'
     ).all();
     rows = res.results || [];
   } catch { rows = []; }
@@ -464,8 +514,9 @@ async function handleAdmin(request, env, url, base = '') {
         const pill = T.pill[t] || t;
         const badges = (r.pinned ? `<span class="badge badge--pin">${esc(T.pinned)}</span>` : '')
           + (r.resolved ? `<span class="badge badge--done">${esc(T.resolvedTag)}</span>` : '');
+        const tick = r.ticket ? `<div class="tick">${esc(r.ticket)}</div>` : '';
         const cls = [r.pinned ? 'is-pinned' : '', r.resolved ? 'is-resolved' : ''].filter(Boolean).join(' ');
-        return `<tr class="${cls}"><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span>${badges}</td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td><td class="acts">${rowActions(r)}</td></tr>`;
+        return `<tr class="${cls}"><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span>${badges}${tick}</td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td><td class="acts">${rowActions(r)}</td></tr>`;
       }).join('')
     }</tbody></table>`;
 
@@ -503,6 +554,7 @@ async function handleAdmin(request, env, url, base = '') {
   .badge{display:inline-block;margin-inline-start:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;vertical-align:middle}
   .badge--pin{background:rgba(245,160,92,.22);color:#f5a05c}
   .badge--done{background:rgba(120,200,150,.18);color:#7fd6a3}
+  .tick{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;color:#9088a8;margin-top:5px;letter-spacing:.03em}
   tr.is-pinned{background:rgba(245,160,92,.06)}
   tr.is-resolved td.msg,tr.is-resolved td:nth-child(3){opacity:.55}
   td.acts{white-space:nowrap}

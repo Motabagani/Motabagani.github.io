@@ -41,6 +41,7 @@ function HaaGreeter() {
     }
   });
   const [note, setNote] = useState('');
+  const [ticket, setTicket] = useState('');
   const [error, setError] = useState('');
   const [hp, setHp] = useState(''); // honeypot — must stay empty
   const areaRef = useRef(null);
@@ -139,13 +140,14 @@ function HaaGreeter() {
     setError('');
     setStage('sending');
     try {
-      await sendMessage({
+      const data = await sendMessage({
         type: 'feedback',
         message: note.trim(),
         page: window.location.pathname + window.location.search,
         lang,
         website: hp, // honeypot
       });
+      setTicket((data && data.ticket) || '');
       setStage('thanks');
       remember();
     } catch (e) {
@@ -251,6 +253,14 @@ function HaaGreeter() {
         {stage === 'thanks' && (
           <>
             <p className="haa-hello">{t.thanks}</p>
+            {ticket && (
+              <p className="haa-ticket">
+                {ar ? 'رقم تذكرتك:' : 'Your ticket:'} <strong>{ticket}</strong><br />
+                <a href={`/${lang}/track?id=${encodeURIComponent(ticket)}`}>
+                  {ar ? 'تابع ملاحظتك' : 'track your feedback'}
+                </a>
+              </p>
+            )}
             <div className="haa-actions">
               <button className="haa-btn haa-btn--primary" onClick={close}>
                 {t.close}

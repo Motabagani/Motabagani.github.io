@@ -11,6 +11,7 @@ import LegalPage from './pages/LegalPage';
 import FaqPage from './pages/FaqPage';
 import CourseRegistrationProject from './pages/CourseRegistrationProject';
 import Ashom1Project from './pages/Ashom1Project';
+import TrackPage from './pages/TrackPage';
 import RafeeqProject from './pages/RafeeqProject';
 import SSAUCSDProject from './pages/SSAUCSDProject';
 import EconomicModelsPage from './pages/EconomicModelsPage';
@@ -71,7 +72,7 @@ function App() {
     const NAMES = lang === 'ar'
       ? {
           '/coding': 'البرمجة', '/economic-models': 'النماذج الاقتصادية',
-          '/graphic-design': 'التصميم الجرافيكي', '/about': 'عني', '/contact': 'تواصل',
+          '/graphic-design': 'التصميم الجرافيكي', '/about': 'عني', '/contact': 'تواصل', '/track': 'تتبّع الطلب',
           '/projects/rafeeq': 'رفيق', '/rafeeq': 'رفيق',
           '/projects/ashom1': 'أسهم ١',
           '/projects/course-registration': 'نظام تسجيل المقررات',
@@ -81,7 +82,7 @@ function App() {
         }
       : {
           '/coding': 'Coding', '/economic-models': 'Economic Models',
-          '/graphic-design': 'Graphic Design', '/about': 'About', '/contact': 'Contact',
+          '/graphic-design': 'Graphic Design', '/about': 'About', '/contact': 'Contact', '/track': 'Track a request',
           '/projects/rafeeq': 'Rafeeq', '/rafeeq': 'Rafeeq',
           '/projects/ashom1': 'Ashom 1',
           '/projects/course-registration': 'Course Registration System',
@@ -136,6 +137,8 @@ function App() {
     page = <EconomicModelsPage />;
   } else if (routeWithoutLang.startsWith('/graphic-design')) {
     page = <GraphicDesignPage />;
+  } else if (routeWithoutLang.startsWith('/track')) {
+    page = <TrackPage />;
   } else if (routeWithoutLang.startsWith('/contact')) {
     page = <ContactPage />;
   } else if (routeWithoutLang.startsWith('/faq')) {

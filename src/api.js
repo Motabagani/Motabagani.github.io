@@ -13,7 +13,8 @@ const ENDPOINT = '/api/submit';
  * Send a message to the backend.
  * @param {{type:'feedback'|'contact', message:string, name?:string,
  *          email?:string, page?:string, lang?:string, website?:string}} payload
- * @returns {Promise<void>} resolves on success, throws Error on failure.
+ * @returns {Promise<{ok:true, ticket?:string}>} resolves with the server data
+ *          (including the tracking `ticket`) on success, throws Error on failure.
  */
 export async function sendMessage(payload) {
   let res;
@@ -40,4 +41,5 @@ export async function sendMessage(payload) {
     err.code = data && data.error; // 'message' | 'email' | 'rate' | ...
     throw err;
   }
+  return data; // { ok:true, ticket:'C-K-04821' }
 }

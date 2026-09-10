@@ -14,6 +14,7 @@ function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [hp, setHp] = useState(''); // honeypot
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [ticket, setTicket] = useState('');
   const [error, setError] = useState(''); // general (non-field) error
   const [invalid, setInvalid] = useState({ name: '', email: '', message: '' }); // per-field messages
 
@@ -54,7 +55,7 @@ function ContactPage() {
     setError('');
     setStatus('sending');
     try {
-      await sendMessage({
+      const data = await sendMessage({
         type: 'contact',
         name: form.name.trim(),
         email: form.email.trim(),
@@ -63,6 +64,7 @@ function ContactPage() {
         lang,
         website: hp,
       });
+      setTicket((data && data.ticket) || '');
       setStatus('sent');
     } catch (err) {
       const msg =
@@ -87,6 +89,7 @@ function ContactPage() {
 
   const reset = () => {
     setForm({ name: '', email: '', message: '' });
+    setTicket('');
     setStatus('idle');
     setError('');
     setInvalid({ name: '', email: '', message: '' });
@@ -115,12 +118,24 @@ function ContactPage() {
         <header className="project-header container">
           <h1>{c.title}</h1>
           <p className="deck">{c.deck}</p>
+          <p className="deck" style={{ marginTop: 6 }}>
+            <a href={`/${lang}/track`}>{ar ? 'تتبّع طلبًا موجودًا ←' : 'Track an existing request →'}</a>
+          </p>
         </header>
 
         <section className="container" style={{ paddingBlock: '8px 100px' }}>
           {status === 'sent' ? (
             <div className="contact-done" role="status">
               <p>{c.success}</p>
+              {ticket && (
+                <p className="contact-ticket">
+                  {ar ? 'رقم تذكرتك:' : 'Your ticket:'} <strong>{ticket}</strong>
+                  {' — '}
+                  <a href={`/${lang}/track?id=${encodeURIComponent(ticket)}`}>
+                    {ar ? 'تابع طلبك' : 'track your request'}
+                  </a>
+                </p>
+              )}
               <button className="contact-btn" onClick={reset}>
                 {c.another}
               </button>

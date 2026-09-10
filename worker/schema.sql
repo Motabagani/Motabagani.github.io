@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS messages (
   message     TEXT NOT NULL,
   page        TEXT,
   lang        TEXT,
+  ticket      TEXT,                   -- public tracking id, e.g. C-K-04821 / F-M-19230
   user_agent  TEXT,
   ip_hash     TEXT,
   pinned      INTEGER NOT NULL DEFAULT 0,   -- admin: pin to top
