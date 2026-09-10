@@ -304,6 +304,9 @@ const DASH_T = {
     when: 'When', type: 'Type', from: 'From', message: 'Message', page: 'Page',
     empty: 'No messages yet.', signout: 'Sign out', back: 'Back to website',
     toggle: 'العربية', pill: { contact: 'contact', feedback: 'feedback' },
+    actions: 'Actions', pin: 'Pin', unpin: 'Unpin', resolve: 'Resolve', reopen: 'Reopen',
+    del: 'Delete', restore: 'Restore', purge: 'Delete forever', trash: 'Trash',
+    emptyTrash: 'Trash is empty.', pinned: 'Pinned', resolvedTag: 'Resolved',
   },
   ar: {
     dir: 'rtl', title: 'لوحة التحكم', h1: 'لوحة التحكم', welcome: 'مرحبًا هاشم', total: 'الإجمالي',
@@ -311,6 +314,9 @@ const DASH_T = {
     when: 'الوقت', type: 'النوع', from: 'من', message: 'الرسالة', page: 'الصفحة',
     empty: 'لا توجد رسائل بعد.', signout: 'تسجيل الخروج', back: 'العودة إلى الموقع',
     toggle: 'English', pill: { contact: 'تواصل', feedback: 'ملاحظة' },
+    actions: 'إجراءات', pin: 'تثبيت', unpin: 'إلغاء التثبيت', resolve: 'تم', reopen: 'إعادة فتح',
+    del: 'حذف', restore: 'استعادة', purge: 'حذف نهائي', trash: 'المحذوفات',
+    emptyTrash: 'سلة المحذوفات فارغة.', pinned: 'مثبّت', resolvedTag: 'تم',
   },
 };
 
@@ -334,17 +340,40 @@ async function handleAdmin(request, env, url, base = '') {
   }
 
   const ipHash = await clientIpHash(request, env);
+  const authed = await validSession(readCookie(request, 'admin_session'), env);
 
-  // Login form submission.
   if (request.method === 'POST') {
-    // Brute-force lockout: refuse once too many recent failures from this IP.
+    const form = await request.formData().catch(() => null);
+    const action = form ? String(form.get('action') || '') : '';
+
+    // Authenticated row actions: delete / pin / unpin / resolve / unresolve.
+    if (action) {
+      if (!authed) return new Response(loginPage('', home), { status: 401, headers: adminSecHeaders() });
+      const id = Number(form.get('id'));
+      const rawBack = String(form.get('back') || home);
+      const back = (rawBack.startsWith('/') || rawBack.startsWith('?')) ? rawBack : home;
+      if (Number.isInteger(id) && id > 0) {
+        // pin/resolve toggles + soft delete (trash) / restore; `purge` is permanent.
+        const SETS = {
+          pin: 'pinned=1', unpin: 'pinned=0',
+          resolve: 'resolved=1', unresolve: 'resolved=0',
+          trash: 'deleted=1', restore: 'deleted=0',
+        };
+        try {
+          if (action === 'purge') await env.DB.prepare('DELETE FROM messages WHERE id = ?').bind(id).run();
+          else if (SETS[action]) await env.DB.prepare(`UPDATE messages SET ${SETS[action]} WHERE id = ?`).bind(id).run();
+        } catch { /* ignore */ }
+      }
+      return new Response('', { status: 303, headers: adminSecHeaders({ Location: back }) });
+    }
+
+    // Otherwise: a sign-in attempt.
     if (await loginLocked(env, ipHash)) {
       return new Response(
         loginPage('Too many attempts. Try again later. · محاولات كثيرة، حاول لاحقًا.', home),
         { status: 429, headers: adminSecHeaders({ 'Retry-After': '900' }) },
       );
     }
-    const form = await request.formData().catch(() => null);
     const u = form ? String(form.get('username') || '') : '';
     const p = form ? String(form.get('password') || '') : '';
     const okUser = !!env.ADMIN_USER ? timingEq(u, env.ADMIN_USER) : u === 'admin';
@@ -363,8 +392,8 @@ async function handleAdmin(request, env, url, base = '') {
     });
   }
 
-  // Anything else requires a valid session cookie; otherwise show the login page.
-  if (!(await validSession(readCookie(request, 'admin_session'), env))) {
+  // GET without a valid session -> login.
+  if (!authed) {
     return new Response(loginPage('', home), { headers: adminSecHeaders() });
   }
 
@@ -372,20 +401,24 @@ async function handleAdmin(request, env, url, base = '') {
   const T = DASH_T[lang];
   const rtl = lang === 'ar';
 
-  const want = ['all', 'contact', 'feedback'].includes(url.searchParams.get('type'))
+  const want = ['all', 'contact', 'feedback', 'trash'].includes(url.searchParams.get('type'))
     ? url.searchParams.get('type') : 'all';
 
   let rows = [];
   try {
     const res = await env.DB.prepare(
-      'SELECT ts, type, name, email, message, page, lang FROM messages ORDER BY ts DESC'
+      'SELECT id, ts, type, name, email, message, page, lang, pinned, resolved, deleted FROM messages ORDER BY pinned DESC, ts DESC'
     ).all();
     rows = res.results || [];
   } catch { rows = []; }
 
-  const counts = { all: rows.length, contact: 0, feedback: 0 };
-  for (const r of rows) counts[r.type] = (counts[r.type] || 0) + 1;
-  const shown = want === 'all' ? rows : rows.filter((r) => (r.type || 'feedback') === want);
+  const live = rows.filter((r) => !r.deleted);
+  const trash = rows.filter((r) => r.deleted);
+  const counts = { all: live.length, contact: 0, feedback: 0, trash: trash.length };
+  for (const r of live) counts[r.type] = (counts[r.type] || 0) + 1;
+  const inTrash = want === 'trash';
+  const shown = inTrash ? trash
+    : (want === 'all' ? live : live.filter((r) => (r.type || 'feedback') === want));
 
   const when = (ts) => {
     const d = new Date(ts);
@@ -401,11 +434,25 @@ async function handleAdmin(request, env, url, base = '') {
   };
   const q = (obj) => Object.entries(obj).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
   const tab = (key, label) =>
-    `<a class="tab${want === key ? ' active' : ''}" href="?${q({ type: key, lang })}">${label} <span class="n">${counts[key] || 0}</span></a>`;
+    `<a class="tab${want === key ? ' active' : ''}${key === 'trash' ? ' tab--trash' : ''}" href="?${q({ type: key, lang })}">${label} <span class="n">${counts[key] || 0}</span></a>`;
+
+  // Each action is a tiny same-origin POST form (no JS needed; CSP-safe).
+  const backQ = '?' + q({ type: want, lang });
+  const actForm = (id, action, label, cls = '') =>
+    `<form method="POST" action="${home}"><input type="hidden" name="action" value="${esc(action)}"><input type="hidden" name="id" value="${id}"><input type="hidden" name="back" value="${esc(backQ)}"><button class="act${cls ? ' ' + cls : ''}" type="submit">${label}</button></form>`;
+
+  const rowActions = (r) => {
+    if (inTrash) {
+      return actForm(r.id, 'restore', T.restore) + actForm(r.id, 'purge', T.purge, 'act--danger');
+    }
+    return (r.pinned ? actForm(r.id, 'unpin', T.unpin) : actForm(r.id, 'pin', T.pin))
+      + (r.resolved ? actForm(r.id, 'unresolve', T.reopen) : actForm(r.id, 'resolve', T.resolve))
+      + actForm(r.id, 'trash', T.del, 'act--danger');
+  };
 
   const bodyRows = shown.length === 0
-    ? `<p class="empty">${esc(T.empty)}</p>`
-    : `<table><thead><tr><th>${esc(T.when)}</th><th>${esc(T.type)}</th><th>${esc(T.from)}</th><th>${esc(T.message)}</th><th>${esc(T.page)}</th></tr></thead><tbody>${
+    ? `<p class="empty">${esc(inTrash ? T.emptyTrash : T.empty)}</p>`
+    : `<table><thead><tr><th>${esc(T.when)}</th><th>${esc(T.type)}</th><th>${esc(T.from)}</th><th>${esc(T.message)}</th><th>${esc(T.page)}</th><th>${esc(T.actions)}</th></tr></thead><tbody>${
       shown.map((r) => {
         const t = r.type || 'feedback';
         let frm = '';
@@ -415,7 +462,10 @@ async function handleAdmin(request, env, url, base = '') {
         let page = esc(r.page || '');
         if (r.lang) page += ' &middot; ' + esc(r.lang);
         const pill = T.pill[t] || t;
-        return `<tr><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span></td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td></tr>`;
+        const badges = (r.pinned ? `<span class="badge badge--pin">${esc(T.pinned)}</span>` : '')
+          + (r.resolved ? `<span class="badge badge--done">${esc(T.resolvedTag)}</span>` : '');
+        const cls = [r.pinned ? 'is-pinned' : '', r.resolved ? 'is-resolved' : ''].filter(Boolean).join(' ');
+        return `<tr class="${cls}"><td class="when">${when(r.ts)}</td><td><span class="pill ${esc(t)}">${esc(pill)}</span>${badges}</td><td>${frm}</td><td class="msg" dir="auto">${esc(r.message)}</td><td class="meta">${page}</td><td class="acts">${rowActions(r)}</td></tr>`;
       }).join('')
     }</tbody></table>`;
 
@@ -448,6 +498,20 @@ async function handleAdmin(request, env, url, base = '') {
   .hbtn{color:#9088a8;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.16);
     padding:6px 12px;border-radius:999px;white-space:nowrap}
   .hbtn:hover{color:#f0ebe0;border-color:#f5a05c}
+  .tabsp{flex:1}
+  .tab--trash{color:#c9b6ff}
+  .badge{display:inline-block;margin-inline-start:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.03em;vertical-align:middle}
+  .badge--pin{background:rgba(245,160,92,.22);color:#f5a05c}
+  .badge--done{background:rgba(120,200,150,.18);color:#7fd6a3}
+  tr.is-pinned{background:rgba(245,160,92,.06)}
+  tr.is-resolved td.msg,tr.is-resolved td:nth-child(3){opacity:.55}
+  td.acts{white-space:nowrap}
+  td.acts form{display:inline-block;margin:0 4px 4px 0}
+  .act{cursor:pointer;font:600 12px/1 ${FONT_STACK};color:#d9d2ea;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 10px}
+  .act:hover{color:#fff;border-color:#f5a05c}
+  .act--danger{color:#ff9a9a;border-color:rgba(255,120,120,.35)}
+  .act--danger:hover{color:#fff;background:rgba(220,70,70,.35);border-color:#ff7a7a}
 </style></head><body><div class="wrap">
 <header>
   <img src="/images/logowhite.png" alt="">
@@ -458,7 +522,7 @@ async function handleAdmin(request, env, url, base = '') {
   <a class="hbtn" href="${logoutPath}">${esc(T.signout)}</a>
 </header>
 <p class="sub">${esc(T.welcome)} &middot; ${counts.all} ${esc(T.total)}</p>
-<nav class="tabs">${tab('all', T.all)}${tab('contact', T.contact)}${tab('feedback', T.feedback)}</nav>
+<nav class="tabs">${tab('all', T.all)}${tab('contact', T.contact)}${tab('feedback', T.feedback)}<span class="tabsp"></span>${tab('trash', T.trash)}</nav>
 ${bodyRows}
 </div></body></html>`;
 
