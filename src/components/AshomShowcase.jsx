@@ -285,8 +285,8 @@ export default function AshomShowcase() {
       <h2 className="ashom__h2">{ar ? 'التنفيذ الحالي وخطة التحسين' : 'Current implementation & roadmap'}</h2>
       <p className="ashom__abstract">
         {ar
-          ? 'حاليًا: تعمل دائرة الكيوبتات العشرة ونواة الإخلاص على مرجعٍ دقيق (statevector). تأتي المدخلات المنظَّمة من الإفصاحات الرسمية (السوق المالية السعودية وSEC EDGAR) ومن بيانات السوق العامة وسلاسل البنك الدولي الكلية؛ أمّا نبرة الأخبار واستخراج العلاقات المثبّتة بالإفصاح فيتمّان اليوم عبر واجهة Gemini من Google. إنه نموذج بحثي مستقل أبنيه تدريجيًا.'
-          : 'Today: the ten-qubit circuit and fidelity kernel run on an exact statevector reference. Structured inputs come from official disclosures (Saudi Exchange, SEC EDGAR), public market feeds, and World Bank macro series; the qualitative news tone and the disclosure-anchored relationship extraction currently run through Google’s Gemini API. It’s an independent research prototype I’m building out incrementally.'}
+          ? 'حاليًا: تعمل دائرة الكيوبتات العشرة ونواة الإخلاص على مرجعٍ دقيق (statevector). تأتي المدخلات المنظَّمة من الإفصاحات الرسمية (السوق المالية السعودية وSEC EDGAR) ومن بيانات السوق العامة وسلاسل البنك الدولي الكلية؛ أمّا نبرة الأخبار واستخراج العلاقات المثبّتة بالإفصاح فيتمّان اليوم عبر واجهة Groq المجانية (نحو ٢٥٠ طلبًا مركّبًا يوميًا). إنه نموذج بحثي مستقل أبنيه تدريجيًا.'
+          : 'Today: the ten-qubit circuit and fidelity kernel run on an exact statevector reference. Structured inputs come from official disclosures (Saudi Exchange, SEC EDGAR), public market feeds, and World Bank macro series; the qualitative news tone and the disclosure-anchored relationship extraction currently run through Groq’s free API (about 250 compound requests per day). It’s an independent research prototype I’m building out incrementally.'}
       </p>
       <p className="ashom__abstract" style={{ marginTop: 12 }}>
         {ar
