@@ -1,4 +1,8 @@
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 import { useLanguage } from '../LanguageContext';
+
+const tex = (s) => ({ __html: katex.renderToString(s, { throwOnError: false, displayMode: true }) });
 
 /* Ashom 1 — Quantum Equity Model concept showcase for the Economic Models page.
    The interactive scanner itself is still being built; this presents the concept,
@@ -81,27 +85,33 @@ const METHOD = [
   {
     h: { en: '1 · The target', ar: '١ · الهدف' },
     p: { en: 'It forecasts the net benchmark-relative return over a 20- or 252-session horizon — the stock’s return, minus the benchmark’s, minus estimated transaction costs.', ar: 'يتنبّأ بالعائد الصافي النسبي مقابل المؤشر على أفق ٢٠ أو ٢٥٢ جلسة — عائد السهم ناقص عائد المؤشر ناقص تكاليف التداول المقدّرة.' },
-    eq: 'NXR(h) = R[i, t→t+h] − R[benchmark, t→t+h] − TC(h)     ·  h ∈ {20, 252} sessions',
+    eq: ['\\mathrm{NXR}^{(h)}_{i,t} \\;=\\; R_{i,\\,t\\to t+h} \\;-\\; R_{b,\\,t\\to t+h} \\;-\\; \\mathrm{TC}^{(h)}_{i,t}, \\qquad h \\in \\{20,\\,252\\}\\ \\text{sessions}'],
   },
   {
     h: { en: '2 · Disclosure-anchored network score', ar: '٢ · درجة الشبكة المثبّتة بالإفصاح' },
     p: { en: 'Each related-company event is weighted by relationship strength r, classifier confidence c, source quality q, and a 30-day time decay. Directions d ∈ {−1,0,1} and tones T (0–100) are pooled, then squashed to a 0–100 shift capped at ±20 points around neutral (50).', ar: 'يُوزَن كل حدث لشركة مرتبطة بقوة العلاقة r وثقة المصنّف c وجودة المصدر q وتضاؤل زمني ٣٠ يومًا. تُجمع الاتجاهات d ∈ {−١،٠،١} والنبرات T (٠–١٠٠)، ثم تُضغط إلى إزاحة ٠–١٠٠ بحدٍّ ±٢٠ حول الحياد (٥٠).' },
-    eq: 'w = r · c · q · exp(−ln2 · age / 30)\nN = clip[ 50 + 20 · Σ w·d·(T−50) / (50 · Σ w),  0, 100 ]',
+    eq: [
+      'w_e \\;=\\; r_e\\, c_e\\, q_e\\; e^{-\\ln 2 \\,\\cdot\\, a_e / 30}',
+      'N_{i,t} \\;=\\; \\operatorname{clip}\\!\\left[\\, 50 + \\frac{20\\sum_e w_e\\, d_e\\,(T_e - 50)}{50\\sum_e w_e},\\ \\ 0,\\ \\ 100 \\right]',
+    ],
   },
   {
     h: { en: '3 · Quantum feature map & fidelity kernel', ar: '٣ · خريطة السمات الكمّية ونواة الإخلاص' },
     p: { en: 'The ten factors are standardized, clipped to [−3,3], turned into rotation angles, and loaded into a 10-qubit circuit (Hadamard + data-reuploading Ry/Rz + ring-connected Rzz). Similarity between two observations is the squared overlap of their quantum states.', ar: 'تُوحّد العوامل العشرة وتُقصّ إلى [−٣،٣] وتُحوّل إلى زوايا دوران وتُحمّل في دائرة بعشرة كيوبتات (Hadamard + إعادة رفع Ry/Rz + Rzz حلقي). والتشابه بين مشاهدتين هو مربّع تداخل حالتيهما الكمّيتين.' },
-    eq: 'θ = (π/3) · clip((x − μ)/s, −3, 3)\nK(x, z) = |⟨φ(x)|φ(z)⟩|²      ·  0 ≤ K ≤ 1',
+    eq: [
+      '\\theta \\;=\\; \\tfrac{\\pi}{3}\\, \\operatorname{clip}\\!\\left( \\frac{x - \\mu}{s},\\, -3,\\, 3 \\right)',
+      'K(x, z) \\;=\\; \\bigl|\\, \\langle \\varphi(x) \\mid \\varphi(z) \\rangle \\,\\bigr|^{2}, \\qquad 0 \\le K \\le 1',
+    ],
   },
   {
     h: { en: '4 · From similarity to a forecast', ar: '٤ · من التشابه إلى تنبؤ' },
     p: { en: 'A benchmark-weighted kernel-ridge regression (review penalty λ = 1e−3) maps the vector of kernel similarities to a predicted net-excess return. The quantum circuit only builds the kernel; the regression, risk gates, and governance stay classical.', ar: 'انحدار ريدج نووي مُرجّح بالمؤشر (عقوبة λ = ١e−٣) يربط متجه أوجه التشابه بعائد صافٍ متوقّع. تبني الدائرة الكمّية النواة فقط؛ أما الانحدار وبوابات المخاطر والحوكمة فتبقى كلاسيكية.' },
-    eq: 'f(x) = β₀ + k(x)ᵀ β',
+    eq: ['\\hat f(x) \\;=\\; \\hat\\beta_0 \\;+\\; k(x)^{\\top}\\hat\\beta'],
   },
   {
     h: { en: '5 · Uncertainty & the decision bound', ar: '٥ · عدم اليقين وحدّ القرار' },
     p: { en: 'A full-pipeline wild-cluster bootstrap re-fits the model many times to build a forecast distribution. The decision statistic is its 5th-percentile lower bound — not a single point estimate.', ar: 'يعيد bootstrap عنقودي لكامل المسار تقدير النموذج مرارًا لبناء توزيع تنبؤ. وإحصاء القرار هو الحد الأدنى عند المئين الخامس — لا تقديرًا نقطيًا واحدًا.' },
-    eq: 'L(h) = Q(0.05) { NXR̂₁, …, NXR̂_B }',
+    eq: ['L^{(h)}_{i,t} \\;=\\; Q_{0.05}\\bigl\\{ \\widehat{\\mathrm{NXR}}_{1},\\, \\dots,\\, \\widehat{\\mathrm{NXR}}_{B} \\bigr\\}'],
   },
   {
     h: { en: '6 · Classification hurdles', ar: '٦ · عتبات التصنيف' },
@@ -176,8 +186,11 @@ export default function AshomShowcase() {
         .ashom__method li:last-child { border-bottom: 0; }
         .ashom__method h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--ink); }
         .ashom__method p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
-        .ashom__eq { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; white-space: pre-wrap;
-          background: rgba(0,0,0,.24); border: 1px solid var(--divider); border-radius: 10px; padding: 12px 14px; margin: 10px 0 0; color: var(--ink); overflow-x: auto; }
+        .ashom__eq { background: rgba(0,0,0,.24); border: 1px solid var(--divider); border-radius: 10px;
+          padding: 14px 16px; margin: 10px 0 0; color: var(--ink); overflow-x: auto; }
+        .ashom__eq > div + div { margin-top: 8px; }
+        .ashom__eq .katex-display { margin: 0; text-align: start; }
+        .ashom__eq .katex { color: var(--ink); font-size: 1.05em; white-space: nowrap; }
         .ashom__fine { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--divider);
           font-size: 12px; line-height: 1.7; color: var(--muted); max-width: 80ch; }
         .ashom__fine code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; color: var(--ink); opacity: .82; }
@@ -253,7 +266,11 @@ export default function AshomShowcase() {
           <li key={i}>
             <h3>{ar ? m.h.ar : m.h.en}</h3>
             <p>{ar ? m.p.ar : m.p.en}</p>
-            {m.eq && <div className="ashom__eq" dir="ltr">{m.eq}</div>}
+            {m.eq && (
+              <div className="ashom__eq" dir="ltr">
+                {m.eq.map((e, j) => <div key={j} dangerouslySetInnerHTML={tex(e)} />)}
+              </div>
+            )}
           </li>
         ))}
       </ol>
